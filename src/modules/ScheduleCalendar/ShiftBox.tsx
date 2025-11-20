@@ -1,0 +1,240 @@
+'use client'
+import { useEffect, useRef, useState } from 'react'
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { Trash2, UserPlus, X } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/shadcn/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/shadcn/dialog'
+
+function timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number)
+    return hours * 60 + minutes
+}
+
+export default function ShiftBox({
+                                     shift,
+                                     employees,
+                                     shiftsData,
+                                     setShiftsData,
+                                     date,
+                                     cellHeight = 40,
+                                 }: any) {
+    const ref = useRef<HTMLDivElement>(null)
+    const [isDraggingOver, setIsDraggingOver] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+    useEffect(() => {
+        if (!ref.current) return
+        return draggable({
+            element: ref.current,
+            getInitialData: () => ({ type: 'shift', id: shift.id }),
+        })
+    }, [shift.id])
+
+    useEffect(() => {
+        if (!ref.current) return
+        return dropTargetForElements({
+            element: ref.current,
+            onDrop: ({ source }) => {
+                if (source.data.type === 'employee') {
+                    const empId = source.data.id
+                    if (shift.employees.some((e: any) => e.id === empId)) {
+                        toast.info('Employee already assigned to this shift')
+                        return
+                    }
+
+                    const alreadyAssigned = shiftsData.some(
+                        (s: any) =>
+                            s.date === date &&
+                            s.id !== shift.id &&
+                            s.employees.some((e: any) => e.id === empId)
+                    )
+
+                    if (alreadyAssigned) {
+                        toast.error('Employee already has a shift on this day')
+                        return
+                    }
+
+                    const emp = employees.find((e: any) => e.id === empId)
+                    if (!emp) return
+
+                    setShiftsData((prev: any) =>
+                        prev.map((s: any) =>
+                            s.id === shift.id
+                                ? {
+                                    ...s,
+                                    employees: [
+                                        ...s.employees,
+                                        { id: emp.id, name: emp.name },
+                                    ],
+                                }
+                                : s
+                        )
+                    )
+                    setIsDraggingOver(false)
+                }
+            },
+            onDragEnter: () => setIsDraggingOver(true),
+            onDragLeave: () => setIsDraggingOver(false),
+        })
+    }, [shift, employees, date, shiftsData, setShiftsData])
+
+    const handleRemoveShift = () => {
+        setShiftsData((prev: any) => prev.filter((s: any) => s.id !== shift.id))
+        toast.success('Shift removed')
+    }
+
+    const handleRemoveEmployee = (empId: number) => {
+        setShiftsData((prev: any) =>
+            prev.map((s: any) =>
+                s.id === shift.id
+                    ? {
+                        ...s,
+                        employees: s.employees.filter((e: any) => e.id !== empId),
+                    }
+                    : s
+            )
+        )
+    }
+
+    const handleAddEmployee = (empId: number) => {
+        const alreadyAssigned = shiftsData.some(
+            (s: any) =>
+                s.date === date &&
+                s.id !== shift.id &&
+                s.employees.some((e: any) => e.id === empId)
+        )
+
+        if (alreadyAssigned) {
+            toast.error('Employee already has a shift on this day')
+            return
+        }
+
+        const emp = employees.find((e: any) => e.id === empId)
+        if (!emp) return
+
+        setShiftsData((prev: any) =>
+            prev.map((s: any) =>
+                s.id === shift.id
+                    ? {
+                        ...s,
+                        employees: [...s.employees, { id: emp.id, name: emp.name }],
+                    }
+                    : s
+            )
+        )
+        toast.success(`${emp.name} assigned to shift`)
+    }
+
+    // Вычисляем позицию и высоту
+    const startMinutes = timeToMinutes(shift.startTime)
+    const endMinutes = timeToMinutes(shift.endTime)
+
+    // Если смена заканчивается на следующий день (endTime < startTime или endTime === 00:00)
+    const isOvernight = endMinutes <= startMinutes
+    const actualEndMinutes = isOvernight ? 24 * 60 : endMinutes
+
+    const duration = actualEndMinutes - startMinutes
+    const topPosition = (startMinutes / 60) * cellHeight
+    const height = (duration / 60) * cellHeight
+
+    const availableEmployees = employees.filter(
+        (e: any) => !shift.employees.some((se: any) => se.id === e.id)
+    )
+
+    return (
+        <div
+            ref={ref}
+            className={`absolute left-0 right-0 mx-1 rounded border-l-4 shadow-sm cursor-move transition-colors ${
+                isDraggingOver ? 'ring-2 ring-primary' : ''
+            }`}
+            style={{
+                top: topPosition,
+                height: height,
+                borderLeftColor: shift.color,
+                backgroundColor: shift.color + '15',
+                minHeight: '60px',
+            }}
+        >
+            <div className="p-2 h-full flex flex-col text-xs">
+                <div className="flex items-center justify-between mb-1">
+                    <span className="font-semibold text-sm">{shift.shiftTypeName}</span>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={handleRemoveShift}
+                    >
+                        <Trash2 className="h-3 w-3" />
+                    </Button>
+                </div>
+
+                <div className="text-muted-foreground mb-2">
+                    {shift.startTime.slice(0, 5)} - {shift.endTime.slice(0, 5)}
+                    {isOvernight && <span className="ml-1 text-orange-500">(+1)</span>}
+                </div>
+
+                <div className="flex-1 space-y-1 overflow-y-auto">
+                    {shift.employees.map((emp: any) => (
+                        <div
+                            key={emp.id}
+                            className="flex items-center justify-between bg-background/50 rounded px-2 py-1"
+                        >
+                            <span className="text-xs truncate">{emp.name}</span>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 ml-1 flex-shrink-0"
+                                onClick={() => handleRemoveEmployee(emp.id)}
+                            >
+                                <X className="h-3 w-3" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="mt-2 h-7">
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Add Employee
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add Employee to {shift.shiftTypeName}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                            {availableEmployees.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">
+                                    No available employees
+                                </p>
+                            ) : (
+                                availableEmployees.map((emp: any) => (
+                                    <Button
+                                        key={emp.id}
+                                        variant="outline"
+                                        className="w-full justify-start"
+                                        onClick={() => {
+                                            handleAddEmployee(emp.id)
+                                            setIsDialogOpen(false)
+                                        }}
+                                    >
+                                        {emp.name}
+                                    </Button>
+                                ))
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </div>
+    )
+}
