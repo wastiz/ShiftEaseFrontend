@@ -1,7 +1,7 @@
 'use client'
 
 import ScheduleCalendar from "@/modules/ScheduleCalendar/ScheduleCalendar";
-import {useGetEmployeeSchedule} from "@/api";
+import {useGetConfirmedSchedule} from "@/api";
 import {useEffect, useState, useMemo} from "react";
 import {DateData, Shift} from "@/types";
 import {getDaysInMonth} from "@/helpers/dateHelper";
@@ -15,11 +15,13 @@ export default function EmployeePersonalPage() {
     const [daysOfMonth, setDaysOfMonth] = useState<DateData[]>(getDaysInMonth(today.getFullYear(), today.getMonth()));
     const [shiftsData, setShiftsData] = useState<Shift[]>([]);
 
-    const {data: scheduleData, isLoading} = useGetEmployeeSchedule(currentMonth, currentYear);
+    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(currentMonth, currentYear);
+
+    console.log(scheduleData);
 
     useEffect(() => {
-        if (scheduleData?.scheduleInfoWithShifts) {
-            setShiftsData(scheduleData.scheduleInfoWithShifts.shifts || []);
+        if (scheduleData) {
+            setShiftsData(scheduleData.shifts || []);
         }
     }, [scheduleData]);
 
@@ -34,15 +36,13 @@ export default function EmployeePersonalPage() {
                 return shiftDate > today;
             })
             .sort((a, b) => {
-                const aTime = new Date(`${a.date}T${a.from}`).getTime();
-                const bTime = new Date(`${b.date}T${b.from}`).getTime();
+                const aTime = new Date(`${a.date}T${a.startTime}`).getTime();
+                const bTime = new Date(`${b.date}T${b.endTime}`).getTime();
                 return aTime - bTime;
             });
 
         return upcomingShifts[0];
     }, [shiftsData]);
-
-    console.log(shiftsData)
 
     return (
         <div className="flex flex-col gap-4">
@@ -50,7 +50,7 @@ export default function EmployeePersonalPage() {
                 <div className="p-4 bg-primary/20 rounded border">
                     <p className="font-medium text-lg">Next Shift:</p>
                     <p>
-                        {nextShift.shiftTypeName} — {nextShift.from} to {nextShift.to} on {nextShift.date}
+                        {nextShift.shiftTypeName} — {nextShift.startTime} to {nextShift.endTime} on {nextShift.date}
                     </p>
                 </div>
             )}
