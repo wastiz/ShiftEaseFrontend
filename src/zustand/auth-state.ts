@@ -4,7 +4,7 @@ import {User} from "@/types";
 
 type AuthState = {
     user: User | null;
-    setUser: (user: User | null) => void;
+    setUser: (user: User) => void;
     clearAuth: () => void;
     logout: () => void;
 };

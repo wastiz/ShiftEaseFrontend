@@ -11,12 +11,13 @@ import {
     Shift
 } from "@/types";
 
-export function useGetConfirmedSchedule(month: number, year: number) {
+export function useGetConfirmedSchedule(month: number, year: number, groupId: number) {
     return useQuery<Schedule>({
         queryKey: ["schedule", month, year],
         queryFn: async () => {
             const res = await api.get<Schedule>("/schedules/confirmed", {
                 params: {
+                    groupId,
                     month,
                     year
                 },

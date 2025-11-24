@@ -5,6 +5,7 @@ import {useGetConfirmedSchedule} from "@/api";
 import {useEffect, useState, useMemo} from "react";
 import {DateData, Shift} from "@/types";
 import {getDaysInMonth} from "@/helpers/dateHelper";
+import {useAuthStore} from "@/zustand/auth-state";
 
 const today = new Date();
 
@@ -14,8 +15,9 @@ export default function EmployeePersonalPage() {
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [daysOfMonth, setDaysOfMonth] = useState<DateData[]>(getDaysInMonth(today.getFullYear(), today.getMonth()));
     const [shiftsData, setShiftsData] = useState<Shift[]>([]);
+    const user = useAuthStore((state) => state.user);
 
-    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(currentMonth, currentYear);
+    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(currentMonth, currentYear, user.userData.groupId);
 
     console.log(scheduleData);
 
@@ -55,12 +57,21 @@ export default function EmployeePersonalPage() {
                 </div>
             )}
 
-            <ScheduleCalendar
-                shiftsData={shiftsData}
-                setShiftsData={setShiftsData}
-                daysOfMonth={daysOfMonth}
-                isEditable={false}
-            />
+            {/*<ScheduleCalendar*/}
+            {/*    shiftsData={shiftsData}*/}
+            {/*    setShiftsData={setShiftsData}*/}
+            {/*    shiftTypes={scheduleData?.shiftTypes || []}*/}
+            {/*    employees={scheduleData?.employees || []}*/}
+            {/*    daysOfMonth={daysOfMonth}*/}
+            {/*    currentMonth={currentMonth}*/}
+            {/*    currentYear={currentYear}*/}
+            {/*    setCurrentMonth={setCurrentMonth}*/}
+            {/*    setCurrentYear={setCurrentYear}*/}
+            {/*    isConfirmed={true}*/}
+            {/*    isEditable={false}*/}
+            {/*    orgHolidays={scheduleData.organizationHolidays}*/}
+            {/*    orgSchedule={scheduleData.organizationSchedule}*/}
+            {/*/>*/}
         </div>
     );
 }

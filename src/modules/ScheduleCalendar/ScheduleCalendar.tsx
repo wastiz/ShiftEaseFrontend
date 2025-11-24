@@ -19,8 +19,8 @@ type ScheduleCalendarProps = {
     currentYear: number
     setCurrentMonth: Dispatch<SetStateAction<number>>
     setCurrentYear: Dispatch<SetStateAction<number>>
-    autorenewal: boolean
-    setAutorenewal: Dispatch<SetStateAction<boolean>>
+    autorenewal?: boolean
+    setAutorenewal?: Dispatch<SetStateAction<boolean>>
     isConfirmed: boolean
     isEditable?: boolean
     cellHeight?: number
