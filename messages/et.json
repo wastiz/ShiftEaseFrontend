@@ -1,0 +1,136 @@
+{
+  "common": {
+    "appName": "ShiftEase",
+    "notifications": "Teavitused",
+    "email": "E-post",
+    "password": "Parool",
+    "login": "Logi sisse",
+    "register": "Registreeru",
+    "save": "Salvesta",
+    "cancel": "Tühista",
+    "delete": "Kustuta",
+    "edit": "Muuda",
+    "create": "Loo",
+    "back": "Tagasi",
+    "next": "Edasi",
+    "search": "Otsi",
+    "filter": "Filter",
+    "loading": "Laadimine...",
+    "error": "Viga",
+    "success": "Edukas",
+    "somethingWentWrong": "Midagi läks valesti"
+  },
+  "auth": {
+    "loginTitle": "Logi sisse oma {role} kontole",
+    "loginDescription": "Sisestage oma e-posti aadress sisselogimiseks",
+    "registerTitle": "Loo {role} konto",
+    "registerDescription": "Sisestage oma andmed konto loomiseks",
+    "forgotPasswordTitle": "Unustasid parooli",
+    "forgotPasswordDescription": "Sisestage oma e-posti aadress parooli lähtestamiseks",
+    "employee": "töötaja",
+    "employer": "tööandja",
+    "emailPlaceholder": "m@example.com",
+    "forgotPassword": "Unustasid parooli?",
+    "loggingIn": "Sisselogimine...",
+    "loginWithGoogle": "Logi sisse Google'iga",
+    "loginSuccess": "Sisselogimine õnnestus!",
+    "dontHaveAccount": "Kas teil pole kontot?",
+    "alreadyHaveAccount": "Kas teil on juba konto?",
+    "employeeCannotRegister": "Te ei saa ise töötaja kontot luua. Palun paluge oma tööandjal see luua",
+    "firstName": "Eesnimi",
+    "lastName": "Perekonnanimi",
+    "confirmPassword": "Kinnita parool",
+    "creating": "Loomine...",
+    "createAccount": "Loo konto",
+    "sendResetLink": "Saada lähtestamise link",
+    "sending": "Saatmine...",
+    "resetLinkSent": "Lähtestamise link saadetud teie e-posti aadressile",
+    "backToLogin": "Tagasi sisselogimise juurde"
+  },
+  "nav": {
+    "backToOrganizations": "Tagasi organisatsioonide juurde",
+    "overview": "Ülevaade",
+    "schedules": "Graafikud",
+    "employees": "Töötajad",
+    "groups": "Grupid",
+    "shiftTypes": "Vahetuse tüübid",
+    "dashboard": "Juhtpaneel",
+    "preferences": "Eelistused",
+    "vacation": "Puhkus",
+    "sickLeave": "Haigusleht"
+  },
+  "employer": {
+    "organizations": {
+      "title": "Organisatsioonid",
+      "description": "Hallake oma organisatsioone",
+      "create": "Loo organisatsioon",
+      "name": "Organisatsiooni nimi",
+      "noOrganizations": "Organisatsioone ei leitud"
+    },
+    "employees": {
+      "title": "Töötajad",
+      "description": "Hallake oma töötajaid",
+      "create": "Lisa töötaja",
+      "firstName": "Eesnimi",
+      "lastName": "Perekonnanimi",
+      "email": "E-post",
+      "phone": "Telefon",
+      "position": "Ametikoht",
+      "noEmployees": "Töötajaid ei leitud"
+    },
+    "groups": {
+      "title": "Grupid",
+      "description": "Hallake töötajate gruppe",
+      "create": "Loo grupp",
+      "name": "Grupi nimi",
+      "noGroups": "Gruppe ei leitud"
+    },
+    "shiftTypes": {
+      "title": "Vahetuse tüübid",
+      "description": "Hallake vahetuse tüüpe",
+      "create": "Loo vahetuse tüüp",
+      "name": "Vahetuse nimi",
+      "startTime": "Algusaeg",
+      "endTime": "Lõppaeg",
+      "noShiftTypes": "Vahetuse tüüpe ei leitud"
+    },
+    "schedules": {
+      "title": "Graafikud",
+      "description": "Hallake töögraafikuid",
+      "create": "Loo graafik",
+      "noSchedules": "Graafikuid ei leitud"
+    }
+  },
+  "employee": {
+    "dashboard": {
+      "title": "Juhtpaneel",
+      "welcome": "Tere tulemast tagasi",
+      "upcomingShifts": "Eelseisvad vahetused",
+      "noUpcomingShifts": "Eelseisvaid vahetusi pole"
+    },
+    "preferences": {
+      "title": "Eelistused",
+      "description": "Hallake oma tööeelistusi"
+    },
+    "vacation": {
+      "title": "Puhkusetaotlused",
+      "description": "Taotlege ja hallake oma puhkuseaega",
+      "request": "Taotlege puhkust",
+      "startDate": "Alguskuupäev",
+      "endDate": "Lõppkuupäev",
+      "noRequests": "Puhkusetaotlusi pole"
+    },
+    "sickLeave": {
+      "title": "Haigusleht",
+      "description": "Teatage ja hallake haiguslehte",
+      "report": "Teatage haiguslehest",
+      "noReports": "Haiguslehtede kirjeid pole"
+    }
+  },
+  "language": {
+    "select": "Vali keel",
+    "en": "English",
+    "ru": "Русский",
+    "et": "Eesti"
+  }
+}

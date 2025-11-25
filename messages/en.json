@@ -1,0 +1,136 @@
+{
+  "common": {
+    "appName": "ShiftEase",
+    "notifications": "Notifications",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "register": "Register",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "somethingWentWrong": "Something went wrong"
+  },
+  "auth": {
+    "loginTitle": "Login to your {role} account",
+    "loginDescription": "Enter your email below to login",
+    "registerTitle": "Create {role} account",
+    "registerDescription": "Enter your details below to create account",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordDescription": "Enter your email to reset password",
+    "employee": "Employee",
+    "employer": "Employer",
+    "emailPlaceholder": "m@example.com",
+    "forgotPassword": "Forgot your password?",
+    "loggingIn": "Logging in...",
+    "loginWithGoogle": "Login with Google",
+    "loginSuccess": "Login successful!",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "employeeCannotRegister": "You cannot create employee account by yourself. Please ask your employer to create one",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "confirmPassword": "Confirm Password",
+    "creating": "Creating...",
+    "createAccount": "Create Account",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "resetLinkSent": "Reset link sent to your email",
+    "backToLogin": "Back to Login"
+  },
+  "nav": {
+    "backToOrganizations": "Back to Organizations",
+    "overview": "Overview",
+    "schedules": "Schedules",
+    "employees": "Employees",
+    "groups": "Groups",
+    "shiftTypes": "Shift Types",
+    "dashboard": "Dashboard",
+    "preferences": "Preferences",
+    "vacation": "Vacation",
+    "sickLeave": "Sick Leave"
+  },
+  "employer": {
+    "organizations": {
+      "title": "Organizations",
+      "description": "Manage your organizations",
+      "create": "Create Organization",
+      "name": "Organization Name",
+      "noOrganizations": "No organizations found"
+    },
+    "employees": {
+      "title": "Employees",
+      "description": "Manage your employees",
+      "create": "Add Employee",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "position": "Position",
+      "noEmployees": "No employees found"
+    },
+    "groups": {
+      "title": "Groups",
+      "description": "Manage employee groups",
+      "create": "Create Group",
+      "name": "Group Name",
+      "noGroups": "No groups found"
+    },
+    "shiftTypes": {
+      "title": "Shift Types",
+      "description": "Manage shift types",
+      "create": "Create Shift Type",
+      "name": "Shift Name",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "noShiftTypes": "No shift types found"
+    },
+    "schedules": {
+      "title": "Schedules",
+      "description": "Manage work schedules",
+      "create": "Create Schedule",
+      "noSchedules": "No schedules found"
+    }
+  },
+  "employee": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "upcomingShifts": "Upcoming Shifts",
+      "noUpcomingShifts": "No upcoming shifts"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Manage your work preferences"
+    },
+    "vacation": {
+      "title": "Vacation Requests",
+      "description": "Request and manage your vacation time",
+      "request": "Request Vacation",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "noRequests": "No vacation requests"
+    },
+    "sickLeave": {
+      "title": "Sick Leave",
+      "description": "Report and manage sick leave",
+      "report": "Report Sick Leave",
+      "noReports": "No sick leave reports"
+    }
+  },
+  "language": {
+    "select": "Select Language",
+    "en": "English",
+    "ru": "Русский",
+    "et": "Eesti"
+  }
+}

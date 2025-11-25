@@ -8,6 +8,7 @@ import {
     FileType,
     IdCardLanyard, CalendarCheck, Bolt, CalendarPlus2, TreePalm, ArrowBigLeft
 } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 import { NavMain } from "@/components/ui/shadcn/nav-main"
 import { NavUser } from "@/components/ui/shadcn/nav-user"
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/shadcn/sidebar"
 import Logo from "@/components/ui/Logo";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/shadcn/collapsible";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export interface NavItem {
     title: string
@@ -54,6 +56,7 @@ const iconMap = {
 export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
+    const tCommon = useTranslations('common')
 
     const mappedNavMain = navMain.map(item => ({
         ...item,
@@ -72,13 +75,16 @@ export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {
 
             <SidebarFooter>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Notifications">
+                    <SidebarMenuButton asChild tooltip={tCommon('notifications')}>
                         <a href="/notifications">
                             <Bell />
-                            <span>Notifications</span>
+                            <span>{tCommon('notifications')}</span>
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
+                <div className="p-2">
+                    <LanguageSwitcher />
+                </div>
                 <NavUser user={user} />
             </SidebarFooter>
 

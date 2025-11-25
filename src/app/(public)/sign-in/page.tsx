@@ -9,6 +9,8 @@ import RegisterForm from "@/modules/page-modules/sign-in/RegisterForm";
 import ForgotPasswordForm from "@/modules/page-modules/sign-in/ForgotPasswordForm";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/shadcn/tabs";
 import {Mode} from "@/types";
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const variants = {
     initial: { x: 100, opacity: 0 },
@@ -19,15 +21,18 @@ const variants = {
 
 export default function SignIn() {
     const [mode, setMode] = useState<Mode>("login")
+    const t = useTranslations('auth');
+    const tCommon = useTranslations('common');
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
-                <div className="flex justify-center gap-2 md:justify-start">
+                <div className="flex justify-between items-center gap-2">
                     <a href="#" className="flex items-center gap-2 font-medium">
                         <img src="/images/logo.svg" alt="Logo" />
-                        ShiftEase
+                        {tCommon('appName')}
                     </a>
+                    <LanguageSwitcher />
                 </div>
                 <div className="flex flex-1 items-center justify-center relative min-h-[400px] overflow-hidden">
                     <AnimatePresence mode="wait">
@@ -42,8 +47,8 @@ export default function SignIn() {
                         >
                             <Tabs defaultValue="employer" className="w-[400px]">
                                 <TabsList>
-                                    <TabsTrigger value="employee">Employee</TabsTrigger>
-                                    <TabsTrigger value="employer">Employer</TabsTrigger>
+                                    <TabsTrigger value="employee">{t('employee')}</TabsTrigger>
+                                    <TabsTrigger value="employer">{t('employer')}</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="employee">
                                     <Card className="bg-glassBorder">
@@ -53,8 +58,7 @@ export default function SignIn() {
 
                                         {mode === "register" && (
                                             <div className={"p-4"}>
-                                                <p>You cannot create employee account by yourself.
-                                                    Please ask your employer to create one</p>
+                                                <p>{t('employeeCannotRegister')}</p>
                                             </div>
                                         )}
 
