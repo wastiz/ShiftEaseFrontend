@@ -23,8 +23,12 @@ import Header from "@/modules/Header";
 import Main from "@/modules/Main";
 import Link from 'next/link';
 import { useGetOrganizationData } from '@/api';
+import { useTranslations } from 'next-intl';
 
 export default function EmployerDashboard() {
+    const t = useTranslations('dashboard');
+    const tCommon = useTranslations('common');
+    const tOrg = useTranslations('organization');
     const organizationId = "1";
     const { data, isLoading } = useGetOrganizationData(organizationId, { enabled: !!organizationId });
     const [selectedGroup, setSelectedGroup] = useState<number>(1);
@@ -46,9 +50,9 @@ export default function EmployerDashboard() {
     if (!data) return null;
 
     const missingSetup = [];
-    if (data.shiftTypeCount === 0) missingSetup.push('Shift Types');
-    if (data.groupCount === 0) missingSetup.push('Groups');
-    if (data.employeeCount === 0) missingSetup.push('Employees');
+    if (data.shiftTypeCount === 0) missingSetup.push(t('shiftTypes'));
+    if (data.groupCount === 0) missingSetup.push(t('groups'));
+    if (data.employeeCount === 0) missingSetup.push(tCommon('employees'));
 
     const allUnconfirmedSchedules = data.scheduleSummaries.flatMap(summary =>
         summary.unconfirmedSchedules.map(schedule => ({
@@ -61,11 +65,11 @@ export default function EmployerDashboard() {
 
     return (
         <>
-            <Header title="Dashboard">
+            <Header title={t('title')}>
                 <Button asChild disabled={data.groupCount === 0}>
                     <Link href="/employer/schedules/create">
                         <Plus className="mr-2 h-4 w-4" />
-                        Create Schedule
+                        {t('createSchedule')}
                     </Link>
                 </Button>
             </Header>
@@ -75,9 +79,9 @@ export default function EmployerDashboard() {
                         <Alert>
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                                Complete setup: Missing {missingSetup.join(', ')}.
+                                {t('completeSetup', { items: missingSetup.join(', ') })}
                                 <Link href="/employer/settings" className="ml-2 underline font-medium">
-                                    Go to Settings
+                                    {t('goToSettings')}
                                 </Link>
                             </AlertDescription>
                         </Alert>
@@ -87,7 +91,7 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Total Employees
+                                    {t('totalEmployees')}
                                 </CardTitle>
                                 <Users className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -96,12 +100,12 @@ export default function EmployerDashboard() {
                                 {data.employeeCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
                                         <Link href="/employer/employees">
-                                            Add employees
+                                            {t('addEmployees')}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Across {data.groupCount} groups
+                                        {t('acrossGroups', { count: data.groupCount })}
                                     </p>
                                 )}
                             </CardContent>
@@ -110,7 +114,7 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Total Schedules
+                                    {t('totalSchedules')}
                                 </CardTitle>
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -119,12 +123,12 @@ export default function EmployerDashboard() {
                                 {data.scheduleCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
                                         <Link href="/employer/schedules/create">
-                                            Create schedule
+                                            {t('createSchedule')}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        {allUnconfirmedSchedules.length} unconfirmed
+                                        {allUnconfirmedSchedules.length} {t('unconfirmed')}
                                     </p>
                                 )}
                             </CardContent>
@@ -133,7 +137,7 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Groups
+                                    {t('groups')}
                                 </CardTitle>
                                 <Building2 className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -142,12 +146,12 @@ export default function EmployerDashboard() {
                                 {data.groupCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
                                         <Link href="/employer/groups">
-                                            Create group
+                                            {t('createGroup')}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Work groups configured
+                                        {t('workGroupsConfigured')}
                                     </p>
                                 )}
                             </CardContent>
@@ -156,7 +160,7 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Shift Types
+                                    {t('shiftTypes')}
                                 </CardTitle>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
@@ -165,12 +169,12 @@ export default function EmployerDashboard() {
                                 {data.shiftTypeCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
                                         <Link href="/employer/shift-types">
-                                            Configure shift types
+                                            {t('configureShiftTypes')}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Shift types configured
+                                        {t('shiftTypesConfigured')}
                                     </p>
                                 )}
                             </CardContent>
@@ -180,14 +184,14 @@ export default function EmployerDashboard() {
                     <div className="grid gap-4 md:grid-cols-2">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Unconfirmed Schedules</CardTitle>
+                                <CardTitle>{t('unconfirmedSchedules')}</CardTitle>
                                 <CardDescription>
-                                    Schedules that need confirmation
+                                    {t('schedulesThatNeedConfirmation')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {allUnconfirmedSchedules.length === 0 ? (
-                                    <p className="text-sm text-muted-foreground">No unconfirmed schedules</p>
+                                    <p className="text-sm text-muted-foreground">{t('noUnconfirmedSchedules')}</p>
                                 ) : (
                                     allUnconfirmedSchedules.map((schedule) => (
                                         <div key={schedule.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -198,7 +202,7 @@ export default function EmployerDashboard() {
                                             </div>
                                             <Button variant="outline" size="sm" asChild>
                                                 <Link href={`/employer/schedules/${schedule.groupId}`}>
-                                                    Edit
+                                                    {tCommon('edit')}
                                                 </Link>
                                             </Button>
                                         </div>
@@ -209,40 +213,40 @@ export default function EmployerDashboard() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Quick Actions</CardTitle>
+                                <CardTitle>{t('quickActions')}</CardTitle>
                                 <CardDescription>
-                                    Common tasks and shortcuts
+                                    {t('commonTasksAndShortcuts')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 <Button variant="outline" className="w-full justify-start" asChild>
                                     <Link href="/employer/schedules/create">
                                         <Calendar className="mr-2 h-4 w-4" />
-                                        Create New Schedule
+                                        {t('createNewSchedule')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
                                     <Link href="/employer/employees">
                                         <Users className="mr-2 h-4 w-4" />
-                                        Manage Employees
+                                        {t('manageEmployees')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
                                     <Link href="/employer/shift-types">
                                         <Clock className="mr-2 h-4 w-4" />
-                                        Configure Shift Types
+                                        {t('configureShiftTypes')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
                                     <Link href="/employer/reports">
                                         <FileText className="mr-2 h-4 w-4" />
-                                        View Reports
+                                        {t('viewReports')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
                                     <Link href="/employer/settings">
                                         <Settings className="mr-2 h-4 w-4" />
-                                        Organization Settings
+                                        {t('organizationSettings')}
                                     </Link>
                                 </Button>
                             </CardContent>
@@ -251,9 +255,9 @@ export default function EmployerDashboard() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Group Schedules</CardTitle>
+                            <CardTitle>{t('groupSchedules')}</CardTitle>
                             <CardDescription>
-                                View and manage schedules for each group
+                                {t('viewAndManageSchedules')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -275,22 +279,22 @@ export default function EmployerDashboard() {
                                             <div>
                                                 <h3 className="text-lg font-semibold">{group.name}</h3>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {group.employeeCount} employees
+                                                    {group.employeeCount} {t('employees')}
                                                 </p>
                                             </div>
                                             <Badge variant={
                                                 group.scheduleStatus === 'confirmed' ? 'default' :
                                                     group.scheduleStatus === 'pending' ? 'secondary' : 'outline'
                                             }>
-                                                {group.scheduleStatus}
+                                                {t(group.scheduleStatus as 'confirmed' | 'pending' | 'draft')}
                                             </Badge>
                                         </div>
 
                                         <div className="border rounded-lg p-4">
                                             <div className="grid grid-cols-7 gap-2 mb-4">
-                                                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                                                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => (
                                                     <div key={day} className="text-center text-sm font-medium text-muted-foreground">
-                                                        {day}
+                                                        {tOrg(`days.${day}`)}
                                                     </div>
                                                 ))}
                                             </div>
@@ -313,12 +317,12 @@ export default function EmployerDashboard() {
                                         <div className="flex justify-end gap-2">
                                             <Button variant="outline" asChild>
                                                 <Link href={`/employer/schedules/${group.id}`}>
-                                                    View Full Schedule
+                                                    {t('viewFullSchedule')}
                                                 </Link>
                                             </Button>
                                             <Button asChild>
                                                 <Link href={`/employer/schedules/${group.id}/edit`}>
-                                                    Edit Schedule
+                                                    {t('editSchedule')}
                                                 </Link>
                                             </Button>
                                         </div>
@@ -332,14 +336,14 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">
-                                    Average Weekly Hours
+                                    {t('averageWeeklyHours')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">38.5h</div>
                                 <div className="flex items-center text-xs text-green-600 mt-1">
                                     <TrendingUp className="h-3 w-3 mr-1" />
-                                    +2.5h from last week
+                                    +2.5h {t('fromLastWeek')}
                                 </div>
                             </CardContent>
                         </Card>
@@ -347,13 +351,13 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">
-                                    Schedule Coverage
+                                    {t('scheduleCoverage')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">95%</div>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    All shifts assigned
+                                    {t('allShiftsAssigned')}
                                 </p>
                             </CardContent>
                         </Card>
@@ -361,13 +365,13 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-sm font-medium">
-                                    Upcoming Time Off
+                                    {t('upcomingTimeOff')}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">3</div>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    Requests this week
+                                    {t('requestsThisWeek')}
                                 </p>
                             </CardContent>
                         </Card>

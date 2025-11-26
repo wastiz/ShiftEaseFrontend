@@ -45,6 +45,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     useEffect(() => {
         if (isInitialized && storedUser && isPublicRoute && pathname !== "/") {
+            if (storedUser)
             router.push("/dashboard");
         }
     }, [isInitialized, storedUser, isPublicRoute, pathname]);

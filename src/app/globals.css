@@ -135,7 +135,7 @@
     }
 
     body {
-        @apply bg-background text-textPrimary font-sans relative min-h-screen w-full overflow-hidden;
+        @apply bg-background text-textPrimary font-sans relative min-h-screen w-full;
         margin: 0;
         padding: 0;
         box-sizing: border-box;

@@ -1,5 +1,4 @@
 //Imports from other type files, so importing types on components would be pleasant
-import {Employee} from "@/types/employee";
 
 export * from "./auth";
 export * from "./organizations";
@@ -35,7 +34,9 @@ export const enumToDayName: Record<number, string> = {
 
 export type User = {
     authenticated: boolean;
-    userData: Employer | Employee
+    id: number;
+    role: Role;
+    fullName: string;
 };
 
 

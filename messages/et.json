@@ -132,5 +132,179 @@
     "en": "English",
     "ru": "Русский",
     "et": "Eesti"
+  },
+  "home": {
+    "landing": "Avaleht",
+    "dashboard": "Juhtpaneel",
+    "signIn": "Logi sisse"
+  },
+  "landing": {
+    "hero": {
+      "title": "Lihtsusta oma vahetuste planeerimist",
+      "subtitle": "Halda töötajate graafikuid, jälgi vahetusi ja optimeeri oma tööjõudu lihtsalt",
+      "description": "ShiftEase on kaasaegne, intuitiivne platvorm, mis on loodud vahetuste planeerimise lihtsustamiseks. Säästa aega, vähenda konflikte ja hoia oma meeskond organiseerituna.",
+      "getStarted": "Alusta",
+      "learnMore": "Lisateave"
+    },
+    "features": {
+      "title": "Miks valida ShiftEase?",
+      "subtitle": "Kõik, mida vajad oma meeskonna tõhusaks juhtimiseks",
+      "easyToUse": {
+        "title": "Lihtne kasutada",
+        "description": "Intuitiivne liides, mida igaüks saab minutitega omandada. Koolitust pole vaja."
+      },
+      "flexible": {
+        "title": "Paindlik planeerimine",
+        "description": "Loo, muuda ja jaga graafikuid vaid mõne klikiga. Toetus mitmesugustele vahetuste tüüpidele ja gruppidele."
+      },
+      "realTime": {
+        "title": "Reaalajas uuendused",
+        "description": "Kohesed teavitused hoiavad kõiki sünkroonis. Muudatused kajastuvad kohe kõigis seadmetes."
+      },
+      "analytics": {
+        "title": "Nutikas analüütika",
+        "description": "Jälgi tunde, kontrolli katvust ja tee andmetepõhiseid otsuseid sisseehitatud aruandlusvahendite abil."
+      }
+    },
+    "screenshots": {
+      "title": "Vaata ShiftEase't tegevuses",
+      "subtitle": "Võimsad funktsioonid kaasaegsetele meeskondadele",
+      "dashboard": "Juhtpaneeli ülevaade",
+      "schedule": "Graafiku haldamine",
+      "mobile": "Mobiilikogemus"
+    },
+    "cta": {
+      "title": "Valmis oma planeerimist sujuvamaks muutma?",
+      "subtitle": "Liitu tuhandete ettevõtetega, kes juba kasutavad ShiftEase",
+      "button": "Alusta tasuta prooviperioodi"
+    }
+  },
+  "dashboard": {
+    "title": "Juhtpaneel",
+    "createSchedule": "Loo graafik",
+    "completeSetup": "Lõpeta seadistus: Puudub {items}.",
+    "goToSettings": "Mine seadetesse",
+    "totalEmployees": "Töötajaid kokku",
+    "addEmployees": "Lisa töötajaid",
+    "acrossGroups": "{count} gruppides",
+    "totalSchedules": "Graafikuid kokku",
+    "createSchedule": "Loo graafik",
+    "unconfirmed": "kinnitamata",
+    "groups": "Grupid",
+    "createGroup": "Loo grupp",
+    "workGroupsConfigured": "Töögrupid seadistatud",
+    "shiftTypes": "Vahetuse tüübid",
+    "configureShiftTypes": "Seadista vahetuse tüübid",
+    "shiftTypesConfigured": "Vahetuse tüübid seadistatud",
+    "unconfirmedSchedules": "Kinnitamata graafikud",
+    "schedulesThatNeedConfirmation": "Graafikud, mis vajavad kinnitamist",
+    "noUnconfirmedSchedules": "Kinnitamata graafikuid pole",
+    "quickActions": "Kiirtoimingud",
+    "commonTasksAndShortcuts": "Tavalised ülesanded ja otseteed",
+    "createNewSchedule": "Loo uus graafik",
+    "manageEmployees": "Halda töötajaid",
+    "viewReports": "Vaata aruandeid",
+    "organizationSettings": "Organisatsiooni seaded",
+    "groupSchedules": "Grupi graafikud",
+    "viewAndManageSchedules": "Vaata ja halda iga grupi graafikuid",
+    "employees": "töötajat",
+    "confirmed": "kinnitatud",
+    "pending": "ootel",
+    "draft": "mustand",
+    "viewFullSchedule": "Vaata täielikku graafikut",
+    "editSchedule": "Muuda graafikut",
+    "averageWeeklyHours": "Keskmine nädalatunde",
+    "fromLastWeek": "eelmisest nädalast",
+    "scheduleCoverage": "Graafiku katvus",
+    "allShiftsAssigned": "Kõik vahetused määratud",
+    "upcomingTimeOff": "Eelseisvad puhkused",
+    "requestsThisWeek": "Taotlused sel nädalal"
+  },
+  "organization": {
+    "title": "Organisatsioon",
+    "loadingData": "Organisatsiooni andmete laadimine...",
+    "editOrganization": "Muuda organisatsiooni",
+    "createOrganization": "Loo organisatsioon",
+    "organizationName": "Organisatsiooni nimi",
+    "enterOrganizationName": "Sisesta organisatsiooni nimi",
+    "description": "Kirjeldus",
+    "enterDescription": "Sisesta organisatsiooni kirjeldus",
+    "organizationType": "Organisatsiooni tüüp",
+    "selectOrganizationType": "Vali organisatsiooni tüüp",
+    "types": {
+      "retail": "Jaemüük",
+      "hospitality": "Hotellindus",
+      "healthcare": "Tervishoiuteenus",
+      "manufacturing": "Tootmine",
+      "other": "Muu"
+    },
+    "website": "Veebileht",
+    "phone": "Telefon",
+    "address": "Aadress",
+    "enterAddress": "Sisesta organisatsiooni aadress",
+    "photoUrl": "Foto URL",
+    "nightShiftBonus": "Öise vahetuse boonus (%)",
+    "holidayBonus": "Pühade boonus (%)",
+    "employeeCount": "Töötajate arv",
+    "workSchedule": "Töögraafik",
+    "manual": "Käsitsi",
+    "fiveTwoWorkWeek": "5/2 töönädal",
+    "fullTimeOperation": "24/7 töö",
+    "days": {
+      "monday": "Esmaspäev",
+      "tuesday": "Teisipäev",
+      "wednesday": "Kolmapäev",
+      "thursday": "Neljapäev",
+      "friday": "Reede",
+      "saturday": "Laupäev",
+      "sunday": "Pühapäev",
+      "mon": "E",
+      "tue": "T",
+      "wed": "K",
+      "thu": "N",
+      "fri": "R",
+      "sat": "L",
+      "sun": "P"
+    },
+    "to": "kuni",
+    "saving": "Salvestamine...",
+    "saveChanges": "Salvesta muudatused",
+    "organizationUpdated": "Organisatsioon uuendatud",
+    "organizationCreated": "Organisatsioon loodud",
+    "failedToUpdate": "Organisatsiooni uuendamine ebaõnnestus",
+    "failedToCreate": "Organisatsiooni loomine ebaõnnestus"
+  },
+  "schedule": {
+    "manageSchedule": "Halda graafikut",
+    "selectGroup": "Vali grupp",
+    "simpleView": "Lihtne vaade",
+    "calendarView": "Kalendri vaade",
+    "generating": "Genereerimine...",
+    "generateSchedule": "Genereeri graafik",
+    "save": "Salvesta",
+    "unconfirm": "Tühista kinnitus",
+    "confirm": "Kinnita",
+    "exportToExcel": "Ekspordi Excelisse",
+    "exportSuccess": "Graafik edukalt eksporditud",
+    "exportFailed": "Graafiku eksportimine ebaõnnestus",
+    "failedToLoad": "Laadimine ebaõnnestus"
+  },
+  "profile": {
+    "accountSettings": "Konto seaded",
+    "subscription": "Tellimus",
+    "usageAnalytics": "Kasutusanalüütika",
+    "storageUsed": "Kasutatud salvestusruum",
+    "gbUsed": "GB kasutatud",
+    "gbTotal": "GB kokku",
+    "upgradePlan": "Uuenda plaani",
+    "loggingOut": "Väljalogimine...",
+    "signOut": "Logi välja",
+    "loggedOutSuccess": "Väljalogimine õnnestus.",
+    "logoutFailed": "Väljalogimine ebaõnnestus. Proovi uuesti."
+  },
+  "notifications": {
+    "title": "Teavitused",
+    "noNew": "Uusi teavitusi pole",
+    "allCaughtUp": "Olete kõigega kursis!"
   }
 }

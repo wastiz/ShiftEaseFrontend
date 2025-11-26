@@ -132,5 +132,179 @@
     "en": "English",
     "ru": "Русский",
     "et": "Eesti"
+  },
+  "home": {
+    "landing": "Главная страница",
+    "dashboard": "Панель управления",
+    "signIn": "Войти"
+  },
+  "landing": {
+    "hero": {
+      "title": "Упростите планирование и управление сменами",
+      "subtitle": "Управляйте графиками сотрудников, отслеживайте смены и оптимизируйте работу команды с легкостью",
+      "description": "ShiftEase - современная, интуитивно понятная платформа, созданная для упрощения планирования смен. Экономьте время, избегайте конфликтов и держите команду организованной.",
+      "getStarted": "Начать работу",
+      "learnMore": "Узнать больше"
+    },
+    "features": {
+      "title": "Почему выбирают ShiftEase?",
+      "subtitle": "Все необходимое для эффективного управления командой",
+      "easyToUse": {
+        "title": "Простота использования",
+        "description": "Интуитивный интерфейс, освоить который можно за считанные минуты. Обучение не требуется."
+      },
+      "flexible": {
+        "title": "Гибкое планирование",
+        "description": "Создавайте, изменяйте и делитесь расписаниями в несколько кликов. Поддержка различных типов смен и групп."
+      },
+      "realTime": {
+        "title": "Обновления в реальном времени",
+        "description": "Мгновенные уведомления держат всех в курсе. Изменения отражаются сразу на всех устройствах."
+      },
+      "analytics": {
+        "title": "Умная аналитика",
+        "description": "Отслеживайте часы, контролируйте покрытие и принимайте решения на основе данных со встроенными инструментами отчетности."
+      }
+    },
+    "screenshots": {
+      "title": "Увидьте ShiftEase в действии",
+      "subtitle": "Мощные функции для современных команд",
+      "dashboard": "Обзор панели управления",
+      "schedule": "Управление расписанием",
+      "mobile": "Мобильная версия"
+    },
+    "cta": {
+      "title": "Готовы оптимизировать планирование?",
+      "subtitle": "Присоединяйтесь к тысячам компаний, уже использующих ShiftEase",
+      "button": "Начать"
+    }
+  },
+  "dashboard": {
+    "title": "Панель управления",
+    "createSchedule": "Создать расписание",
+    "completeSetup": "Завершите настройку: Отсутствует {items}.",
+    "goToSettings": "Перейти к настройкам",
+    "totalEmployees": "Всего сотрудников",
+    "addEmployees": "Добавить сотрудников",
+    "acrossGroups": "В {count} группах",
+    "totalSchedules": "Всего расписаний",
+    "createSchedule": "Создать расписание",
+    "unconfirmed": "не подтверждено",
+    "groups": "Группы",
+    "createGroup": "Создать группу",
+    "workGroupsConfigured": "Рабочие группы настроены",
+    "shiftTypes": "Типы смен",
+    "configureShiftTypes": "Настроить типы смен",
+    "shiftTypesConfigured": "Типы смен настроены",
+    "unconfirmedSchedules": "Неподтвержденные расписания",
+    "schedulesThatNeedConfirmation": "Расписания, требующие подтверждения",
+    "noUnconfirmedSchedules": "Нет неподтвержденных расписаний",
+    "quickActions": "Быстрые действия",
+    "commonTasksAndShortcuts": "Общие задачи и ярлыки",
+    "createNewSchedule": "Создать новое расписание",
+    "manageEmployees": "Управление сотрудниками",
+    "viewReports": "Просмотр отчетов",
+    "organizationSettings": "Настройки организации",
+    "groupSchedules": "Расписания групп",
+    "viewAndManageSchedules": "Просмотр и управление расписаниями для каждой группы",
+    "employees": "сотрудников",
+    "confirmed": "подтверждено",
+    "pending": "ожидает",
+    "draft": "черновик",
+    "viewFullSchedule": "Просмотреть полное расписание",
+    "editSchedule": "Редактировать расписание",
+    "averageWeeklyHours": "Средние часы в неделю",
+    "fromLastWeek": "с прошлой недели",
+    "scheduleCoverage": "Покрытие расписания",
+    "allShiftsAssigned": "Все смены назначены",
+    "upcomingTimeOff": "Предстоящие отгулы",
+    "requestsThisWeek": "Заявок на этой неделе"
+  },
+  "organization": {
+    "title": "Организация",
+    "loadingData": "Загрузка данных организации...",
+    "editOrganization": "Редактировать организацию",
+    "createOrganization": "Создать организацию",
+    "organizationName": "Название организации",
+    "enterOrganizationName": "Введите название организации",
+    "description": "Описание",
+    "enterDescription": "Введите описание организации",
+    "organizationType": "Тип организации",
+    "selectOrganizationType": "Выберите тип организации",
+    "types": {
+      "retail": "Розничная торговля",
+      "hospitality": "Гостиничный бизнес",
+      "healthcare": "Здравоохранение",
+      "manufacturing": "Производство",
+      "other": "Другое"
+    },
+    "website": "Веб-сайт",
+    "phone": "Телефон",
+    "address": "Адрес",
+    "enterAddress": "Введите адрес организации",
+    "photoUrl": "URL фото",
+    "nightShiftBonus": "Надбавка за ночную смену (%)",
+    "holidayBonus": "Надбавка за праздничные дни (%)",
+    "employeeCount": "Количество сотрудников",
+    "workSchedule": "График работы",
+    "manual": "Вручную",
+    "fiveTwoWorkWeek": "Рабочая неделя 5/2",
+    "fullTimeOperation": "Работа 24/7",
+    "days": {
+      "monday": "Понедельник",
+      "tuesday": "Вторник",
+      "wednesday": "Среда",
+      "thursday": "Четверг",
+      "friday": "Пятница",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье",
+      "mon": "Пн",
+      "tue": "Вт",
+      "wed": "Ср",
+      "thu": "Чт",
+      "fri": "Пт",
+      "sat": "Сб",
+      "sun": "Вс"
+    },
+    "to": "до",
+    "saving": "Сохранение...",
+    "saveChanges": "Сохранить изменения",
+    "organizationUpdated": "Организация обновлена",
+    "organizationCreated": "Организация создана",
+    "failedToUpdate": "Не удалось обновить организацию",
+    "failedToCreate": "Не удалось создать организацию"
+  },
+  "schedule": {
+    "manageSchedule": "Управление расписанием",
+    "selectGroup": "Выберите группу",
+    "simpleView": "Простой вид",
+    "calendarView": "Вид календаря",
+    "generating": "Генерация...",
+    "generateSchedule": "Сгенерировать расписание",
+    "save": "Сохранить",
+    "unconfirm": "Отменить подтверждение",
+    "confirm": "Подтвердить",
+    "exportToExcel": "Экспорт в Excel",
+    "exportSuccess": "Расписание успешно экспортировано",
+    "exportFailed": "Не удалось экспортировать расписание",
+    "failedToLoad": "Не удалось загрузить"
+  },
+  "profile": {
+    "accountSettings": "Настройки аккаунта",
+    "subscription": "Подписка",
+    "usageAnalytics": "Аналитика использования",
+    "storageUsed": "Использовано хранилища",
+    "gbUsed": "ГБ использовано",
+    "gbTotal": "ГБ всего",
+    "upgradePlan": "Улучшить тариф",
+    "loggingOut": "Выход...",
+    "signOut": "Выйти",
+    "loggedOutSuccess": "Вы успешно вышли из системы.",
+    "logoutFailed": "Не удалось выйти. Попробуйте еще раз."
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "noNew": "Нет новых уведомлений",
+    "allCaughtUp": "Вы в курсе всех событий!"
   }
 }
