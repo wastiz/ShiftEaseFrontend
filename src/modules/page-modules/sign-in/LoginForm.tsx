@@ -7,6 +7,7 @@ import { useLogin } from "@/api/auth";
 import { LoginPayload } from "@/types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 
 interface LoginFormProps {
     setMode: (mode: Mode) => void;
@@ -14,6 +15,8 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ setMode, role }: LoginFormProps) {
+    const t = useTranslations('auth');
+    const tCommon = useTranslations('common');
     const router = useRouter();
     const [form, setForm] = useState<LoginPayload>({
         email: "",
@@ -48,20 +51,20 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
         <>
             <CardHeader>
                 <CardTitle>
-                    Login to your {role === "employer" ? "Employer" : "Employee"} account
+                    {t('loginTitle', { role: t(role) })}
                 </CardTitle>
-                <CardDescription>Enter your email below to login</CardDescription>
+                <CardDescription>{t('loginDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-6">
                         {/* Email */}
                         <div className="grid gap-3">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">{tCommon('email')}</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="m@example.com"
+                                placeholder={t('emailPlaceholder')}
                                 value={form.email}
                                 onChange={handleChange}
                                 required
@@ -71,13 +74,13 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                         {/* Password */}
                         <div className="grid gap-3">
                             <div className="flex items-center">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">{tCommon('password')}</Label>
                                 <button
                                     type="button"
                                     className="ml-auto text-sm underline-offset-4 hover:underline"
                                     onClick={() => setMode("forgot")}
                                 >
-                                    Forgot your password?
+                                    {t('forgotPassword')}
                                 </button>
                             </div>
                             <Input
@@ -92,29 +95,29 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                         {/* Buttons */}
                         <div className="flex flex-col gap-3">
                             <Button type="submit" className="w-full" disabled={isPending}>
-                                {isPending ? "Logging in..." : "Login"}
+                                {isPending ? t('loggingIn') : tCommon('login')}
                             </Button>
                             <Button variant="outline" className="w-full">
-                                Login with Google
+                                {t('loginWithGoogle')}
                             </Button>
                         </div>
 
                         {/* Error & Success */}
                         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
                         {isSuccess && (
-                            <p className="text-green-500">Login successful!</p>
+                            <p className="text-green-500">{t('loginSuccess')}</p>
                         )}
                     </div>
 
                     {/* Switch to register */}
                     <div className="mt-4 text-center text-sm">
-                        Don&apos;t have an account?{" "}
+                        {t('dontHaveAccount')}{" "}
                         <button
                             type="button"
                             onClick={() => setMode("register")}
                             className="underline underline-offset-4"
                         >
-                            Register
+                            {tCommon('register')}
                         </button>
                     </div>
                 </form>

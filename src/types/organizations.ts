@@ -1,3 +1,5 @@
+import {ScheduleSummary} from "@/types/schedule";
+
 export type Organization = {
     id: number
     name: string
@@ -54,16 +56,4 @@ export interface OrganizationDashboardData {
     employeeCount: number;
     scheduleCount: number;
     scheduleSummaries: ScheduleSummary[];
-}
-
-export interface ScheduleSummary {
-    groupId: number;
-    groupName: string;
-    confirmedSchedules: ScheduleItem[];
-    unconfirmedSchedules: ScheduleItem[];
-}
-
-export interface ScheduleItem {
-    id: number;
-    month: string;
 }

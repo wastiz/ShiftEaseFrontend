@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from 'next-intl';
 
 interface NotificationWindowProps {
   className?: string;
@@ -11,6 +12,8 @@ export default function NotificationWindow({
   className,
   onClose,
 }: NotificationWindowProps) {
+  const t = useTranslations('notifications');
+
   return (
     <div
       className={cn(
@@ -20,7 +23,7 @@ export default function NotificationWindow({
     >
       <div className="border-b border-white/10 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-semibold">Notifications</h3>
+          <h3 className="text-white font-semibold">{t('title')}</h3>
           <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
         </div>
       </div>
@@ -31,9 +34,9 @@ export default function NotificationWindow({
             <Bell className="w-6 h-6 text-orange-400" />
           </div>
           <p className="text-white/80 text-sm font-medium mb-1">
-            No new notifications
+            {t('noNew')}
           </p>
-          <p className="text-white/60 text-xs">You're all caught up!</p>
+          <p className="text-white/60 text-xs">{t('allCaughtUp')}</p>
         </div>
       </div>
     </div>

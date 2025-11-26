@@ -1,6 +1,7 @@
-import {Holiday, ShiftType, WorkDay} from "@/types/organizations";
+import {Holiday, WorkDay} from "@/types/organizations";
 import {EmployeeMinData} from "@/types/employee";
 import {Group} from "@/types/group";
+import {ShiftType} from "@/types/shiftType";
 
 
 export type Schedule ={
@@ -65,11 +66,15 @@ export type ScheduleGenerateRequest = {
     groupId: number
 }
 
-export type ScheduleSummary = {
-    groupId: number
-    groupName: string
-    confirmedMonths: string[]
-    unconfirmedMonths: string[]
-    autorenewal: boolean
+export interface ScheduleSummary {
+    groupId: number;
+    groupName: string;
+    confirmedSchedules: ScheduleItem[];
+    unconfirmedSchedules: ScheduleItem[];
+}
+
+export interface ScheduleItem {
+    id: number;
+    month: string;
 }
 

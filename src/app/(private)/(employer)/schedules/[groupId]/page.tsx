@@ -15,10 +15,12 @@ import {ToggleGroup, ToggleGroupItem} from "@/components/ui/shadcn/toggle-group"
 import {Calendar, Download, List, Loader2} from "lucide-react";
 import SimpleView from "@/modules/ScheduleSimple/ScheduleSimple";
 import {toast} from "sonner";
+import { useTranslations } from 'next-intl';
 
 const today = new Date()
 
 export default function ManageSchedule() {
+    const t = useTranslations('schedule');
     const params = useParams()
     const groupId = Number(params.groupId)
 
@@ -97,23 +99,23 @@ export default function ManageSchedule() {
     const handleExport = () => {
         exportSchedule.mutate(scheduleId, {
             onSuccess: () => {
-                toast.success('Schedule exported successfully');
+                toast.success(t('exportSuccess'));
             },
             onError: () => {
-                toast.error('Failed to export schedule');
+                toast.error(t('exportFailed'));
             }
         });
     };
 
     if (isLoading) return <Loader />
-    if (error) return <p className="p-4 text-red-500">Failed to load</p>
+    if (error) return <p className="p-4 text-red-500">{t('failedToLoad')}</p>
 
     return (
         <>
-            <Header title="Manage Schedule">
+            <Header title={t('manageSchedule')}>
                 <Select value={selectedGroupId.toString()} onValueChange={(v) => setSelectedGroupId(Number(v))}>
                     <SelectTrigger className="w-48">
-                        <SelectValue placeholder="Select group" />
+                        <SelectValue placeholder={t('selectGroup')} />
                     </SelectTrigger>
                     <SelectContent>
                         {data?.groups?.map((g: any) => (
@@ -129,25 +131,25 @@ export default function ManageSchedule() {
                     onValueChange={(value) => value && setViewMode(value as any)}
                     className="ml-auto"
                 >
-                    <ToggleGroupItem value="simple" aria-label="Simple view">
+                    <ToggleGroupItem value="simple" aria-label={t('simpleView')}>
                         <List className="h-4 w-4" />
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="calendar" aria-label="Calendar view">
+                    <ToggleGroupItem value="calendar" aria-label={t('calendarView')}>
                         <Calendar className="h-4 w-4" />
                     </ToggleGroupItem>
                 </ToggleGroup>
                 <Button onClick={handleGenerate} disabled={generateSchedule.isPending}>
-                    {generateSchedule.isPending ? 'Generating...' : 'Generate Schedule'}
+                    {generateSchedule.isPending ? t('generating') : t('generateSchedule')}
                 </Button>
                 <Button onClick={() => saveMutation.mutate(false)} disabled={saveMutation.isPending}>
-                    Save
+                    {t('save')}
                 </Button>
                 <Button
                     onClick={handleConfirmToggle}
                     disabled={saveMutation.isPending || unconfirmMutation.isPending}
                     variant={isConfirmed ? "outline" : "default"}
                 >
-                    {isConfirmed ? 'Unconfirm' : 'Confirm'}
+                    {isConfirmed ? t('unconfirm') : t('confirm')}
                 </Button>
                 <Button onClick={handleExport} disabled={exportSchedule.isPending}>
                     {exportSchedule.isPending ? (
@@ -155,7 +157,7 @@ export default function ManageSchedule() {
                     ) : (
                         <Download className="mr-2 h-4 w-4" />
                     )}
-                    Export to Excel
+                    {t('exportToExcel')}
                 </Button>
             </Header>
 

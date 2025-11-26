@@ -1,0 +1,310 @@
+{
+  "common": {
+    "appName": "ShiftEase",
+    "notifications": "Notifications",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "register": "Register",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "somethingWentWrong": "Something went wrong"
+  },
+  "auth": {
+    "loginTitle": "Login to your {role} account",
+    "loginDescription": "Enter your email below to login",
+    "registerTitle": "Create {role} account",
+    "registerDescription": "Enter your details below to create account",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordDescription": "Enter your email to reset password",
+    "employee": "Employee",
+    "employer": "Employer",
+    "emailPlaceholder": "m@example.com",
+    "forgotPassword": "Forgot your password?",
+    "loggingIn": "Logging in...",
+    "loginWithGoogle": "Login with Google",
+    "loginSuccess": "Login successful!",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "employeeCannotRegister": "You cannot create employee account by yourself. Please ask your employer to create one",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "confirmPassword": "Confirm Password",
+    "creating": "Creating...",
+    "createAccount": "Create Account",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "resetLinkSent": "Reset link sent to your email",
+    "backToLogin": "Back to Login"
+  },
+  "nav": {
+    "backToOrganizations": "Back to Organizations",
+    "overview": "Overview",
+    "schedules": "Schedules",
+    "employees": "Employees",
+    "groups": "Groups",
+    "shiftTypes": "Shift Types",
+    "dashboard": "Dashboard",
+    "preferences": "Preferences",
+    "vacation": "Vacation",
+    "sickLeave": "Sick Leave"
+  },
+  "employer": {
+    "organizations": {
+      "title": "Organizations",
+      "description": "Manage your organizations",
+      "create": "Create Organization",
+      "name": "Organization Name",
+      "noOrganizations": "No organizations found"
+    },
+    "employees": {
+      "title": "Employees",
+      "description": "Manage your employees",
+      "create": "Add Employee",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "position": "Position",
+      "noEmployees": "No employees found"
+    },
+    "groups": {
+      "title": "Groups",
+      "description": "Manage employee groups",
+      "create": "Create Group",
+      "name": "Group Name",
+      "noGroups": "No groups found"
+    },
+    "shiftTypes": {
+      "title": "Shift Types",
+      "description": "Manage shift types",
+      "create": "Create Shift Type",
+      "name": "Shift Name",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "noShiftTypes": "No shift types found"
+    },
+    "schedules": {
+      "title": "Schedules",
+      "description": "Manage work schedules",
+      "create": "Create Schedule",
+      "noSchedules": "No schedules found"
+    }
+  },
+  "employee": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "upcomingShifts": "Upcoming Shifts",
+      "noUpcomingShifts": "No upcoming shifts"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Manage your work preferences"
+    },
+    "vacation": {
+      "title": "Vacation Requests",
+      "description": "Request and manage your vacation time",
+      "request": "Request Vacation",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "noRequests": "No vacation requests"
+    },
+    "sickLeave": {
+      "title": "Sick Leave",
+      "description": "Report and manage sick leave",
+      "report": "Report Sick Leave",
+      "noReports": "No sick leave reports"
+    }
+  },
+  "language": {
+    "select": "Select Language",
+    "en": "English",
+    "ru": "Русский",
+    "et": "Eesti"
+  },
+  "home": {
+    "landing": "Landing page",
+    "dashboard": "Dashboard",
+    "signIn": "Sign in"
+  },
+  "landing": {
+    "hero": {
+      "title": "Simplify Your Shift Scheduling",
+      "subtitle": "Manage employee schedules, track shifts, and optimize your workforce with ease",
+      "description": "ShiftEase is a modern, intuitive platform designed to make shift scheduling effortless. Save time, reduce conflicts, and keep your team organized.",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "title": "Why Choose ShiftEase?",
+      "subtitle": "Everything you need to manage your team efficiently",
+      "easyToUse": {
+        "title": "Easy to Use",
+        "description": "Intuitive interface that anyone can master in minutes. No training required."
+      },
+      "flexible": {
+        "title": "Flexible Scheduling",
+        "description": "Create, modify, and share schedules with just a few clicks. Support for multiple shift types and groups."
+      },
+      "realTime": {
+        "title": "Real-Time Updates",
+        "description": "Instant notifications keep everyone in sync. Changes are reflected immediately across all devices."
+      },
+      "analytics": {
+        "title": "Smart Analytics",
+        "description": "Track hours, monitor coverage, and make data-driven decisions with built-in reporting tools."
+      }
+    },
+    "screenshots": {
+      "title": "See ShiftEase in Action",
+      "subtitle": "Powerful features designed for modern teams",
+      "dashboard": "Dashboard Overview",
+      "schedule": "Schedule Management",
+      "mobile": "Mobile Experience"
+    },
+    "cta": {
+      "title": "Ready to Streamline Your Scheduling?",
+      "subtitle": "Join thousands of businesses already using ShiftEase",
+      "button": "Start Free Trial"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "createSchedule": "Create Schedule",
+    "completeSetup": "Complete setup: Missing {items}.",
+    "goToSettings": "Go to Settings",
+    "totalEmployees": "Total Employees",
+    "addEmployees": "Add employees",
+    "acrossGroups": "Across {count} groups",
+    "totalSchedules": "Total Schedules",
+    "createSchedule": "Create schedule",
+    "unconfirmed": "unconfirmed",
+    "groups": "Groups",
+    "createGroup": "Create group",
+    "workGroupsConfigured": "Work groups configured",
+    "shiftTypes": "Shift Types",
+    "configureShiftTypes": "Configure shift types",
+    "shiftTypesConfigured": "Shift types configured",
+    "unconfirmedSchedules": "Unconfirmed Schedules",
+    "schedulesThatNeedConfirmation": "Schedules that need confirmation",
+    "noUnconfirmedSchedules": "No unconfirmed schedules",
+    "quickActions": "Quick Actions",
+    "commonTasksAndShortcuts": "Common tasks and shortcuts",
+    "createNewSchedule": "Create New Schedule",
+    "manageEmployees": "Manage Employees",
+    "viewReports": "View Reports",
+    "organizationSettings": "Organization Settings",
+    "groupSchedules": "Group Schedules",
+    "viewAndManageSchedules": "View and manage schedules for each group",
+    "employees": "employees",
+    "confirmed": "confirmed",
+    "pending": "pending",
+    "draft": "draft",
+    "viewFullSchedule": "View Full Schedule",
+    "editSchedule": "Edit Schedule",
+    "averageWeeklyHours": "Average Weekly Hours",
+    "fromLastWeek": "from last week",
+    "scheduleCoverage": "Schedule Coverage",
+    "allShiftsAssigned": "All shifts assigned",
+    "upcomingTimeOff": "Upcoming Time Off",
+    "requestsThisWeek": "Requests this week"
+  },
+  "organization": {
+    "title": "Organization",
+    "loadingData": "Loading organization data...",
+    "editOrganization": "Edit Organization",
+    "createOrganization": "Create Organization",
+    "organizationName": "Organization Name",
+    "enterOrganizationName": "Enter organization name",
+    "description": "Description",
+    "enterDescription": "Enter organization description",
+    "organizationType": "Organization Type",
+    "selectOrganizationType": "Select organization type",
+    "types": {
+      "retail": "Retail",
+      "hospitality": "Hospitality",
+      "healthcare": "Healthcare",
+      "manufacturing": "Manufacturing",
+      "other": "Other"
+    },
+    "website": "Website",
+    "phone": "Phone",
+    "address": "Address",
+    "enterAddress": "Enter organization address",
+    "photoUrl": "Photo URL",
+    "nightShiftBonus": "Night Shift Bonus (%)",
+    "holidayBonus": "Holiday Bonus (%)",
+    "employeeCount": "Employee Count",
+    "workSchedule": "Work Schedule",
+    "manual": "Manual",
+    "fiveTwoWorkWeek": "5/2 Work Week",
+    "fullTimeOperation": "24/7 Operation",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "to": "to",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "organizationUpdated": "Organization updated",
+    "organizationCreated": "Organization created",
+    "failedToUpdate": "Failed to update organization",
+    "failedToCreate": "Failed to create organization"
+  },
+  "schedule": {
+    "manageSchedule": "Manage Schedule",
+    "selectGroup": "Select group",
+    "simpleView": "Simple view",
+    "calendarView": "Calendar view",
+    "generating": "Generating...",
+    "generateSchedule": "Generate Schedule",
+    "save": "Save",
+    "unconfirm": "Unconfirm",
+    "confirm": "Confirm",
+    "exportToExcel": "Export to Excel",
+    "exportSuccess": "Schedule exported successfully",
+    "exportFailed": "Failed to export schedule",
+    "failedToLoad": "Failed to load"
+  },
+  "profile": {
+    "accountSettings": "Account Settings",
+    "subscription": "Subscription",
+    "usageAnalytics": "Usage Analytics",
+    "storageUsed": "Storage Used",
+    "gbUsed": "GB used",
+    "gbTotal": "GB total",
+    "upgradePlan": "Upgrade Plan",
+    "loggingOut": "Logging out...",
+    "signOut": "Sign Out",
+    "loggedOutSuccess": "Logged out successfully.",
+    "logoutFailed": "Logout failed. Try again."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNew": "No new notifications",
+    "allCaughtUp": "You're all caught up!"
+  }
+}

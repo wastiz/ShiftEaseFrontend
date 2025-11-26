@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 const AnimatedLink = memo(function AnimatedLink({
     to,
@@ -92,6 +93,7 @@ export default function ProfileWindow({
     onClose,
 }: ProfileWindowProps) {
     const router = useRouter();
+    const t = useTranslations('profile');
 
     const getInitials = (first: string, last: string) => {
         return `${first[0]}${last[0]}`.toUpperCase();
@@ -105,13 +107,13 @@ export default function ProfileWindow({
     const { mutate: logoutMutate, isPending } = useMutation({
         mutationFn: () => logout(),
         onSuccess: () => {
-            toast.success('Logged out successfully.');
+            toast.success(t('loggedOutSuccess'));
             router.push('/sign-in');
             onClose?.();
         },
         onError: (err: any) => {
             console.error(err);
-            toast.error('Logout failed. Try again.');
+            toast.error(t('logoutFailed'));
         },
     });
 
@@ -132,7 +134,7 @@ export default function ProfileWindow({
                     icon={<User className="h-4 w-4" />}
                     onClick={() => handleNavigation('/account')}
                 >
-                    Account Settings
+                    {t('accountSettings')}
                 </AnimatedLink>
 
                 <AnimatedLink
@@ -140,7 +142,7 @@ export default function ProfileWindow({
                     icon={<CreditCard className="h-4 w-4" />}
                     onClick={() => handleNavigation('/subscription')}
                 >
-                    Subscription
+                    {t('subscription')}
                 </AnimatedLink>
 
                 <AnimatedLink
@@ -148,14 +150,14 @@ export default function ProfileWindow({
                     icon={<ChartNoAxesColumnIncreasing className="h-4 w-4" />}
                     onClick={() => handleNavigation('/usage')}
                 >
-                    Usage Analytics
+                    {t('usageAnalytics')}
                 </AnimatedLink>
             </div>
             <div className="mx-2 mb-2">
                 <div className="bg-white/5 rounded-lg p-4 border border-white/5">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-white/80 text-sm font-medium">
-                            Storage Used
+                            {t('storageUsed')}
                         </span>
                         <span className="text-orange-300 text-sm">40%</span>
                     </div>
@@ -163,14 +165,14 @@ export default function ProfileWindow({
                         <div className="bg-gradient-to-r from-orange-500 to-yellow-500 h-full w-[40%] rounded-full transition-all duration-300" />
                     </div>
                     <div className="flex justify-between text-xs text-white/60">
-                        <span>4 GB used</span>
-                        <span>10 GB total</span>
+                        <span>4 {t('gbUsed')}</span>
+                        <span>10 {t('gbTotal')}</span>
                     </div>
                     <button
                         onClick={() => handleNavigation('/upgrade')}
                         className="mt-3 w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-sm font-medium py-2 px-4 rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 transform hover:scale-[1.02]"
                     >
-                        Upgrade Plan
+                        {t('upgradePlan')}
                     </button>
                 </div>
             </div>{' '}
@@ -180,7 +182,7 @@ export default function ProfileWindow({
                     variant="danger"
                     onClick={handleLogout}
                 >
-                    {isPending ? 'Logging out...' : 'Sign Out'}
+                    {isPending ? t('loggingOut') : t('signOut')}
                 </AnimatedButton>
             </div>
         </div>

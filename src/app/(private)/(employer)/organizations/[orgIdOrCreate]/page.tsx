@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import HolidaySelector from "@/components/inputs/HolidaySelector";
+import { useTranslations } from 'next-intl';
 import {
     Card,
     CardHeader,
@@ -74,6 +75,8 @@ const INITIAL_WORK_DAYS: Record<string, LocalWorkDay> = {
 const ORG_TYPES = ["Retail", "Hospitality", "Healthcare", "Manufacturing", "Other"];
 
 export default function AddOrganization() {
+    const t = useTranslations('organization');
+    const tCommon = useTranslations('common');
     const router = useRouter();
     const params = useParams();
     const orgId = params?.orgIdOrCreate === "create" ? undefined : String(params?.orgIdOrCreate);
@@ -255,12 +258,12 @@ export default function AddOrganization() {
 
         mutation.mutate(organizationData, {
             onSuccess: () => {
-                toast.success(isEditMode ? "Organization updated" : "Organization created");
+                toast.success(isEditMode ? t('organizationUpdated') : t('organizationCreated'));
                 router.push("/organizations");
             },
             onError: (error: any) => {
                 console.error("Error:", error);
-                toast.error(`Failed to ${isEditMode ? "update" : "create"} organization`);
+                toast.error(isEditMode ? t('failedToUpdate') : t('failedToCreate'));
             },
         });
     };
@@ -270,10 +273,10 @@ export default function AddOrganization() {
     if (isEditMode && (isLoading || !isFormInitialized)) {
         return (
             <>
-                <Header title="Organization" />
+                <Header title={t('title')} />
                 <Main>
                     <div className="flex items-center justify-center h-96">
-                        <p>Loading organization data...</p>
+                        <p>{t('loadingData')}</p>
                     </div>
                 </Main>
             </>
@@ -282,11 +285,11 @@ export default function AddOrganization() {
 
     return (
         <>
-            <Header title="Organization" />
+            <Header title={t('title')} />
             <Main>
                 <Card className="max-w-5xl mx-auto">
                     <CardHeader>
-                        <CardTitle>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
+                        <CardTitle>{isEditMode ? t('editOrganization') : t('createOrganization')}</CardTitle>
                     </CardHeader>
 
                     <Form {...form}>
@@ -299,11 +302,11 @@ export default function AddOrganization() {
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Organization Name</FormLabel>
+                                                    <FormLabel>{t('organizationName')}</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="Enter organization name"
+                                                            placeholder={t('enterOrganizationName')}
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -316,12 +319,12 @@ export default function AddOrganization() {
                                             name="description"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Description</FormLabel>
+                                                    <FormLabel>{t('description')}</FormLabel>
                                                     <FormControl>
                                                         <Textarea
                                                             rows={3}
                                                             {...field}
-                                                            placeholder="Enter organization description"
+                                                            placeholder={t('enterDescription')}
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -334,19 +337,19 @@ export default function AddOrganization() {
                                             name="organizationType"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Organization Type</FormLabel>
+                                                    <FormLabel>{t('organizationType')}</FormLabel>
                                                     <Select
                                                         onValueChange={field.onChange}
                                                         value={field.value}
                                                     >
                                                         <FormControl>
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Select organization type" />
+                                                                <SelectValue placeholder={t('selectOrganizationType')} />
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {ORG_TYPES.map(t => (
-                                                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                                                            {ORG_TYPES.map(type => (
+                                                                <SelectItem key={type} value={type}>{t(`types.${type.toLowerCase()}`)}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
@@ -362,7 +365,7 @@ export default function AddOrganization() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Website</FormLabel>
+                                                    <FormLabel>{t('website')}</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             type="url"
@@ -378,7 +381,7 @@ export default function AddOrganization() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Phone</FormLabel>
+                                                    <FormLabel>{t('phone')}</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             type="tel"
@@ -394,11 +397,11 @@ export default function AddOrganization() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Address</FormLabel>
+                                                    <FormLabel>{t('address')}</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
-                                                            placeholder="Enter organization address"
+                                                            placeholder={t('enterAddress')}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -409,7 +412,7 @@ export default function AddOrganization() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Photo URL</FormLabel>
+                                                    <FormLabel>{t('photoUrl')}</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
@@ -428,7 +431,7 @@ export default function AddOrganization() {
                                         control={form.control}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Night Shift Bonus (%)</FormLabel>
+                                                <FormLabel>{t('nightShiftBonus')}</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
@@ -445,7 +448,7 @@ export default function AddOrganization() {
                                         control={form.control}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Holiday Bonus (%)</FormLabel>
+                                                <FormLabel>{t('holidayBonus')}</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
@@ -462,7 +465,7 @@ export default function AddOrganization() {
                                         control={form.control}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Employee Count</FormLabel>
+                                                <FormLabel>{t('employeeCount')}</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
@@ -476,16 +479,16 @@ export default function AddOrganization() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <Label className="text-sm font-medium">Work Schedule</Label>
+                                    <Label className="text-sm font-medium">{t('workSchedule')}</Label>
                                     <ToggleGroup
                                         type="single"
                                         value={scheduleMode}
                                         onValueChange={handleScheduleModeChange}
                                         className="flex gap-2"
                                     >
-                                        <ToggleGroupItem value="manual">Manual</ToggleGroupItem>
-                                        <ToggleGroupItem value="fiveTwo">5/2 Work Week</ToggleGroupItem>
-                                        <ToggleGroupItem value="fullTime">24/7 Operation</ToggleGroupItem>
+                                        <ToggleGroupItem value="manual">{t('manual')}</ToggleGroupItem>
+                                        <ToggleGroupItem value="fiveTwo">{t('fiveTwoWorkWeek')}</ToggleGroupItem>
+                                        <ToggleGroupItem value="fullTime">{t('fullTimeOperation')}</ToggleGroupItem>
                                     </ToggleGroup>
 
                                     <div className="flex flex-col gap-4">
@@ -495,14 +498,14 @@ export default function AddOrganization() {
                                                     checked={conf.active}
                                                     onCheckedChange={() => handleDayToggle(day)}
                                                 />
-                                                <span className="capitalize w-24">{day}</span>
+                                                <span className="capitalize w-24">{t(`days.${day}`)}</span>
                                                 {conf.active && (
                                                     <>
                                                         <TimePicker
                                                             value={conf.startTime}
                                                             onChange={(time) => handleTimeChange(day, "startTime", time)}
                                                         />
-                                                        <span>to</span>
+                                                        <span>{t('to')}</span>
                                                         <TimePicker
                                                             value={conf.endTime}
                                                             onChange={(time) => handleTimeChange(day, "endTime", time)}
@@ -526,17 +529,17 @@ export default function AddOrganization() {
                                     variant="secondary"
                                     onClick={() => router.back()}
                                 >
-                                    Cancel
+                                    {tCommon('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isPending}
                                 >
                                     {isPending
-                                        ? "Saving..."
+                                        ? t('saving')
                                         : isEditMode
-                                            ? "Save Changes"
-                                            : "Create Organization"
+                                            ? t('saveChanges')
+                                            : t('createOrganization')
                                     }
                                 </Button>
                             </CardFooter>
