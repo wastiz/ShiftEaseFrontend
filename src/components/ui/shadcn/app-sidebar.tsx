@@ -82,9 +82,6 @@ export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
-                <div className="p-2">
-                    <LanguageSwitcher />
-                </div>
                 <NavUser user={user} />
             </SidebarFooter>
 

@@ -17,6 +17,7 @@ import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
+import ShiftTypeCard from "@/components/cards/ShiftTypeCard";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -50,33 +51,6 @@ function getHolidayName(date: string, holidays: Holiday[]) {
     const d = new Date(date)
     const holiday = holidays.find(h => h.month === d.getMonth() + 1 && h.day === d.getDate())
     return holiday?.holidayName || 'Holiday'
-}
-
-function DraggableShiftType({ shiftType }: { shiftType: ShiftType }) {
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!ref.current) return;
-        return draggable({
-            element: ref.current,
-            getInitialData: () => ({ type: "shiftType", id: shiftType.id }),
-        });
-    }, [shiftType.id]);
-
-    return (
-        <div
-            ref={ref}
-            className="flex items-center gap-2 p-2 border rounded cursor-grab active:cursor-grabbing hover:bg-accent/50 transition-colors"
-            style={{ borderLeftColor: shiftType.color, borderLeftWidth: "4px" }}
-        >
-            <div className="flex-1">
-                <div className="font-medium text-sm">{shiftType.name}</div>
-                <div className="text-xs text-muted-foreground">
-                    {shiftType.startTime.slice(0, 5)} - {shiftType.endTime.slice(0, 5)}
-                </div>
-            </div>
-        </div>
-    );
 }
 
 function DroppableCell({
@@ -303,7 +277,14 @@ export default function SimpleView({
                 <h3 className="font-semibold mb-3">Available Shift Types</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
                     {shiftTypes.map((st) => (
-                        <DraggableShiftType key={st.id} shiftType={st} />
+                        <ShiftTypeCard
+                            key={st.id}
+                            name={st.name}
+                            id={st.id}
+                            startTime={st.startTime}
+                            endTime={st.endTime}
+                            color={st.color}
+                        />
                     ))}
                 </div>
             </div>

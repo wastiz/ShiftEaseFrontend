@@ -10,6 +10,7 @@ import {
     Role, EmployerMeData, User,
 } from "@/types";
 import {authKeys} from "@/lib/api-keys";
+import {useRouter} from "next/navigation";
 
 
 export function useEmployerRegister() {
@@ -30,11 +31,16 @@ export function useLogin(role: Role) {
     });
 }
 
-export function useEmployerLogout(role: Role) {
+export function useLogout() {
+    const router = useRouter();
+
     return useMutation<void, Error>({
         mutationFn: async () => {
-            await api.post(`/auth/${role}/logout`);
+            await api.post(`/auth/logout`);
         },
+        onSuccess: () => {
+            router.push('/login');
+        }
     });
 }
 
@@ -58,15 +64,6 @@ export function useChangePassword() {
     });
 }
 
-export function useDeleteUser() {
-    return useMutation({
-        mutationFn: async (payload) => {
-            const res = await api.post("/me/delete", payload);
-            return res.data;
-        },
-    });
-}
-
 export function useGetMe({ isEnabled }: { isEnabled: boolean }) {
     return useQuery({
         queryKey: authKeys.currentUser(),
@@ -81,6 +78,14 @@ export function useGetMe({ isEnabled }: { isEnabled: boolean }) {
     });
 }
 
+// export function useDeleteUser() {
+//     return useMutation({
+//         mutationFn: async (payload) => {
+//             const res = await api.post("/me/delete", payload);
+//             return res.data;
+//         },
+//     });
+// }
 //
 // export function useRefreshToken() {
 //     return useQuery({

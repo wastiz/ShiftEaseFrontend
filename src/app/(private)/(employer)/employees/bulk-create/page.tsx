@@ -152,6 +152,7 @@ export default function BulkAddEmployees() {
     const onSubmit = async (data: FormValues) => {
         bulkCreate.mutate(data.employees, {
             onSuccess: (response) => {
+                console.log(response);
                 setResults(response);
                 setShowResults(true);
 

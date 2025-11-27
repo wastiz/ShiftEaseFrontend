@@ -2,12 +2,12 @@
 
 import { Button } from '@/components/ui/shadcn/button'
 import { Badge } from '@/components/ui/shadcn/badge'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, PanelLeft, PanelTop } from 'lucide-react'
 import DayContainer from './DayContainer'
 import ShiftTypeCard from '@/components/cards/ShiftTypeCard'
 import EmployeeCard from '@/components/cards/EmployeeCard'
 import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
@@ -46,127 +46,175 @@ export default function ScheduleCalendar({
                                              orgHolidays,
                                              orgSchedule,
                                          }: ScheduleCalendarProps) {
+    const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
+
     return (
-        <div className="flex h-[calc(100vh-120px)] gap-4">
+        <div className="flex flex-col h-[calc(100vh-62px)]">
             {isEditable && (
-                <aside className="w-64 flex-shrink-0 space-y-6 border-r p-4 overflow-y-auto">
-                    <div>
-                        <h4 className="font-semibold mb-2">Shift Types</h4>
-                        <div className="space-y-2">
-                            {shiftTypes.map((st) => (
-                                <ShiftTypeCard
-                                    key={st.id}
-                                    type={st.name}
-                                    id={st.id}
-                                    startTime={st.startTime}
-                                    endTime={st.endTime}
+                <div
+                    className={`border-b space-y-3 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${
+                        layoutPosition === 'top' ? 'max-h-[200px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
+                    }`}
+                >
+                    <div className="flex gap-4 overflow-x-auto">
+                        <div className="flex-shrink-0">
+                            <h4 className="font-semibold mb-2">Shift Types</h4>
+                            <div className="flex gap-2">
+                                {shiftTypes.map((st) => (
+                                    <ShiftTypeCard
+                                        key={st.id}
+                                        name={st.name}
+                                        id={st.id}
+                                        startTime={st.startTime}
+                                        endTime={st.endTime}
+                                        color={st.color}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto">
+                        <div className="flex-shrink-0">
+                            <h4 className="font-semibold mb-2">Employees</h4>
+                            <div className="flex gap-2">
+                                {employees.map((emp) => (
+                                    <EmployeeCard key={emp.id} id={emp.id} name={emp.name}/>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="flex flex-1 gap-4 min-h-0">
+                {isEditable && (
+                    <aside
+                        className={`flex-shrink-0 space-y-6 border-r overflow-y-auto transition-all duration-300 ease-in-out ${
+                            layoutPosition === 'left' ? 'w-64 opacity-100 p-4' : 'w-0 opacity-0 p-0 border-0'
+                        }`}
+                    >
+                        <div>
+                            <h4 className="font-semibold mb-2">Shift Types</h4>
+                            <div className="space-y-2">
+                                {shiftTypes.map((st) => (
+                                    <ShiftTypeCard
+                                        key={st.id}
+                                        name={st.name}
+                                        id={st.id}
+                                        startTime={st.startTime}
+                                        endTime={st.endTime}
+                                        color={st.color}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 className="font-semibold mb-2">Employees</h4>
+                            <div className="space-y-2">
+                                {employees.map((emp) => (
+                                    <EmployeeCard key={emp.id} id={emp.id} name={emp.name}/>
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
+                )}
+
+                <section className="flex-1 flex flex-col min-w-0 p-4 space-y-4">
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                                currentMonth === 0
+                                    ? (setCurrentMonth(11), setCurrentYear(currentYear - 1))
+                                    : setCurrentMonth(currentMonth - 1)
+                            }
+                        >
+                            <ChevronLeft />
+                        </Button>
+
+                        <div className="flex items-center gap-2">
+                            <span className="font-medium whitespace-nowrap">
+                                {new Date(currentYear, currentMonth).toLocaleString('default', {
+                                    month: 'long',
+                                    year: 'numeric',
+                                })}
+                            </span>
+                            {isConfirmed ? (
+                                <Badge variant="secondary">
+                                    Confirmed
+                                </Badge>
+                            ) : (
+                                <Badge variant="outline">
+                                    Unconfirmed
+                                </Badge>
+                            )}
+                        </div>
+
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                                currentMonth === 11
+                                    ? (setCurrentMonth(0), setCurrentYear(currentYear + 1))
+                                    : setCurrentMonth(currentMonth + 1)
+                            }
+                        >
+                            <ChevronRight />
+                        </Button>
+
+                        {isEditable && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
+                                className="ml-auto"
+                            >
+                                {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
+                            </Button>
+                        )}
+                    </div>
+
+                    <div className="flex-1 border rounded-lg overflow-auto">
+                        <div
+                            className="grid min-w-max"
+                            style={{
+                                gridTemplateColumns: `100px repeat(${daysOfMonth.length}, 180px)`,
+                            }}
+                        >
+                            <div className="sticky left-0 z-10 shadow-md bg-background">
+                                <div
+                                    className="h-10 flex items-center justify-center font-medium border-b border-r bg-black"></div>
+                                {Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`).map((h) => (
+                                    <div
+                                        key={h}
+                                        className="h-10 bg-black border-b border-r flex items-center justify-center text-sm"
+                                    >
+                                        {h}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {daysOfMonth.map((day) => (
+                                <DayContainer
+                                    key={day.isoDate}
+                                    date={day.isoDate}
+                                    dateLabel={day.label}
+                                    shiftTypes={shiftTypes}
+                                    employees={employees}
+                                    shiftsData={shiftsData}
+                                    setShiftsData={setShiftsData}
+                                    isEditable={isEditable}
+                                    cellHeight={cellHeight}
+                                    holidays={orgHolidays}
+                                    workDays={orgSchedule}
                                 />
                             ))}
                         </div>
                     </div>
-
-                    <div>
-                        <h4 className="font-semibold mb-2">Employees</h4>
-                        <div className="space-y-2">
-                            {employees.map((emp) => (
-                                <EmployeeCard key={emp.id} id={emp.id} name={emp.name}/>
-                            ))}
-                        </div>
-                    </div>
-                </aside>
-            )}
-
-            <section className="flex-1 flex flex-col min-w-0 p-4 space-y-4">
-                <div className="flex items-center gap-3 flex-shrink-0">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                            currentMonth === 0
-                                ? (setCurrentMonth(11), setCurrentYear((y) => y - 1))
-                                : setCurrentMonth((m) => m - 1)
-                        }
-                    >
-                        <ChevronLeft/>
-                    </Button>
-
-                    <span className="font-medium whitespace-nowrap">
-                        {new Date(currentYear, currentMonth).toLocaleString('default', {
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </span>
-
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                            currentMonth === 11
-                                ? (setCurrentMonth(0), setCurrentYear((y) => y + 1))
-                                : setCurrentMonth((m) => m + 1)
-                        }
-                    >
-                        <ChevronRight/>
-                    </Button>
-
-                    <label className="flex items-center gap-2 ml-4 whitespace-nowrap">
-                        <input
-                            type="checkbox"
-                            checked={autorenewal}
-                            onChange={(e) => setAutorenewal(e.target.checked)}
-                        />
-                        Autorenewal
-                    </label>
-
-                    {isConfirmed ? (
-                        <Badge variant="secondary" className="ml-2">
-                            Confirmed
-                        </Badge>
-                    ) : (
-                        <Badge variant="outline" className="ml-2">
-                            Unconfirmed
-                        </Badge>
-                    )}
-                </div>
-
-                <div className="flex-1 border rounded-lg overflow-auto">
-                    <div
-                        className="grid min-w-max"
-                        style={{
-                            gridTemplateColumns: `100px repeat(${daysOfMonth.length}, 180px)`,
-                        }}
-                    >
-                        <div className="sticky left-0 z-10 shadow-md bg-background">
-                            <div
-                                className="h-10 flex items-center justify-center font-medium border-b border-r bg-black"></div>
-                            {Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`).map((h) => (
-                                <div
-                                    key={h}
-                                    className="h-10 bg-black border-b border-r flex items-center justify-center text-sm"
-                                >
-                                    {h}
-                                </div>
-                            ))}
-                        </div>
-
-                        {daysOfMonth.map((day) => (
-                            <DayContainer
-                                key={day.isoDate}
-                                date={day.isoDate}
-                                dateLabel={day.label}
-                                shiftTypes={shiftTypes}
-                                employees={employees}
-                                shiftsData={shiftsData}
-                                setShiftsData={setShiftsData}
-                                isEditable={isEditable}
-                                cellHeight={cellHeight}
-                                holidays={orgHolidays}
-                                workDays={orgSchedule}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     )
 }

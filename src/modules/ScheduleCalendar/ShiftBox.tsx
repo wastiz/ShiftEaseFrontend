@@ -133,11 +133,9 @@ export default function ShiftBox({
         toast.success(`${emp.name} assigned to shift`)
     }
 
-    // Вычисляем позицию и высоту
     const startMinutes = timeToMinutes(shift.startTime)
     const endMinutes = timeToMinutes(shift.endTime)
 
-    // Если смена заканчивается на следующий день (endTime < startTime или endTime === 00:00)
     const isOvernight = endMinutes <= startMinutes
     const actualEndMinutes = isOvernight ? 24 * 60 : endMinutes
 
@@ -152,14 +150,14 @@ export default function ShiftBox({
     return (
         <div
             ref={ref}
-            className={`absolute left-0 right-0 mx-1 rounded border-l-4 shadow-sm cursor-move transition-colors ${
+            className={`absolute left-0 right-0 mx-1 rounded border-l-4 shadow-sm cursor-move transition-colors bg-card ${
                 isDraggingOver ? 'ring-2 ring-primary' : ''
             }`}
             style={{
                 top: topPosition,
                 height: height,
                 borderLeftColor: shift.color,
-                backgroundColor: shift.color + '15',
+                // backgroundColor: "bg-card",
                 minHeight: '60px',
             }}
         >

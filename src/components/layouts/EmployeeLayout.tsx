@@ -4,12 +4,7 @@ import React from "react";
 import {AppSidebar} from "@/components/ui/shadcn/app-sidebar";
 import {SidebarInset, SidebarProvider} from "@/components/ui/shadcn/sidebar";
 import {useTranslations} from 'next-intl';
-
-const user = {
-    name: "John Doe",
-    email: "m@example.com",
-    avatar: "/images/logo.svg",
-};
+import {useAuthStore} from "@/zustand/auth-state";
 
 export default function EmployeeLayout({
     children,
@@ -17,6 +12,13 @@ export default function EmployeeLayout({
     children: React.ReactNode;
 }) {
     const t = useTranslations('nav');
+    const { user: userData } = useAuthStore();
+
+    const user = {
+        name: userData.fullName,
+        email: userData.email,
+        avatar: "/images/avatar_placeholder.png",
+    };
 
     const navMain = [
         { title: t('dashboard'), url: "/dashboard", icon: "LayoutDashboard" as const, isActive: true },
