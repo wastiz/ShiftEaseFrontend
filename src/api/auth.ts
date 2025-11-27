@@ -7,7 +7,7 @@ import {
     LoginResponse,
     ForgotPasswordPayload,
     DeleteUserPayload,
-    Role, Employer, User,
+    Role, EmployerMeData, User,
 } from "@/types";
 import {authKeys} from "@/lib/api-keys";
 

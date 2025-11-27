@@ -315,9 +315,6 @@ export default function SimpleView({
                             <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
                                 Employee
                             </TableHead>
-                            <TableHead className="w-[100px] sticky left-[120px] bg-background z-20 border-r">
-                                Total Hours
-                            </TableHead>
                             {daysOfMonth.map((day) => {
                                 const holiday = isHoliday(day.isoDate, orgHolidays)
                                 const working = isWorkingDay(day.isoDate, orgSchedule)
@@ -347,25 +344,25 @@ export default function SimpleView({
                         {rows.map((row) => (
                             <TableRow key={row.employeeId}>
                                 <TableCell className="font-medium sticky left-0 bg-background z-10 border-r">
-                                    <div>
-                                        <div>{row.employeeName}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {row.position}
+                                    <div className={"flex flex-row gap-2 justify-between items-center"}>
+                                        <div>
+                                            <div>{row.employeeName}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {row.position}
+                                            </div>
                                         </div>
+                                        <Badge
+                                            variant={
+                                                row.totalHours > 200
+                                                    ? "destructive"
+                                                    : row.totalHours > 180
+                                                        ? "warning"
+                                                        : "secondary"
+                                            }
+                                        >
+                                            {row.totalHours.toFixed(1)}h
+                                        </Badge>
                                     </div>
-                                </TableCell>
-                                <TableCell className="text-center sticky left-[120px] bg-background z-10 border-r">
-                                    <Badge
-                                        variant={
-                                            row.totalHours > 200
-                                                ? "destructive"
-                                                : row.totalHours > 180
-                                                    ? "warning"
-                                                    : "secondary"
-                                        }
-                                    >
-                                        {row.totalHours.toFixed(1)}h
-                                    </Badge>
                                 </TableCell>
                                 {daysOfMonth.map((day) => {
                                     const assignment = row.days.get(day.isoDate);

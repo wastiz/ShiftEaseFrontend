@@ -20,7 +20,7 @@ export default function EmployerLayout({
 
     const navMain = [
         { title: t('backToOrganizations'), url: "/organizations", icon: "ArrowBigLeft" as const, isActive: true },
-        { title: t('overview'), url: "/shift-table", icon: "LayoutDashboard" as const, isActive: true },
+        { title: t('dashboard'), url: "/dashboard", icon: "LayoutDashboard" as const, isActive: true },
         { title: t('schedules'), url: "/schedules", icon: "CalendarCheck" as const },
         { title: t('employees'), url: "/employees", icon: "IdCardLanyard" as const },
         { title: t('groups'), url: "/groups", icon: "UserRound" as const },

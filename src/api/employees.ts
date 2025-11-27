@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { Employee } from "@/types";
+import {BulkCreateResult, Employee} from "@/types";
 
 export function useGetEmployees() {
     return useQuery({
@@ -41,6 +41,15 @@ export function useCreateEmployee() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["employees"] });
         },
+    });
+}
+
+export function useBulkCreateEmployees() {
+    return useMutation({
+        mutationFn: async (employees: Employee[]) => {
+            const res = await api.post<BulkCreateResult>('/employees/bulk', employees);
+            return res.data;
+        }
     });
 }
 

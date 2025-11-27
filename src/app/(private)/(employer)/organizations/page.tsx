@@ -23,6 +23,7 @@ import {
 import toast from "react-hot-toast";
 import Header from "@/modules/Header";
 import Main from "@/modules/Main";
+import {useAuthStore} from "@/zustand/auth-state";
 
 export default function Organizations() {
     const router = useRouter()
@@ -52,7 +53,7 @@ export default function Organizations() {
 
     const handleNavigate = (orgId: number) => {
         localStorage.setItem("orgId", String(orgId))
-        router.push(`/shift-table`)
+        router.push(`/dashboard`)
     }
 
     const handleEdit = (orgId: number) => {

@@ -67,7 +67,7 @@ export default function EmployerDashboard() {
         <>
             <Header title={t('title')}>
                 <Button asChild disabled={data.groupCount === 0}>
-                    <Link href="/employer/schedules/create">
+                    <Link href="/schedules">
                         <Plus className="mr-2 h-4 w-4" />
                         {t('createSchedule')}
                     </Link>
@@ -80,7 +80,7 @@ export default function EmployerDashboard() {
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
                                 {t('completeSetup', { items: missingSetup.join(', ') })}
-                                <Link href="/employer/settings" className="ml-2 underline font-medium">
+                                <Link href="/settings" className="ml-2 underline font-medium">
                                     {t('goToSettings')}
                                 </Link>
                             </AlertDescription>
@@ -99,7 +99,7 @@ export default function EmployerDashboard() {
                                 <div className="text-2xl font-bold">{data.employeeCount}</div>
                                 {data.employeeCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                                        <Link href="/employer/employees">
+                                        <Link href="/employees">
                                             {t('addEmployees')}
                                         </Link>
                                     </Button>
@@ -122,7 +122,7 @@ export default function EmployerDashboard() {
                                 <div className="text-2xl font-bold">{data.scheduleCount}</div>
                                 {data.scheduleCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                                        <Link href="/employer/schedules/create">
+                                        <Link href="/schedules/create">
                                             {t('createSchedule')}
                                         </Link>
                                     </Button>
@@ -145,7 +145,7 @@ export default function EmployerDashboard() {
                                 <div className="text-2xl font-bold">{data.groupCount}</div>
                                 {data.groupCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                                        <Link href="/employer/groups">
+                                        <Link href="/groups">
                                             {t('createGroup')}
                                         </Link>
                                     </Button>
@@ -168,7 +168,7 @@ export default function EmployerDashboard() {
                                 <div className="text-2xl font-bold">{data.shiftTypeCount}</div>
                                 {data.shiftTypeCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                                        <Link href="/employer/shift-types">
+                                        <Link href="/shift-types">
                                             {t('configureShiftTypes')}
                                         </Link>
                                     </Button>
@@ -201,7 +201,7 @@ export default function EmployerDashboard() {
                                                 </p>
                                             </div>
                                             <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/employer/schedules/${schedule.groupId}`}>
+                                                <Link href={`/schedules/${schedule.groupId}`}>
                                                     {tCommon('edit')}
                                                 </Link>
                                             </Button>
@@ -220,31 +220,31 @@ export default function EmployerDashboard() {
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employer/schedules/create">
+                                    <Link href="/schedules/create">
                                         <Calendar className="mr-2 h-4 w-4" />
                                         {t('createNewSchedule')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employer/employees">
+                                    <Link href="/employees">
                                         <Users className="mr-2 h-4 w-4" />
                                         {t('manageEmployees')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employer/shift-types">
+                                    <Link href="/shift-types">
                                         <Clock className="mr-2 h-4 w-4" />
                                         {t('configureShiftTypes')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employer/reports">
+                                    <Link href="/reports">
                                         <FileText className="mr-2 h-4 w-4" />
                                         {t('viewReports')}
                                     </Link>
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employer/settings">
+                                    <Link href="/settings">
                                         <Settings className="mr-2 h-4 w-4" />
                                         {t('organizationSettings')}
                                     </Link>
@@ -316,12 +316,12 @@ export default function EmployerDashboard() {
 
                                         <div className="flex justify-end gap-2">
                                             <Button variant="outline" asChild>
-                                                <Link href={`/employer/schedules/${group.id}`}>
+                                                <Link href={`/schedules/${group.id}`}>
                                                     {t('viewFullSchedule')}
                                                 </Link>
                                             </Button>
                                             <Button asChild>
-                                                <Link href={`/employer/schedules/${group.id}/edit`}>
+                                                <Link href={`/schedules/${group.id}/edit`}>
                                                     {t('editSchedule')}
                                                 </Link>
                                             </Button>

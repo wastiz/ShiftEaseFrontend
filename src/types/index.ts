@@ -9,7 +9,7 @@ export * from "./group";
 export * from "./shiftType";
 
 
-export type Role = "employer" | "employee";
+export type Role = "Employer" | "Employee";
 export type Mode = "login" | "register" | "forgot"
 
 export const dayNameToEnum: Record<string, number> = {
@@ -32,20 +32,33 @@ export const enumToDayName: Record<number, string> = {
     6: 'saturday',
 };
 
-export type User = {
+export interface User {
     authenticated: boolean;
     id: number;
     role: Role;
     fullName: string;
-};
+    email: string;
+}
 
+export interface EmployerMeData extends User {
+    authenticated: boolean;
+    id: number;
+    role: Role;
+    fullName: string;
+    email: string;
+}
 
-export type Employer = {
-    id: number
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
+export interface EmployeeMeData extends User {
+    authenticated: boolean;
+    id: number;
+    role: Role;
+    fullName: string;
+    email: string;
+    groupId: number;
+    groupName: string;
+    organizationId: number;
+    organizationName: string;
+    position: string;
 }
 
 export type DateData = {

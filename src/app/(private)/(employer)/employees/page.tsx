@@ -45,6 +45,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/shadcn/select";
+import {useRouter} from "next/navigation";
 
 type EmployeeFormValues = {
     firstName: string;
@@ -52,14 +53,14 @@ type EmployeeFormValues = {
     email: string;
     phone: string;
     position: string;
-    workload: number;
-    salary: number;
+    hourlyRate: number;
     priority: string;
     groupId: number;
     groupName?: string | null;
 };
 
 export default function Employees() {
+    const router = useRouter();
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
         null
     );
@@ -131,6 +132,7 @@ export default function Employees() {
     return (
         <>
             <Header title="Employees">
+                <Button onClick={() => router.push("employees/bulk-create")}>+ Add Bulk</Button>
                 <Drawer
                     open={drawerOpen}
                     onOpenChange={setDrawerOpen}
@@ -208,29 +210,14 @@ export default function Employees() {
                                 />
                             </FormField>
 
-                            <FormField description={errors.workload?.message}>
-                                <Label htmlFor="workload">Working Hours</Label>
+                            <FormField description={errors.hourlyRate?.message}>
+                                <Label htmlFor="hourlyRate">Hourly Rate</Label>
                                 <Input
-                                    id="workload"
-                                    type="number"
-                                    step="0.1"
-                                    placeholder="Enter workload"
-                                    {...register("workload", {
-                                        required: "Workload is required",
-                                        valueAsNumber: true,
-                                    })}
-                                />
-                            </FormField>
-
-                            <FormField description={errors.salary?.message}>
-                                <Label htmlFor="salary">Monthly Salary</Label>
-                                <Input
-                                    id="salary"
+                                    id="hourlyRate"
                                     type="number"
                                     step="0.01"
-                                    placeholder="Enter monthly salary"
-                                    {...register("salary", {
-                                        required: "Salary is required",
+                                    placeholder="Enter Hourly Rate"
+                                    {...register("hourlyRate", {
                                         valueAsNumber: true,
                                     })}
                                 />
