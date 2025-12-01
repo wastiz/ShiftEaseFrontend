@@ -19,7 +19,7 @@ export default function ForgotPasswordForm({setMode, role}: ForgotPasswordFormPr
         email: "",
     });
 
-    const {mutate, error, isPending, isError, isSuccess} = useForgotPassword(role)
+    const {mutate, error, isPending, isError, isSuccess} = useForgotPassword()
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {id, value} = event.target;
@@ -30,7 +30,7 @@ export default function ForgotPasswordForm({setMode, role}: ForgotPasswordFormPr
         event.preventDefault();
         mutate(form, {
             onSuccess: (data) => {
-                router.push(role === "employer" ? "/dashboard" : "/employee/dashboard");
+                router.push("/sign-in");
             },
         })
     }

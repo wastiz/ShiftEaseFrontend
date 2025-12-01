@@ -17,7 +17,7 @@ import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
-import ShiftTypeCard from "@/components/cards/ShiftTypeCard";
+import ShiftTypeSmallCard from "@/components/cards/ShiftTypeSmallCard";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -277,7 +277,7 @@ export default function SimpleView({
                 <h3 className="font-semibold mb-3">Available Shift Types</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
                     {shiftTypes.map((st) => (
-                        <ShiftTypeCard
+                        <ShiftTypeSmallCard
                             key={st.id}
                             name={st.name}
                             id={st.id}

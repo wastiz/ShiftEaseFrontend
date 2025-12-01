@@ -44,22 +44,21 @@ export function useLogout() {
     });
 }
 
-export function useForgotPassword(role: Role) {
+export function useForgotPassword() {
     return useMutation({
-        mutationFn: async (payload) => {
-            const res = await api.post(`/auth/${role}/forgot-password`, payload);
+        mutationFn: async (payload: ForgotPasswordPayload) => {
+            const res = await api.post(`/auth/forgot-password`, payload);
             return res.data;
         },
     });
 }
 
-export function useChangePassword() {
+export function useResetPassword() {
     return useMutation({
-        mutationFn: async (queryParam: string) => {
-            const res = await api.post(
-                `/change-forgotten-password/${queryParam}`
-            );
-            return res.data;
+        mutationFn: async (payload: { token: string; newPassword: string }) => {
+            const response = await api.post("/auth/reset-password", payload);
+            console.log(response);
+            return response.data;
         },
     });
 }

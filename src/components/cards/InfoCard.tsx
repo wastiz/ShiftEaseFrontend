@@ -33,7 +33,16 @@ export default function InfoCard({
                                      className = "",
                                  }: InfoCardProps) {
     return (
-        <Card className={`overflow-hidden ${className} border-${borderColor}`} style={style}>
+        <Card
+            className={`overflow-hidden ${className}`}
+            style={{
+                ...style,
+                ...(borderColor && {
+                    borderColor: `${borderColor}80`,
+                    borderWidth: '1px'
+                })
+            }}
+        >
             {image && (
                 <div className="w-full h-40 overflow-hidden">
                     <img src={image} alt={title} className="w-full h-full object-cover" />

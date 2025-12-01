@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/shadcn/button'
 import { Badge } from '@/components/ui/shadcn/badge'
 import { ChevronLeft, ChevronRight, PanelLeft, PanelTop } from 'lucide-react'
 import DayContainer from './DayContainer'
-import ShiftTypeCard from '@/components/cards/ShiftTypeCard'
-import EmployeeCard from '@/components/cards/EmployeeCard'
+import ShiftTypeSmallCard from '@/components/cards/ShiftTypeSmallCard'
+import EmployeeSmallCard from '@/components/cards/EmployeeSmallCard'
 import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
 import { Dispatch, SetStateAction, useState } from 'react'
 
@@ -61,7 +61,7 @@ export default function ScheduleCalendar({
                             <h4 className="font-semibold mb-2">Shift Types</h4>
                             <div className="flex gap-2">
                                 {shiftTypes.map((st) => (
-                                    <ShiftTypeCard
+                                    <ShiftTypeSmallCard
                                         key={st.id}
                                         name={st.name}
                                         id={st.id}
@@ -78,7 +78,7 @@ export default function ScheduleCalendar({
                             <h4 className="font-semibold mb-2">Employees</h4>
                             <div className="flex gap-2">
                                 {employees.map((emp) => (
-                                    <EmployeeCard key={emp.id} id={emp.id} name={emp.name}/>
+                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name}/>
                                 ))}
                             </div>
                         </div>
@@ -97,7 +97,7 @@ export default function ScheduleCalendar({
                             <h4 className="font-semibold mb-2">Shift Types</h4>
                             <div className="space-y-2">
                                 {shiftTypes.map((st) => (
-                                    <ShiftTypeCard
+                                    <ShiftTypeSmallCard
                                         key={st.id}
                                         name={st.name}
                                         id={st.id}
@@ -113,7 +113,7 @@ export default function ScheduleCalendar({
                             <h4 className="font-semibold mb-2">Employees</h4>
                             <div className="space-y-2">
                                 {employees.map((emp) => (
-                                    <EmployeeCard key={emp.id} id={emp.id} name={emp.name}/>
+                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name}/>
                                 ))}
                             </div>
                         </div>

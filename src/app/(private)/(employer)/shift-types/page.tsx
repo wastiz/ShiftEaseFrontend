@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/shadcn/label";
 import FormField from "@/components/FormField";
 import Header from "@/modules/Header";
 import {TimePicker} from "@/components/inputs/TimePicker";
+import ColorPicker from "@/components/inputs/ColorPicker";
 
 export default function ShiftTypes() {
     const isMobile = useIsMobile();
@@ -39,7 +40,7 @@ export default function ShiftTypes() {
     const updateMutation = useUpdateShiftType(selectedShift?.id ?? 0);
     const deleteMutation = useDeleteShiftType(selectedShift?.id ?? 0);
 
-    const form = useForm<ShiftTypeFormValues>({
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ShiftTypeFormValues>({
         defaultValues: {
             name: "",
             startTime: "00:00",
@@ -51,7 +52,7 @@ export default function ShiftTypes() {
 
     const openDrawer = (shift?: ShiftType) => {
         setSelectedShift(shift ?? null);
-        form.reset(
+        reset(
             shift ?? {
                 name: "",
                 startTime: "00:00",
@@ -139,18 +140,29 @@ export default function ShiftTypes() {
                         <DrawerTitle>{selectedShift ? "Edit Shift" : "Add Shift"}</DrawerTitle>
                         <DrawerDescription>Configure your shift type details</DrawerDescription>
                     </DrawerHeader>
-                    <form id="shift-form" onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 flex-1 overflow-y-auto">
+                    <form id="shift-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4 flex-1 overflow-y-auto">
 
                         <FormField>
-                            <Label htmlFor="name">Shift Name</Label>
-                            <Input id="name" {...form.register("name", { required: true })} />
+                            <Label htmlFor="name">
+                                Shift Name
+                                <span className="text-red-500 ml-1">*</span>
+                            </Label>
+                            <Input
+                                id="name"
+                                {...register("name", { required: "Shift name is required" })}
+                                placeholder="Enter shift name"
+                            />
+                            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                         </FormField>
 
                         <FormField>
-                            <Label htmlFor="startTime">Start Time</Label>
+                            <Label htmlFor="startTime">
+                                Start Time
+                                <span className="text-red-500 ml-1">*</span>
+                            </Label>
                             <Controller
                                 name="startTime"
-                                control={form.control}
+                                control={control}
                                 rules={{ required: "Start time is required" }}
                                 render={({ field }) => (
                                     <TimePicker
@@ -159,13 +171,17 @@ export default function ShiftTypes() {
                                     />
                                 )}
                             />
+                            {errors.startTime && <p className="text-red-500 text-sm">{errors.startTime.message}</p>}
                         </FormField>
 
                         <FormField>
-                            <Label htmlFor="endTime">End Time</Label>
+                            <Label htmlFor="endTime">
+                                End Time
+                                <span className="text-red-500 ml-1">*</span>
+                            </Label>
                             <Controller
                                 name="endTime"
-                                control={form.control}
+                                control={control}
                                 rules={{ required: "End time is required" }}
                                 render={({ field }) => (
                                     <TimePicker
@@ -174,17 +190,42 @@ export default function ShiftTypes() {
                                     />
                                 )}
                             />
-
+                            {errors.endTime && <p className="text-red-500 text-sm">{errors.endTime.message}</p>}
                         </FormField>
 
                         <FormField>
-                            <Label htmlFor="employeeNeeded">Employees Needed</Label>
-                            <Input type="number" min={1} id="employeeNeeded" {...form.register("employeeNeeded", { valueAsNumber: true })} />
+                            <Label htmlFor="employeeNeeded">
+                                Employees Needed
+                                <span className="text-red-500 ml-1">*</span>
+                            </Label>
+                            <Input
+                                type="number"
+                                min={1}
+                                id="employeeNeeded"
+                                {...register("employeeNeeded", {
+                                    valueAsNumber: true,
+                                    required: "Number of employees is required",
+                                    min: { value: 1, message: "At least 1 employee is required" }
+                                })}
+                            />
+                            {errors.employeeNeeded && <p className="text-red-500 text-sm">{errors.employeeNeeded.message}</p>}
                         </FormField>
 
                         <FormField>
-                            <Label htmlFor="color">Shift Color</Label>
-                            <Input type="color" id="color" {...form.register("color")} />
+                            <Controller
+                                name="color"
+                                control={control}
+                                defaultValue="#000000"
+                                rules={{ required: "Color is required" }}
+                                render={({ field }) => (
+                                    <ColorPicker
+                                        label="Shift Color"
+                                        value={field.value || "#000000"}
+                                        onChange={(color) => field.onChange(color)}
+                                    />
+                                )}
+                            />
+                            {errors.color && <p className="text-red-500 text-sm">{errors.color.message}</p>}
                         </FormField>
                     </form>
 

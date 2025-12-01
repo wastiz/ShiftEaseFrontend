@@ -44,10 +44,12 @@ import Header from "@/modules/Header";
 import Main from "@/modules/Main";
 import { dayNameToEnum, Holiday, OrganizationFormValues, WorkDay } from "@/types";
 import { TimePicker } from "@/components/inputs/TimePicker";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/shadcn/tooltip";
+import {Info} from "lucide-react";
 
 const formSchema = z.object({
     name: z.string().min(1, "Organization name is required"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().optional(),
     organizationType: z.string().min(1, "Type is required"),
     website: z.string().optional(),
     phone: z.string().optional(),
@@ -86,6 +88,8 @@ export default function AddOrganization() {
     const [scheduleMode, setScheduleMode] = useState<ScheduleMode>("manual");
     const [selectedHolidays, setSelectedHolidays] = useState<Holiday[]>([]);
     const [workDays, setWorkDays] = useState<Record<string, LocalWorkDay>>(INITIAL_WORK_DAYS);
+    const [fullTimeStartTime, setFullTimeStartTime] = useState("00:00");
+    const [fullTimeEndTime, setFullTimeEndTime] = useState("23:59");
     const [isFormInitialized, setIsFormInitialized] = useState(false);
 
     const addOrganization = useAddOrganization();
@@ -145,12 +149,15 @@ export default function AddOrganization() {
                 setWorkDays(reconstructed);
 
                 const allActive = Object.values(reconstructed).every(d => d.active);
-                const allFullDay = Object.values(reconstructed).every(d =>
-                    d.startTime === "00:00" && d.endTime === "23:59"
+                const firstDay = Object.values(reconstructed)[0];
+                const allSameTime = Object.values(reconstructed).every(d =>
+                    d.startTime === firstDay.startTime && d.endTime === firstDay.endTime
                 );
 
-                if (allActive && allFullDay) {
+                if (allActive && allSameTime) {
                     setScheduleMode("fullTime");
+                    setFullTimeStartTime(firstDay.startTime);
+                    setFullTimeEndTime(firstDay.endTime);
                 } else if (
                     reconstructed.monday.active &&
                     reconstructed.tuesday.active &&
@@ -206,14 +213,16 @@ export default function AddOrganization() {
                 sunday: { active: false, startTime: "08:00", endTime: "17:00" },
             });
         } else if (mode === "fullTime") {
+            const startTime = fullTimeStartTime;
+            const endTime = fullTimeEndTime;
             setWorkDays({
-                monday: { active: true, startTime: "00:00", endTime: "00:00" },
-                tuesday: { active: true, startTime: "00:00", endTime: "00:00" },
-                wednesday: { active: true, startTime: "00:00", endTime: "00:00" },
-                thursday: { active: true, startTime: "00:00", endTime: "00:00" },
-                friday: { active: true, startTime: "00:00", endTime: "00:00" },
-                saturday: { active: true, startTime: "00:00", endTime: "00:00" },
-                sunday: { active: true, startTime: "00:00", endTime: "00:00" },
+                monday: { active: true, startTime, endTime },
+                tuesday: { active: true, startTime, endTime },
+                wednesday: { active: true, startTime, endTime },
+                thursday: { active: true, startTime, endTime },
+                friday: { active: true, startTime, endTime },
+                saturday: { active: true, startTime, endTime },
+                sunday: { active: true, startTime, endTime },
             });
         } else {
             setWorkDays(INITIAL_WORK_DAYS);
@@ -232,6 +241,24 @@ export default function AddOrganization() {
             ...prev,
             [day]: { ...prev[day], [field]: val },
         }));
+    };
+
+    const handleFullTimeTimeChange = (field: "startTime" | "endTime", val: string) => {
+        if (field === "startTime") {
+            setFullTimeStartTime(val);
+        } else {
+            setFullTimeEndTime(val);
+        }
+
+        setWorkDays(prev => {
+            const updated = { ...prev };
+            Object.keys(updated).forEach(day => {
+                if (updated[day].active) {
+                    updated[day][field] = val;
+                }
+            });
+            return updated;
+        });
     };
 
     const onSubmit = async (values: FormValues) => {
@@ -253,8 +280,6 @@ export default function AddOrganization() {
         };
 
         const mutation = isEditMode ? updateOrganization : addOrganization;
-
-        console.log(organizationData);
 
         mutation.mutate(organizationData, {
             onSuccess: () => {
@@ -302,7 +327,10 @@ export default function AddOrganization() {
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{t('organizationName')}</FormLabel>
+                                                    <FormLabel>
+                                                        {t('organizationName')}
+                                                        <span className="text-red-500 ml-1">*</span>
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
@@ -337,7 +365,10 @@ export default function AddOrganization() {
                                             name="organizationType"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{t('organizationType')}</FormLabel>
+                                                    <FormLabel>
+                                                        {t('organizationType')}
+                                                        <span className="text-red-500 ml-1">*</span>
+                                                    </FormLabel>
                                                     <Select
                                                         onValueChange={field.onChange}
                                                         value={field.value}
@@ -479,42 +510,77 @@ export default function AddOrganization() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <Label className="text-sm font-medium">{t('workSchedule')}</Label>
+                                    <Label className="text-sm font-medium flex items-center gap-2">
+                                        {t('workSchedule')}
+                                        <span className="text-red-500">*</span>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                                </TooltipTrigger>
+                                                <TooltipContent className="max-w-xs">
+                                                    <p>
+                                                        Set your organisation's working schedule (not the employees' schedule), i.e. specify the times when the organisation is working. The rest of the time will be considered non-working time, and you will not be able to add employees for that time.
+                                                    </p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </Label>
                                     <ToggleGroup
                                         type="single"
                                         value={scheduleMode}
                                         onValueChange={handleScheduleModeChange}
-                                        className="flex gap-2"
+                                        className="flex gap-2 justify-start"
                                     >
                                         <ToggleGroupItem value="manual">{t('manual')}</ToggleGroupItem>
                                         <ToggleGroupItem value="fiveTwo">{t('fiveTwoWorkWeek')}</ToggleGroupItem>
                                         <ToggleGroupItem value="fullTime">{t('fullTimeOperation')}</ToggleGroupItem>
                                     </ToggleGroup>
 
-                                    <div className="flex flex-col gap-4">
-                                        {Object.entries(workDays).map(([day, conf]) => (
-                                            <div key={day} className="flex items-center gap-2">
-                                                <Switch
-                                                    checked={conf.active}
-                                                    onCheckedChange={() => handleDayToggle(day)}
-                                                />
-                                                <span className="capitalize w-24">{t(`days.${day}`)}</span>
-                                                {conf.active && (
-                                                    <>
-                                                        <TimePicker
-                                                            value={conf.startTime}
-                                                            onChange={(time) => handleTimeChange(day, "startTime", time)}
-                                                        />
-                                                        <span>{t('to')}</span>
-                                                        <TimePicker
-                                                            value={conf.endTime}
-                                                            onChange={(time) => handleTimeChange(day, "endTime", time)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
+                                    {scheduleMode === "fullTime" && (
+                                        <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
+                                            <span className="font-medium">All week days from</span>
+                                            <TimePicker
+                                                value={fullTimeStartTime}
+                                                onChange={(time) => handleFullTimeTimeChange("startTime", time)}
+                                            />
+                                            <span>{t('to')}</span>
+                                            <TimePicker
+                                                value={fullTimeEndTime}
+                                                onChange={(time) => handleFullTimeTimeChange("endTime", time)}
+                                            />
+                                            <span className="text-sm text-muted-foreground ml-2">
+                                                (this time will be applied to all week days)
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {scheduleMode !== "fullTime" && (
+                                        <div className="flex flex-col gap-4">
+                                            {Object.entries(workDays).map(([day, conf]) => (
+                                                <div key={day} className="flex items-center gap-2">
+                                                    <Switch
+                                                        checked={conf.active}
+                                                        onCheckedChange={() => handleDayToggle(day)}
+                                                    />
+                                                    <span className="capitalize w-24">{t(`days.${day}`)}</span>
+                                                    {conf.active && (
+                                                        <>
+                                                            <TimePicker
+                                                                value={conf.startTime}
+                                                                onChange={(time) => handleTimeChange(day, "startTime", time)}
+                                                            />
+                                                            <span>{t('to')}</span>
+                                                            <TimePicker
+                                                                value={conf.endTime}
+                                                                onChange={(time) => handleTimeChange(day, "endTime", time)}
+                                                            />
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <HolidaySelector

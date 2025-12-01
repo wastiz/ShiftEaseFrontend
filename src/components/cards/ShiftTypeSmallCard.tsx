@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 
-export default function ShiftTypeCard({ name, id, startTime, endTime, color}: { name: string; id: number, startTime: string, endTime: string, color: string }) {
+export default function ShiftTypeSmallCard({ name, id, startTime, endTime, color}: { name: string; id: number, startTime: string, endTime: string, color: string }) {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

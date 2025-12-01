@@ -1,25 +1,92 @@
-'use client'
-import { useEffect, useRef } from 'react'
-import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { ReactNode } from "react";
+import { Card } from "@/components/ui/shadcn/card";
+import { Button } from "@/components/ui/shadcn/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/shadcn/avatar";
+import { Badge } from "@/components/ui/shadcn/badge";
 
-export default function EmployeeCard({ id, name }: { id: number; name: string }) {
-    const ref = useRef<HTMLDivElement>(null)
+type EmployeeCardAction = {
+    label: string;
+    onClick: () => void;
+    variant?: "default" | "destructive" | "secondary" | "outline" | "ghost";
+    icon?: ReactNode;
+};
 
-    useEffect(() => {
-        if (!ref.current) return
-        return draggable({
-            element: ref.current,
-            getInitialData: () => ({ id, type: 'employee', name }),
-        })
-    }, [])
+type EmployeeGroup = {
+    id: number;
+    name: string;
+    color: string;
+};
+
+type EmployeeCardProps = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    avatar?: string;
+    groups?: EmployeeGroup[];
+    actions?: EmployeeCardAction[];
+    className?: string;
+};
+
+export default function EmployeeCard({
+                                         firstName,
+                                         lastName,
+                                         email,
+                                         position,
+                                         avatar,
+                                         groups = [],
+                                         actions = [],
+                                         className = "",
+                                     }: EmployeeCardProps) {
+    const fullName = `${firstName} ${lastName}`;
+    const initials = `${firstName[0]}${lastName[0]}`.toUpperCase();
 
     return (
-        <div
-            ref={ref}
-            className="cursor-grab rounded border px-3 py-1 text-sm hover:bg-accent"
-            data-draggable-id={`employee-${id}`}
-        >
-    {name}
-    </div>
-)
+        <Card className={`overflow-hidden ${className}`}>
+            <div className="p-4 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                        <AvatarImage src={avatar} alt={fullName} />
+                        <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold truncate">{fullName}</h3>
+                        <p className="text-sm text-muted-foreground truncate">{email}</p>
+                    </div>
+                </div>
+
+                <p className={"text-sm"}>{position}</p>
+
+                {groups.length > 0 ? (
+                    <div className="flex gap-1 flex-wrap">
+                        {groups.map((g) => (
+                            <Badge
+                                key={g.id}
+                                style={{
+                                    backgroundColor: g.color + "40",
+                                    borderColor: g.color
+                                }}
+                                className="border text-xs text-white"
+                            >
+                                {g.name}
+                            </Badge>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-xs text-muted-foreground">No groups assigned (may be flexible)</p>
+                )}
+
+                {actions.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {actions.map(({ label, onClick, variant = "default", icon }, index) => (
+                            <Button key={index} onClick={onClick} variant={variant} size="sm">
+                                {icon && <span className="mr-2">{icon}</span>}
+                                {label}
+                            </Button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Card>
+    );
 }

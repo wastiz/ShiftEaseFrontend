@@ -40,6 +40,7 @@ import { Label } from "@/components/ui/shadcn/label";
 import Loader from "@/components/ui/Loader";
 import { TimePicker } from "@/components/inputs/TimePicker";
 import { Info } from "lucide-react";
+import ColorPicker from "@/components/inputs/ColorPicker";
 
 export default function Groups() {
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -142,10 +143,13 @@ export default function Groups() {
                             className="space-y-4 p-4 overflow-y-auto"
                         >
                             <FormField>
-                                <Label htmlFor="name">Group Name</Label>
+                                <Label htmlFor="name">
+                                    Group Name
+                                    <span className="text-red-500">*</span>
+                                </Label>
                                 <Input
                                     id="name"
-                                    {...register("name", { required: "Name is required" })}
+                                    {...register("name", {required: "Name is required"})}
                                     placeholder="Group name"
                                 />
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
@@ -161,8 +165,18 @@ export default function Groups() {
                             </FormField>
 
                             <FormField>
-                                <Label htmlFor="color">Color</Label>
-                                <Input id="color" {...register("color")} type="color" />
+                                <Controller
+                                    name="color"
+                                    control={control}
+                                    defaultValue="#000000"
+                                    render={({ field }) => (
+                                        <ColorPicker
+                                            label="Color"
+                                            value={field.value || "#000000"}
+                                            onChange={(color) => field.onChange(color)}
+                                        />
+                                    )}
+                                />
                             </FormField>
 
                             <div className="border-t pt-4 space-y-4">
@@ -270,14 +284,13 @@ export default function Groups() {
                                 title={group.name}
                                 subtitle={
                                     group.description ||
-                                    (group.startTime && group.endTime
-                                        ? `${group.startTime} - ${group.endTime}`
+                                    group.name + ". " + (group.startTime && group.endTime
+                                        ? `Works from ${group.startTime} till ${group.endTime}`
                                         : "Uses organization hours")
                                 }
                                 borderColor={group.color}
                                 actions={[
-                                    { label: "Edit", onClick: () => openDrawer(group) },
-                                    { label: "Delete", onClick: () => setConfirmDeleteId(group.id) },
+                                    { label: "Edit", onClick: () => openDrawer(group) }
                                 ]}
                             />
                         ))}

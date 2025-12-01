@@ -35,9 +35,8 @@ const MONTHS = [
 
 const DEFAULT_HOLIDAYS = [
     { holidayName: "New Year's Day", month: 1, day: 1 },
+    { holidayName: "Independence Day", month: 2, day: 24 },
     { holidayName: "International Workers' Day", month: 5, day: 1 },
-    { holidayName: "Victory Day", month: 5, day: 9 },
-    { holidayName: "Independence Day", month: 6, day: 12 },
     { holidayName: "Christmas Eve", month: 12, day: 24 },
     { holidayName: "Christmas Day", month: 12, day: 25 },
     { holidayName: "New Year's Eve", month: 12, day: 31 },
@@ -109,9 +108,12 @@ export default function HolidaySelector({
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium">Holidays</Label>
+                <Label className="text-sm font-medium">
+                    Holidays
+                    <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <TooltipProvider>
-                    <Tooltip>
+                <Tooltip>
                         <TooltipTrigger asChild>
                             <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>

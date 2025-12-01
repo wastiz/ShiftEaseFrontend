@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Employee } from "@/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import Header from "@/modules/Header";
@@ -45,7 +45,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/shadcn/select";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/shadcn/tooltip";
+import { Info, X } from "lucide-react";
+import { Badge } from "@/components/ui/shadcn/badge";
+import { Checkbox } from "@/components/ui/shadcn/checkbox";
+import EmployeeCard from "@/components/cards/EmployeeCard";
 
 type EmployeeFormValues = {
     firstName: string;
@@ -55,15 +60,12 @@ type EmployeeFormValues = {
     position: string;
     hourlyRate: number;
     priority: string;
-    groupId: number;
-    groupName?: string | null;
+    groupIds: number[];
 };
 
 export default function Employees() {
     const router = useRouter();
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-        null
-    );
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
@@ -71,8 +73,7 @@ export default function Employees() {
     const queryClient = useQueryClient();
 
     const { data: groups = [], isLoading: isGroupLoading } = useGetGroups();
-    const { data: employees = [], isLoading: isEmployeeLoading } =
-        useGetEmployees();
+    const { data: employees = [], isLoading: isEmployeeLoading } = useGetEmployees();
 
     const createMutation = useCreateEmployee();
     const updateMutation = useUpdateEmployee(selectedEmployee?.id ?? 0);
@@ -82,13 +83,29 @@ export default function Employees() {
         register,
         handleSubmit,
         reset,
-        setValue,
+        control,
+        watch,
         formState: { errors },
-    } = useForm<EmployeeFormValues>();
+    } = useForm<EmployeeFormValues>({
+        defaultValues: {
+            groupIds: [],
+        },
+    });
+
+    const selectedGroupIds = watch("groupIds");
 
     const openDrawer = (employee?: Employee) => {
         setSelectedEmployee(employee ?? null);
-        reset(employee ?? undefined);
+        reset({
+            firstName: employee?.firstName ?? "",
+            lastName: employee?.lastName ?? "",
+            email: employee?.email ?? "",
+            phone: employee?.phone ?? "",
+            position: employee?.position ?? "",
+            hourlyRate: employee?.hourlyRate ?? 0,
+            priority: employee?.priority ?? "medium",
+            groupIds: employee?.groupIds ?? [],
+        });
         setDrawerOpen(true);
     };
 
@@ -163,55 +180,83 @@ export default function Employees() {
                             onSubmit={handleSubmit(onSubmit)}
                             className={`space-y-4 p-4 w-full overflow-y-scroll ${isMobile ? "h-80" : "h-full"}`}
                         >
-                            <FormField description={errors.firstName?.message}>
-                                <Label htmlFor="firstName">First Name</Label>
+                            <FormField>
+                                <Label htmlFor="firstName">
+                                    First Name
+                                    <span className="text-red-500 ml-1">*</span>
+                                </Label>
                                 <Input
                                     id="firstName"
                                     placeholder="Enter first name"
                                     {...register("firstName", { required: "First name is required" })}
                                 />
+                                {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
                             </FormField>
 
-                            <FormField description={errors.lastName?.message}>
-                                <Label htmlFor="lastName">Last Name</Label>
+                            <FormField>
+                                <Label htmlFor="lastName">
+                                    Last Name
+                                    <span className="text-red-500 ml-1">*</span>
+                                </Label>
                                 <Input
                                     id="lastName"
                                     placeholder="Enter last name"
                                     {...register("lastName", { required: "Last name is required" })}
                                 />
+                                {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
                             </FormField>
 
-                            <FormField description={errors.email?.message}>
-                                <Label htmlFor="email">Email</Label>
+                            <FormField>
+                                <Label htmlFor="email">
+                                    Email
+                                    <span className="text-red-500 ml-1">*</span>
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     placeholder="Enter email"
                                     {...register("email", { required: "Email is required" })}
                                 />
+                                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                             </FormField>
 
-                            <FormField description={errors.phone?.message}>
-                                <Label htmlFor="phone">Phone</Label>
-                                <Input
-                                    id="phone"
-                                    type="tel"
-                                    placeholder="Enter phone"
-                                    {...register("phone", { required: "Phone is required" })}
-                                />
-                            </FormField>
-
-                            <FormField description={errors.position?.message}>
-                                <Label htmlFor="position">Position</Label>
+                            <FormField>
+                                <Label htmlFor="position">
+                                    Position
+                                    <span className="text-red-500 ml-1">*</span>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Info className="h-4 w-4 text-muted-foreground cursor-help inline ml-1" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="max-w-xs">
+                                                <p>
+                                                    Indicate the position of this employee. For example, senior manager, to see what position he holds.
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </Label>
                                 <Input
                                     id="position"
                                     placeholder="Enter position"
                                     {...register("position", { required: "Position is required" })}
                                 />
+                                {errors.position && <p className="text-red-500 text-sm">{errors.position.message}</p>}
                             </FormField>
 
-                            <FormField description={errors.hourlyRate?.message}>
-                                <Label htmlFor="hourlyRate">Hourly Rate</Label>
+                            <FormField>
+                                <Label htmlFor="phone">Phone</Label>
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    placeholder="Enter phone"
+                                    {...register("phone")}
+                                />
+                            </FormField>
+
+                            <FormField>
+                                <Label htmlFor="hourlyRate">Hourly Rate (€/hour)</Label>
                                 <Input
                                     id="hourlyRate"
                                     type="number"
@@ -223,40 +268,118 @@ export default function Employees() {
                                 />
                             </FormField>
 
-                            <FormField description={errors.priority?.message}>
+                            <FormField>
                                 <Label>Shift Priority</Label>
-                                <Select
-                                    onValueChange={(value) => setValue("priority", value)}
-                                    defaultValue={selectedEmployee?.priority}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select priority" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="high">High</SelectItem>
-                                        <SelectItem value="medium">Medium</SelectItem>
-                                        <SelectItem value="low">Low</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <Controller
+                                    name="priority"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select priority" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="high">High</SelectItem>
+                                                <SelectItem value="medium">Medium</SelectItem>
+                                                <SelectItem value="low">Low</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
                             </FormField>
 
-                            <FormField description={errors.groupId?.message}>
-                                <Label>Group</Label>
-                                <Select
-                                    onValueChange={(value) => setValue("groupId", Number(value))}
-                                    defaultValue={selectedEmployee?.groupId?.toString()}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {groups.map((g) => (
-                                            <SelectItem key={g.id} value={String(g.id)}>
-                                                {g.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                            <FormField>
+                                <Label>
+                                    Groups
+                                    <span className="text-muted-foreground text-xs ml-2">(Optional)</span>
+                                </Label>
+
+                                {selectedGroupIds && selectedGroupIds.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {selectedGroupIds.map((gId) => {
+                                            const group = groups.find((g) => g.id === gId);
+                                            return (
+                                                <Badge
+                                                    key={gId}
+                                                    style={{ backgroundColor: group?.color + "40", borderColor: group?.color }}
+                                                    className="border"
+                                                >
+                                                    {group?.name}
+                                                    <Controller
+                                                        name="groupIds"
+                                                        control={control}
+                                                        render={({ field }) => (
+                                                            <X
+                                                                className="ml-1 h-3 w-3 cursor-pointer"
+                                                                onClick={() => {
+                                                                    field.onChange(
+                                                                        field.value.filter((id) => id !== gId)
+                                                                    );
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
+                                                </Badge>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                <Controller
+                                    name="groupIds"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectValue
+                                                    placeholder={
+                                                        groups.length === 0
+                                                            ? "No groups available — employee will be flexible"
+                                                            : "Select groups"
+                                                    }
+                                                />
+                                            </SelectTrigger>
+
+                                            <SelectContent>
+                                                {groups.length === 0 ? (
+                                                    <div className="text-muted-foreground p-2 text-sm">
+                                                        No groups created yet. Employee will be flexible.
+                                                    </div>
+                                                ) : (
+                                                    groups.map((g) => (
+                                                        <div
+                                                            key={g.id}
+                                                            className="flex items-center gap-2 cursor-pointer p-2 hover:bg-accent rounded-md"
+                                                            onClick={() => {
+                                                                const current = new Set(field.value ?? []);
+                                                                if (current.has(g.id)) {
+                                                                    current.delete(g.id);
+                                                                } else {
+                                                                    current.add(g.id);
+                                                                }
+                                                                field.onChange(Array.from(current));
+                                                            }}
+                                                        >
+                                                            <Checkbox
+                                                                checked={field.value?.includes(g.id)}
+                                                                onCheckedChange={() => {}}
+                                                            />
+                                                            <span>{g.name}</span>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {selectedGroupIds.length === 0 && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        No groups selected. Employee will be flexible.
+                                    </p>
+                                )}
                             </FormField>
                         </form>
 
@@ -293,17 +416,23 @@ export default function Employees() {
                     <Loader />
                 ) : employees && employees.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {employees.map((emp) => (
-                            <InfoCard
-                                key={emp.id}
-                                title={`${emp.firstName} ${emp.lastName}`}
-                                subtitle={emp.email}
-                                actions={[
-                                    { label: "Edit", onClick: () => openDrawer(emp) },
-                                    { label: "Delete", onClick: () => setConfirmDeleteId(emp.id) },
-                                ]}
-                            />
-                        ))}
+                        {employees.map((emp) => {
+                            const empGroups = groups.filter(g => emp.groupIds?.includes(g.id));
+                            return (
+                                <EmployeeCard
+                                    key={emp.id}
+                                    firstName={emp.firstName}
+                                    lastName={emp.lastName}
+                                    email={emp.email}
+                                    position={emp.position}
+                                    avatar={"/images/avatar_placeholder.png"}
+                                    groups={empGroups}
+                                    actions={[
+                                        {label: "Edit", onClick: () => openDrawer(emp)}
+                                    ]}
+                                />
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="mt-40 flex flex-col justify-center items-center space-y-4">
@@ -312,7 +441,6 @@ export default function Employees() {
                     </div>
                 )}
 
-                {/* Delete Confirmation */}
                 <Dialog open={!!confirmDeleteId} onOpenChange={() => setConfirmDeleteId(null)}>
                     <DialogContent>
                         <DialogHeader>

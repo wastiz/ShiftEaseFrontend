@@ -5,11 +5,10 @@ export interface Employee {
     email: string;
     phone: string;
     position: string;
-    workload: number;
-    salary: number;
+    hourlyRate: number;
     priority: string;
-    groupId: number;
-    groupName?: string | null;
+    groupIds: number[];
+    groupNames?: string[] | null;
     onVacation?: boolean;
     onSickLeave?: boolean;
     onWork?: boolean;
