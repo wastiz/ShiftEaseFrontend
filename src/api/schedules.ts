@@ -46,7 +46,7 @@ export function useScheduleData({ groupId, month, year }: ScheduleRequest) {
     return useQuery<ScheduleDataResponse>({
         queryKey: ['scheduleData', groupId, month, year],
         queryFn: async () => {
-            const base = await api.get<ScheduleEditorData>('/schedules/schedule-data-for-managing');
+            const base = await api.get<ScheduleEditorData>(`/schedules/schedule-data-for-managing/${groupId}`);
 
             const schedule = await api.get<Schedule>('/schedules/schedule-info-with-shifts', {
                 params: {

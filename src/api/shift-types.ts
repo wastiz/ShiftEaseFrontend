@@ -35,9 +35,9 @@ export const useUpdateShiftType = (shiftTypeId: number) => {
     });
 }
 
-export const useDeleteShiftType = (shiftTypeId: number) => {
+export const useDeleteShiftType = () => {
     return useMutation({
-        mutationFn: () => api.delete(`/shift-types/${shiftTypeId}`),
+        mutationFn: (shiftTypeId: number) => api.delete(`/shift-types/${shiftTypeId}`),
         onSuccess: () => {
             toast.success("Shift type deleted!");
         },

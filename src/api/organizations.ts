@@ -34,7 +34,7 @@ export function useGetOrganization(id: string, p0: { enabled: boolean; }) {
     });
 }
 
-export function useGetOrganizationData(id: string, p0: { enabled: boolean; }) {
+export function useGetOrganizationData( id: string, p0: { enabled: boolean; }) {
     return useQuery({
         queryKey: ["organizationDashboardData", id],
         queryFn: async () => {

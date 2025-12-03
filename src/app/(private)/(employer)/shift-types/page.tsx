@@ -38,17 +38,20 @@ export default function ShiftTypes() {
 
     const createMutation = useCreateShiftType();
     const updateMutation = useUpdateShiftType(selectedShift?.id ?? 0);
-    const deleteMutation = useDeleteShiftType(selectedShift?.id ?? 0);
+    const deleteMutation = useDeleteShiftType();
 
-    const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ShiftTypeFormValues>({
+    const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm<ShiftTypeFormValues>({
         defaultValues: {
             name: "",
             startTime: "00:00",
             endTime: "00:00",
-            employeeNeeded: 1,
+            minEmployees: 1,
+            maxEmployees: 1,
             color: "#000000",
         },
     });
+
+    const minEmployees = watch("minEmployees");
 
     const openDrawer = (shift?: ShiftType) => {
         setSelectedShift(shift ?? null);
@@ -57,7 +60,8 @@ export default function ShiftTypes() {
                 name: "",
                 startTime: "00:00",
                 endTime: "00:00",
-                employeeNeeded: 1,
+                minEmployees: 1,
+                maxEmployees: 1,
                 color: "#000000",
             },
             { keepDirty: false, keepTouched: false }
@@ -120,7 +124,7 @@ export default function ShiftTypes() {
                         <InfoCard
                             key={shift.id}
                             title={shift.name}
-                            subtitle={`Employees: ${shift.employeeNeeded}, ${shift.startTime}-${shift.endTime}`}
+                            subtitle={`Employees: ${shift.minEmployees}-${shift.maxEmployees}, ${shift.startTime}-${shift.endTime}`}
                             borderColor={shift.color}
                             actions={[{ label: "Edit", variant: "secondary", onClick: () => openDrawer(shift) }]}
                         />
@@ -193,23 +197,44 @@ export default function ShiftTypes() {
                             {errors.endTime && <p className="text-red-500 text-sm">{errors.endTime.message}</p>}
                         </FormField>
 
-                        <FormField>
-                            <Label htmlFor="employeeNeeded">
-                                Employees Needed
-                                <span className="text-red-500 ml-1">*</span>
-                            </Label>
-                            <Input
-                                type="number"
-                                min={1}
-                                id="employeeNeeded"
-                                {...register("employeeNeeded", {
-                                    valueAsNumber: true,
-                                    required: "Number of employees is required",
-                                    min: { value: 1, message: "At least 1 employee is required" }
-                                })}
-                            />
-                            {errors.employeeNeeded && <p className="text-red-500 text-sm">{errors.employeeNeeded.message}</p>}
-                        </FormField>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField>
+                                <Label htmlFor="minEmployees">
+                                    Min Employees
+                                    <span className="text-red-500 ml-1">*</span>
+                                </Label>
+                                <Input
+                                    type="number"
+                                    min={1}
+                                    id="minEmployees"
+                                    {...register("minEmployees", {
+                                        valueAsNumber: true,
+                                        required: "Min employees is required",
+                                        min: { value: 1, message: "At least 1 employee is required" }
+                                    })}
+                                />
+                                {errors.minEmployees && <p className="text-red-500 text-sm">{errors.minEmployees.message}</p>}
+                            </FormField>
+
+                            <FormField>
+                                <Label htmlFor="maxEmployees">
+                                    Max Employees
+                                    <span className="text-red-500 ml-1">*</span>
+                                </Label>
+                                <Input
+                                    type="number"
+                                    min={minEmployees || 1}
+                                    id="maxEmployees"
+                                    {...register("maxEmployees", {
+                                        valueAsNumber: true,
+                                        required: "Max employees is required",
+                                        min: { value: minEmployees || 1, message: `Must be at least ${minEmployees || 1}` },
+                                        validate: (value) => value >= minEmployees || "Max must be >= Min"
+                                    })}
+                                />
+                                {errors.maxEmployees && <p className="text-red-500 text-sm">{errors.maxEmployees.message}</p>}
+                            </FormField>
+                        </div>
 
                         <FormField>
                             <Controller

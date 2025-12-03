@@ -29,7 +29,7 @@ export default function EmployerDashboard() {
     const t = useTranslations('dashboard');
     const tCommon = useTranslations('common');
     const tOrg = useTranslations('organization');
-    const organizationId = "1";
+    const organizationId = localStorage.getItem('orgId');
     const { data, isLoading } = useGetOrganizationData(organizationId, { enabled: !!organizationId });
     const [selectedGroup, setSelectedGroup] = useState<number>(1);
 
