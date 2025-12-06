@@ -11,7 +11,6 @@ export function useGetEmployees() {
                     "X-Organization-Id": localStorage.getItem("orgId") ?? "",
                 },
             });
-            console.log(res.data);
             return res.data;
         },
     });

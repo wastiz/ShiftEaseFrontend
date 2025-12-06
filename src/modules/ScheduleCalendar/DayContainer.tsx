@@ -22,6 +22,17 @@ function isWorkingDay(date: string, workDays: WorkDay[]) {
     return workDays.some(wd => wd.dayOfWeek === currentDayName)
 }
 
+function getPreviousDay(dateStr: string): string {
+    const date = new Date(dateStr);
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split('T')[0];
+}
+
+function timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
 export default function DayContainer({
                                          date,
                                          dateLabel,
@@ -36,7 +47,16 @@ export default function DayContainer({
                                      }: any) {
     const ref = useRef<HTMLDivElement>(null)
     const [isDraggingOver, setIsDraggingOver] = useState(false)
+
     const shiftsInDay = shiftsData.filter((s: any) => s.date === date)
+
+    const previousDay = getPreviousDay(date);
+    const previousDayShifts = shiftsData.filter((s: any) => {
+        if (s.date !== previousDay) return false;
+        const startMinutes = timeToMinutes(s.startTime);
+        const endMinutes = timeToMinutes(s.endTime);
+        return endMinutes <= startMinutes;
+    });
 
     const holiday = isHoliday(date, holidays)
     const working = isWorkingDay(date, workDays)
@@ -148,6 +168,19 @@ export default function DayContainer({
                         setShiftsData={setShiftsData}
                         date={date}
                         cellHeight={CELL_HEIGHT}
+                    />
+                ))}
+
+                {previousDayShifts.map((shift: any) => (
+                    <ShiftBox
+                        key={`${shift.id}-nextday`}
+                        shift={shift}
+                        employees={employees}
+                        shiftsData={shiftsData}
+                        setShiftsData={setShiftsData}
+                        date={previousDay}
+                        cellHeight={CELL_HEIGHT}
+                        isNextDayPart={true}
                     />
                 ))}
             </div>

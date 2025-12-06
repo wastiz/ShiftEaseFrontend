@@ -2,12 +2,19 @@
 
 import { Button } from '@/components/ui/shadcn/button'
 import { Badge } from '@/components/ui/shadcn/badge'
-import { ChevronLeft, ChevronRight, PanelLeft, PanelTop } from 'lucide-react'
+import { ChevronLeft, ChevronRight, PanelLeft, PanelTop, Filter } from 'lucide-react'
 import DayContainer from './DayContainer'
 import ShiftTypeSmallCard from '@/components/cards/ShiftTypeSmallCard'
 import EmployeeSmallCard from '@/components/cards/EmployeeSmallCard'
 import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useState, useMemo } from 'react'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/shadcn/popover'
+import { Checkbox } from '@/components/ui/shadcn/checkbox'
+import { Label } from '@/components/ui/shadcn/label'
 
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
@@ -47,6 +54,28 @@ export default function ScheduleCalendar({
                                              orgSchedule,
                                          }: ScheduleCalendarProps) {
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
+    const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
+
+    const filteredEmployees = useMemo(() => {
+        if (selectedShiftTypes.length === 0) return employees;
+
+        const employeeIdsWithSelectedShifts = new Set<number>();
+        shiftsData.forEach(shift => {
+            if (selectedShiftTypes.includes(shift.shiftTypeId)) {
+                shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
+            }
+        });
+
+        return employees.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+    }, [employees, selectedShiftTypes, shiftsData]);
+
+    const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
+        setSelectedShiftTypes(prev =>
+            prev.includes(shiftTypeId)
+                ? prev.filter(id => id !== shiftTypeId)
+                : [...prev, shiftTypeId]
+        );
+    };
 
     return (
         <div className="flex flex-col h-[calc(100vh-62px)]">
@@ -77,8 +106,8 @@ export default function ScheduleCalendar({
                         <div className="flex-shrink-0">
                             <h4 className="font-semibold mb-2">Employees</h4>
                             <div className="flex gap-2">
-                                {employees.map((emp) => (
-                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name}/>
+                                {filteredEmployees.map((emp) => (
+                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name} position={emp.position}/>
                                 ))}
                             </div>
                         </div>
@@ -112,8 +141,8 @@ export default function ScheduleCalendar({
                         <div>
                             <h4 className="font-semibold mb-2">Employees</h4>
                             <div className="space-y-2">
-                                {employees.map((emp) => (
-                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name}/>
+                                {filteredEmployees.map((emp) => (
+                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name} position={emp.position}/>
                                 ))}
                             </div>
                         </div>
@@ -165,14 +194,58 @@ export default function ScheduleCalendar({
                         </Button>
 
                         {isEditable && (
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
-                                className="ml-auto"
-                            >
-                                {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
-                            </Button>
+                            <>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="icon" className="ml-auto">
+                                            <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80">
+                                        <div className="space-y-3">
+                                            <h4 className="font-medium text-sm">Filter by Shift Types</h4>
+                                            <div className="space-y-2">
+                                                {shiftTypes.map((st) => (
+                                                    <div key={st.id} className="flex items-center space-x-2">
+                                                        <Checkbox
+                                                            id={`filter-${st.id}`}
+                                                            checked={selectedShiftTypes.includes(st.id)}
+                                                            onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                        />
+                                                        <Label
+                                                            htmlFor={`filter-${st.id}`}
+                                                            className="flex items-center gap-2 cursor-pointer"
+                                                        >
+                                                            <div
+                                                                className="w-3 h-3 rounded"
+                                                                style={{ backgroundColor: st.color }}
+                                                            />
+                                                            {st.name}
+                                                        </Label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {selectedShiftTypes.length > 0 && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setSelectedShiftTypes([])}
+                                                    className="w-full"
+                                                >
+                                                    Clear Filters
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
+                                >
+                                    {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
+                                </Button>
+                            </>
                         )}
                     </div>
 

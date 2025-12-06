@@ -38,4 +38,5 @@ export type EmployeeMinData = {
     id: number;
     name: string;
     groupName: string;
+    position?: string;
 }

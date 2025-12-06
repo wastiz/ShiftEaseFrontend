@@ -12,6 +12,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/shadcn/dialog'
+import NoteEditor from '@/components/NoteEditor'
 
 function timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(':').map(Number)
@@ -25,6 +26,7 @@ export default function ShiftBox({
                                      setShiftsData,
                                      date,
                                      cellHeight = 40,
+                                     isNextDayPart = false,
                                  }: any) {
     const ref = useRef<HTMLDivElement>(null)
     const [isDraggingOver, setIsDraggingOver] = useState(false)
@@ -72,7 +74,7 @@ export default function ShiftBox({
                                     ...s,
                                     employees: [
                                         ...s.employees,
-                                        { id: emp.id, name: emp.name },
+                                        { id: emp.id, name: emp.name, note: undefined },
                                     ],
                                 }
                                 : s
@@ -104,6 +106,22 @@ export default function ShiftBox({
         )
     }
 
+    const handleUpdateNote = (empId: number, note: string) => {
+        setShiftsData((prev: any) =>
+            prev.map((s: any) =>
+                s.id === shift.id
+                    ? {
+                        ...s,
+                        employees: s.employees.map((e: any) =>
+                            e.id === empId ? { ...e, note } : e
+                        ),
+                    }
+                    : s
+            )
+        )
+        toast.success('Note updated')
+    }
+
     const handleAddEmployee = (empId: number) => {
         const alreadyAssigned = shiftsData.some(
             (s: any) =>
@@ -125,7 +143,7 @@ export default function ShiftBox({
                 s.id === shift.id
                     ? {
                         ...s,
-                        employees: [...s.employees, { id: emp.id, name: emp.name }],
+                        employees: [...s.employees, { id: emp.id, name: emp.name, note: undefined }],
                     }
                     : s
             )
@@ -137,11 +155,20 @@ export default function ShiftBox({
     const endMinutes = timeToMinutes(shift.endTime)
 
     const isOvernight = endMinutes <= startMinutes
-    const actualEndMinutes = isOvernight ? 24 * 60 : endMinutes
 
-    const duration = actualEndMinutes - startMinutes
-    const topPosition = (startMinutes / 60) * cellHeight
-    const height = (duration / 60) * cellHeight
+    let topPosition: number
+    let height: number
+
+    if (isNextDayPart) {
+        topPosition = 0
+        height = (endMinutes / 60) * cellHeight
+    } else if (isOvernight) {
+        topPosition = (startMinutes / 60) * cellHeight
+        height = ((24 * 60 - startMinutes) / 60) * cellHeight
+    } else {
+        topPosition = (startMinutes / 60) * cellHeight
+        height = ((endMinutes - startMinutes) / 60) * cellHeight
+    }
 
     const availableEmployees = employees.filter(
         (e: any) => !shift.employees.some((se: any) => se.id === e.id)
@@ -175,25 +202,49 @@ export default function ShiftBox({
                 </div>
 
                 <div className="text-muted-foreground mb-2">
-                    {shift.startTime.slice(0, 5)} - {shift.endTime.slice(0, 5)}
-                    {isOvernight && <span className="ml-1 text-orange-500">(+1)</span>}
+                    {isNextDayPart ? (
+                        <>
+                            00:00 - {shift.endTime.slice(0, 5)}
+                            <span className="ml-1 text-orange-500">(cont.)</span>
+                        </>
+                    ) : (
+                        <>
+                            {shift.startTime.slice(0, 5)} - {isOvernight ? '24:00' : shift.endTime.slice(0, 5)}
+                            {isOvernight && <span className="ml-1 text-orange-500">(+1)</span>}
+                        </>
+                    )}
                 </div>
 
                 <div className="flex-1 space-y-1 overflow-y-auto">
                     {shift.employees.map((emp: any) => (
                         <div
                             key={emp.id}
-                            className="flex items-center justify-between bg-background/50 rounded px-2 py-1"
+                            className="bg-background/50 rounded px-2 py-1"
                         >
-                            <span className="text-xs truncate">{emp.name}</span>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-4 w-4 ml-1 flex-shrink-0"
-                                onClick={() => handleRemoveEmployee(emp.id)}
-                            >
-                                <X className="h-3 w-3" />
-                            </Button>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs truncate">{emp.name}</span>
+                                <div className="flex items-center gap-1">
+                                    <NoteEditor
+                                        note={emp.note}
+                                        onSave={(note) => handleUpdateNote(emp.id, note)}
+                                        entityName={emp.name}
+                                        buttonClassName="h-4 w-4 flex-shrink-0"
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-4 w-4 flex-shrink-0"
+                                        onClick={() => handleRemoveEmployee(emp.id)}
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </Button>
+                                </div>
+                            </div>
+                            {emp.note && (
+                                <div className="text-[10px] text-muted-foreground mt-1 truncate">
+                                    {emp.note}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

@@ -3,6 +3,11 @@ import {EmployeeMinData} from "@/types/employee";
 import {Group} from "@/types/group";
 import {ShiftType} from "@/types/shiftType";
 
+export type ScheduleEditorData = {
+    employees: EmployeeMinData[];
+    shiftTypes: ShiftType[];
+    groups: Group[];
+};
 
 export type Schedule ={
     scheduleInfo: ScheduleInfo;
@@ -10,12 +15,6 @@ export type Schedule ={
     organizationSchedule: WorkDay[];
     shifts: Shift[];
 }
-
-export type ScheduleEditorData = {
-    employees: EmployeeMinData[];
-    shiftTypes: ShiftType[];
-    groups: Group[];
-};
 
 export type ScheduleInfo = {
     id: number
@@ -34,7 +33,14 @@ export type Shift = {
     endTime: string;
     color: string;
     employeeNeeded: number;
-    employees: EmployeeMinData[];
+    employees: EmployeeShiftAssignment[];
+}
+
+export type EmployeeShiftAssignment = {
+    id: number;
+    name: string;
+    groupName?: string;
+    note?: string;
 }
 
 export interface ScheduleRequest {
@@ -56,7 +62,12 @@ export type SchedulePost = {
 export type ShiftPost = {
     shiftTypeId: number;
     date: string;
-    employeeIds: number[];
+    employees: EmployeeIdWithNote[];
+}
+
+export type EmployeeIdWithNote = {
+    id: number;
+    note: string;
 }
 
 export type ScheduleGenerateRequest = {

@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useState} from "react";
 import {
     Table,
     TableBody,
@@ -11,13 +11,21 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Filter } from "lucide-react";
 import { DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
 import ShiftTypeSmallCard from "@/components/cards/ShiftTypeSmallCard";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/shadcn/popover";
+import { Checkbox } from "@/components/ui/shadcn/checkbox";
+import { Label } from "@/components/ui/shadcn/label";
+import DroppableCell from "@/modules/ScheduleSimple/DroppableCell";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -53,86 +61,6 @@ function getHolidayName(date: string, holidays: Holiday[]) {
     return holiday?.holidayName || 'Holiday'
 }
 
-function DroppableCell({
-                           employeeId,
-                           date,
-                           assignment,
-                           onAssign,
-                           onRemove,
-                           isNonWorkingDay,
-                       }: {
-    employeeId: number;
-    date: string;
-    assignment: any;
-    onAssign: (employeeId: number, date: string, shiftTypeId: number) => void;
-    onRemove: (employeeId: number, date: string) => void;
-    isNonWorkingDay: boolean;
-}) {
-    const ref = useRef<HTMLDivElement>(null);
-    const [isDraggingOver, setIsDraggingOver] = useState(false);
-
-    useEffect(() => {
-        if (!ref.current) return;
-        return dropTargetForElements({
-            element: ref.current,
-            onDrop: ({ source }) => {
-                if (source.data.type === "shiftType") {
-                    const shiftTypeId = source.data.id as number;
-                    onAssign(employeeId, date, shiftTypeId);
-                }
-                setIsDraggingOver(false);
-            },
-            onDragEnter: () => setIsDraggingOver(true),
-            onDragLeave: () => setIsDraggingOver(false),
-        });
-    }, [employeeId, date, onAssign]);
-
-    if (isNonWorkingDay) {
-        return (
-            <div className="min-h-[60px] p-2 rounded bg-red-50 dark:bg-red-950/20 flex items-center justify-center">
-                <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                    Off
-                </span>
-            </div>
-        );
-    }
-
-    return (
-        <div
-            ref={ref}
-            className={`min-h-[60px] p-2 rounded transition-colors ${
-                isDraggingOver ? "bg-accent border-2 border-dashed border-primary" : ""
-            }`}
-        >
-            {assignment ? (
-                <div
-                    className="relative p-2 rounded border-l-4 text-xs bg-card"
-                    style={{ borderLeftColor: assignment.color }}
-                >
-                    <div className="flex items-center justify-between gap-1">
-                        <span className="font-medium">{assignment.shiftTypeName}</span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0"
-                            onClick={() => onRemove(employeeId, date)}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </div>
-                    <div className="text-muted-foreground text-[10px]">
-                        {assignment.startTime.slice(0, 5)} - {assignment.endTime.slice(0, 5)}
-                    </div>
-                </div>
-            ) : (
-                <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
-                    Drop shift here
-                </div>
-            )}
-        </div>
-    );
-}
-
 export default function SimpleView({
                                        employees,
                                        shiftTypes,
@@ -148,11 +76,33 @@ export default function SimpleView({
                                        orgSchedule = [],
                                    }: SimpleViewProps) {
     const dates = daysOfMonth.map((d) => d.isoDate);
+    const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
+
+    const filteredEmployees = useMemo(() => {
+        if (selectedShiftTypes.length === 0) return employees;
+
+        const employeeIdsWithSelectedShifts = new Set<number>();
+        shiftsData.forEach(shift => {
+            if (selectedShiftTypes.includes(shift.shiftTypeId)) {
+                shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
+            }
+        });
+
+        return employees.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+    }, [employees, selectedShiftTypes, shiftsData]);
 
     const rows = useMemo(
-        () => transformToSimpleView(employees, shiftsData, dates),
-        [employees, shiftsData, dates]
+        () => transformToSimpleView(filteredEmployees, shiftsData, dates),
+        [filteredEmployees, shiftsData, dates]
     );
+
+    const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
+        setSelectedShiftTypes(prev =>
+            prev.includes(shiftTypeId)
+                ? prev.filter(id => id !== shiftTypeId)
+                : [...prev, shiftTypeId]
+        );
+    };
 
     const assignShift = (employeeId: number, date: string, shiftTypeId: number) => {
         const shiftType = shiftTypes.find((st) => st.id === shiftTypeId);
@@ -184,6 +134,7 @@ export default function SimpleView({
                             {
                                 id: employeeId,
                                 name: employees.find((e) => e.id === employeeId)?.name || "",
+                                note: undefined,
                             },
                         ],
                     }
@@ -204,6 +155,7 @@ export default function SimpleView({
                     {
                         id: employeeId,
                         name: employees.find((e) => e.id === employeeId)?.name || "",
+                        note: undefined,
                     },
                 ],
             };
@@ -225,6 +177,25 @@ export default function SimpleView({
             .filter((shift): shift is Shift => shift !== null);
 
         setShiftsData(updatedShifts);
+    };
+
+    const updateNote = (employeeId: number, date: string, note: string) => {
+        const updatedShifts = shiftsData.map((shift) => {
+            if (shift.date !== date) return shift;
+
+            const hasEmployee = shift.employees.some((e) => e.id === employeeId);
+            if (!hasEmployee) return shift;
+
+            return {
+                ...shift,
+                employees: shift.employees.map((e) =>
+                    e.id === employeeId ? { ...e, note } : e
+                ),
+            };
+        });
+
+        setShiftsData(updatedShifts);
+        toast.success('Note updated');
     };
 
     return (
@@ -271,6 +242,50 @@ export default function SimpleView({
                 >
                     <ChevronRight />
                 </Button>
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="icon" className="ml-auto">
+                            <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                        <div className="space-y-3">
+                            <h4 className="font-medium text-sm">Filter by Shift Types</h4>
+                            <div className="space-y-2">
+                                {shiftTypes.map((st) => (
+                                    <div key={st.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`filter-simple-${st.id}`}
+                                            checked={selectedShiftTypes.includes(st.id)}
+                                            onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                        />
+                                        <Label
+                                            htmlFor={`filter-simple-${st.id}`}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <div
+                                                className="w-3 h-3 rounded"
+                                                style={{ backgroundColor: st.color }}
+                                            />
+                                            {st.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                            {selectedShiftTypes.length > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setSelectedShiftTypes([])}
+                                    className="w-full"
+                                >
+                                    Clear Filters
+                                </Button>
+                            )}
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </div>
 
             <div className="border rounded-lg p-4 bg-muted/50 flex-shrink-0">
@@ -364,6 +379,7 @@ export default function SimpleView({
                                                 assignment={assignment}
                                                 onAssign={assignShift}
                                                 onRemove={removeShift}
+                                                onUpdateNote={updateNote}
                                                 isNonWorkingDay={isNonWorkingDay}
                                             />
                                         </TableCell>

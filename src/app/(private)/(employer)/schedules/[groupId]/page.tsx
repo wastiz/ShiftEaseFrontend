@@ -49,6 +49,7 @@ export default function ManageSchedule() {
 
     useEffect(() => {
         if (data?.schedule) {
+            console.log(data.schedule.shifts)
             setShiftsData(data.schedule.shifts || [])
             setIsConfirmed(data.schedule.scheduleInfo?.isConfirmed || false)
             setScheduleId(data.schedule.scheduleInfo?.id || null)

@@ -73,6 +73,7 @@ type SaveScheduleParams = {
 export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shiftsData }: SaveScheduleParams) {
     const queryClient = useQueryClient();
 
+
     return useMutation<void, Error, boolean>({
         mutationFn: async (isConfirmed: boolean) => {
             const payload: SchedulePost = {
@@ -84,9 +85,14 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
                 shifts: shiftsData.map((s) => ({
                     shiftTypeId: s.shiftTypeId,
                     date: s.date,
-                    employeeIds: s.employees.map((e) => e.id),
+                    employees: s.employees.map((e) => ({
+                        id: e.id,
+                        note: e.note || "",
+                    })),
                 })),
             };
+
+            console.log(payload)
 
             await api.post('/schedules/update-schedule', payload);
         },

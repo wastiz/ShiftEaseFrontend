@@ -15,6 +15,7 @@ export type DayAssignment = {
     startTime: string;
     endTime: string;
     color: string;
+    note?: string;
 };
 
 export function transformToSimpleView(
@@ -30,6 +31,7 @@ export function transformToSimpleView(
         const daysMap = new Map<string, DayAssignment>();
 
         employeeShifts.forEach((shift) => {
+            const employeeAssignment = shift.employees.find((e) => e.id === emp.id);
             daysMap.set(shift.date, {
                 shiftId: shift.id,
                 shiftTypeId: shift.shiftTypeId,
@@ -37,6 +39,7 @@ export function transformToSimpleView(
                 startTime: shift.startTime,
                 endTime: shift.endTime,
                 color: shift.color,
+                note: employeeAssignment?.note,
             });
         });
 
@@ -48,7 +51,7 @@ export function transformToSimpleView(
         return {
             employeeId: emp.id,
             employeeName: emp.name,
-            position: emp.position || "Employee",
+            position: emp.groupName,
             totalHours,
             days: daysMap,
         };
@@ -88,7 +91,8 @@ export function transformFromSimpleView(
 
             shift.employees.push({
                 id: row.employeeId,
-                name: row.employeeName
+                name: row.employeeName,
+                note: assignment.note
             });
         });
     });
