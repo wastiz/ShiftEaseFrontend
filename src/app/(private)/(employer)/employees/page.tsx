@@ -47,10 +47,11 @@ import {
 } from "@/components/ui/shadcn/select";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/shadcn/tooltip";
-import { Info, X } from "lucide-react";
+import { Info, X, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Checkbox } from "@/components/ui/shadcn/checkbox";
 import EmployeeCard from "@/components/cards/EmployeeCard";
+import TimeOffDialog from "@/components/modals/TimeOffDialog";
 
 type EmployeeFormValues = {
     firstName: string;
@@ -68,6 +69,8 @@ export default function Employees() {
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const [timeOffDialogOpen, setTimeOffDialogOpen] = useState(false);
+    const [timeOffEmployee, setTimeOffEmployee] = useState<Employee | null>(null);
 
     const isMobile = useIsMobile();
     const queryClient = useQueryClient();
@@ -144,6 +147,11 @@ export default function Employees() {
             },
             onError: () => toast.error("Failed to delete employee"),
         });
+    };
+
+    const openTimeOffDialog = (employee: Employee) => {
+        setTimeOffEmployee(employee);
+        setTimeOffDialogOpen(true);
     };
 
     return (
@@ -428,7 +436,13 @@ export default function Employees() {
                                     avatar={"/images/avatar_placeholder.png"}
                                     groups={empGroups}
                                     actions={[
-                                        {label: "Edit", onClick: () => openDrawer(emp)}
+                                        {label: "Edit", onClick: () => openDrawer(emp)},
+                                        {
+                                            label: "Time Off",
+                                            onClick: () => openTimeOffDialog(emp),
+                                            variant: "secondary",
+                                            icon: <Calendar className="h-4 w-4" />
+                                        }
                                     ]}
                                 />
                             );
@@ -457,6 +471,15 @@ export default function Employees() {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+
+                {timeOffEmployee && (
+                    <TimeOffDialog
+                        open={timeOffDialogOpen}
+                        onOpenChange={setTimeOffDialogOpen}
+                        employeeId={timeOffEmployee.id}
+                        employeeName={`${timeOffEmployee.firstName} ${timeOffEmployee.lastName}`}
+                    />
+                )}
             </main>
         </>
     );
