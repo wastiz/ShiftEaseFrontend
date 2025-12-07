@@ -37,7 +37,7 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
 
         mutate(form, {
             onSuccess: (data) => {
-                router.push(role === "employer" ? "/organizations" : "/dashboard");
+                router.push(role === "employer" ? "/organizations" : "/overview");
             },
             onError: (err: any) => {
                 const message = err?.response?.data || "Something went wrong";

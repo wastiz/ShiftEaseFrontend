@@ -10,8 +10,16 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Textarea } from '@/components/ui/shadcn/textarea';
 import { Badge } from '@/components/ui/shadcn/badge';
 import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
-import { useVacations, useAddVacation, useDeleteVacation } from '@/api';
-import { VacationRequestDto } from '@/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
+import {
+    useEmployeeVacations,
+    useEmployeeVacationRequests,
+    useAddEmployeeVacationRequest,
+    useDeleteEmployeeVacation,
+    useDeleteEmployeeVacationRequest
+} from '@/api';
+import { EmployeeMeData } from '@/types';
+import { useAuthStore } from '@/zustand/auth-state';
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -24,9 +32,17 @@ export default function VacationPage() {
     const [endDate, setEndDate] = useState('');
     const [reason, setReason] = useState('');
 
-    const { data: vacations, isLoading } = useVacations();
-    const addVacation = useAddVacation();
-    const deleteVacation = useDeleteVacation();
+    const { user } = useAuthStore();
+    const employeeUser = user as EmployeeMeData;
+    const employeeId = employeeUser.id;
+
+    const { data: approvedVacations, isLoading: isLoadingApproved } = useEmployeeVacations(employeeId);
+    const { data: vacationRequests, isLoading: isLoadingRequests } = useEmployeeVacationRequests(employeeId);
+    const addVacationRequest = useAddEmployeeVacationRequest(employeeId);
+    const deleteApprovedVacation = useDeleteEmployeeVacation(employeeId);
+    const deleteVacationRequest = useDeleteEmployeeVacationRequest(employeeId);
+
+    const isLoading = isLoadingApproved || isLoadingRequests;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +53,7 @@ export default function VacationPage() {
         }
 
         try {
-            await addVacation.mutateAsync({
+            await addVacationRequest.mutateAsync({
                 startDate,
                 endDate,
                 reason,
@@ -54,14 +70,25 @@ export default function VacationPage() {
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDeleteRequest = async (id: number) => {
         if (!confirm('Are you sure you want to delete this request?')) return;
 
         try {
-            await deleteVacation.mutateAsync(id);
+            await deleteVacationRequest.mutateAsync(id);
             toast.success('Request deleted successfully');
         } catch (error) {
             toast.error('Failed to delete request');
+        }
+    };
+
+    const handleDeleteApproved = async (id: number) => {
+        if (!confirm('Are you sure you want to delete this vacation?')) return;
+
+        try {
+            await deleteApprovedVacation.mutateAsync(id);
+            toast.success('Vacation deleted successfully');
+        } catch (error) {
+            toast.error('Failed to delete vacation');
         }
     };
 
@@ -140,8 +167,8 @@ export default function VacationPage() {
                             </div>
 
                             <DialogFooter>
-                                <Button type="submit" disabled={addVacation.isPending}>
-                                    {addVacation.isPending && (
+                                <Button type="submit" disabled={addVacationRequest.isPending}>
+                                    {addVacationRequest.isPending && (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                                     )}
                                     Submit Request
@@ -170,74 +197,142 @@ export default function VacationPage() {
                         </Alert>
                     </div>
 
-                    <div className="space-y-3 md:space-y-4">
-                        {vacations && vacations.length === 0 ? (
-                            <Card>
-                                <CardContent className="flex flex-col items-center justify-center py-10">
-                                    <Calendar className="h-12 w-12 text-muted-foreground mb-4"/>
-                                    <p className="text-muted-foreground text-center">
-                                        You don't have any vacation requests yet
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            vacations?.map((vacation) => (
-                                <Card key={vacation.id} className="hover:shadow-md transition-shadow">
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div className="flex-1 min-w-0">
-                                                <CardTitle
-                                                    className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
-                                                    <Calendar className="h-5 w-5 flex-shrink-0"/>
-                                                    <span className="truncate">
-                                                {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
-                                                        {' — '}
-                                                        {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
-                                            </span>
-                                                </CardTitle>
-                                                <CardDescription className="mt-1">
-                                                    {Math.ceil(
-                                                        (new Date(vacation.endDate).getTime() -
-                                                            new Date(vacation.startDate).getTime()) /
-                                                        (1000 * 60 * 60 * 24)
-                                                    )}{' '}
-                                                    days
-                                                </CardDescription>
-                                            </div>
+                    <Tabs defaultValue="requests" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="requests">Pending Requests</TabsTrigger>
+                            <TabsTrigger value="approved">Approved</TabsTrigger>
+                        </TabsList>
 
-                                            {vacation.status !== 'approved' && (
+                        <TabsContent value="requests" className="space-y-4 mt-6">
+                            {vacationRequests && vacationRequests.length === 0 ? (
+                                <Card>
+                                    <CardContent className="flex flex-col items-center justify-center py-10">
+                                        <Calendar className="h-12 w-12 text-muted-foreground mb-4"/>
+                                        <p className="text-muted-foreground text-center">
+                                            You don't have any pending vacation requests
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                vacationRequests?.map((vacation) => (
+                                    <Card key={vacation.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
+                                                        <Calendar className="h-5 w-5 flex-shrink-0"/>
+                                                        <span className="truncate">
+                                                            {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
+                                                            {' — '}
+                                                            {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                        </span>
+                                                    </CardTitle>
+                                                    <CardDescription className="mt-1">
+                                                        {Math.ceil(
+                                                            (new Date(vacation.endDate).getTime() -
+                                                                new Date(vacation.startDate).getTime()) /
+                                                            (1000 * 60 * 60 * 24)
+                                                        )}{' '}
+                                                        days
+                                                    </CardDescription>
+                                                </div>
+
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => vacation.id && handleDelete(vacation.id)}
-                                                    disabled={deleteVacation.isPending}
+                                                    onClick={() => vacation.id && handleDeleteRequest(vacation.id)}
+                                                    disabled={deleteVacationRequest.isPending}
                                                     className="flex-shrink-0"
                                                 >
-                                                    {deleteVacation.isPending ? (
+                                                    {deleteVacationRequest.isPending ? (
                                                         <Loader2 className="h-4 w-4 animate-spin"/>
                                                     ) : (
                                                         <Trash2 className="h-4 w-4"/>
                                                     )}
                                                 </Button>
+                                            </div>
+                                        </CardHeader>
+
+                                        <CardContent className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                {getStatusBadge(vacation.status)}
+                                            </div>
+
+                                            {vacation.reason && (
+                                                <p className="text-sm text-muted-foreground">
+                                                    {vacation.reason}
+                                                </p>
                                             )}
-                                        </div>
-                                    </CardHeader>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </TabsContent>
 
-                                    <CardContent className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            {getStatusBadge(vacation.status)}
-                                        </div>
-
-                                        {vacation.reason && (
-                                            <p className="text-sm text-muted-foreground">
-                                                {vacation.reason}
-                                            </p>
-                                        )}
+                        <TabsContent value="approved" className="space-y-4 mt-6">
+                            {approvedVacations && approvedVacations.length === 0 ? (
+                                <Card>
+                                    <CardContent className="flex flex-col items-center justify-center py-10">
+                                        <Calendar className="h-12 w-12 text-muted-foreground mb-4"/>
+                                        <p className="text-muted-foreground text-center">
+                                            You don't have any approved vacations
+                                        </p>
                                     </CardContent>
                                 </Card>
-                            ))
-                        )}
-                    </div>
+                            ) : (
+                                approvedVacations?.map((vacation) => (
+                                    <Card key={vacation.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
+                                                        <Calendar className="h-5 w-5 flex-shrink-0"/>
+                                                        <span className="truncate">
+                                                            {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
+                                                            {' — '}
+                                                            {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                        </span>
+                                                    </CardTitle>
+                                                    <CardDescription className="mt-1">
+                                                        {Math.ceil(
+                                                            (new Date(vacation.endDate).getTime() -
+                                                                new Date(vacation.startDate).getTime()) /
+                                                            (1000 * 60 * 60 * 24)
+                                                        )}{' '}
+                                                        days
+                                                    </CardDescription>
+                                                </div>
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => vacation.id && handleDeleteApproved(vacation.id)}
+                                                    disabled={deleteApprovedVacation.isPending}
+                                                    className="flex-shrink-0"
+                                                >
+                                                    {deleteApprovedVacation.isPending ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin"/>
+                                                    ) : (
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </CardHeader>
+
+                                        <CardContent className="space-y-2">
+                                            <Badge className="bg-green-500">Approved</Badge>
+
+                                            {vacation.reason && (
+                                                <p className="text-sm text-muted-foreground">
+                                                    {vacation.reason}
+                                                </p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </Main>
         </>

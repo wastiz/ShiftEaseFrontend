@@ -54,8 +54,8 @@ export interface EmployeeMeData extends User {
     role: Role;
     fullName: string;
     email: string;
-    groupId: number;
-    groupName: string;
+    groupIds: number[];
+    groupNames: string[];
     organizationId: number;
     organizationName: string;
     position: string;

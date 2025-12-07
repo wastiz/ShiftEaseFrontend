@@ -21,7 +21,7 @@ export default function EmployeeLayout({
     };
 
     const navMain = [
-        { title: t('dashboard'), url: "/dashboard", icon: "LayoutDashboard" as const, isActive: true },
+        { title: t('overview'), url: "/overview", icon: "LayoutDashboard" as const, isActive: true },
         { title: t('preferences'), url: "/preferences", icon: "Bolt" as const },
         { title: t('sickLeave'), url: "/sick-leave", icon: "CalendarPlus2" as const },
         { title: t('vacation'), url: "/vacation", icon: "TreePalm" as const },
