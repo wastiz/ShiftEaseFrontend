@@ -6,16 +6,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useParams } from "next/navigation"
 import {useExportSchedule, useGenerateSchedule, useSaveSchedule, useScheduleData, useUnconfirmSchedule} from "@/api"
 import Header from "@/modules/Header"
-import { Shift } from "@/types/schedule"
+import { Shift, SchedulePattern, EmployeeTimeOff } from "@/types/schedule"
 import ScheduleCalendar from "@/modules/ScheduleCalendar/ScheduleCalendar"
 import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import {Holiday, WorkDay} from "@/types";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/shadcn/toggle-group";
-import {Calendar, Download, List, Loader2} from "lucide-react";
+import {Calendar, Download, List, Loader2, Settings} from "lucide-react";
 import SimpleView from "@/modules/ScheduleSimple/ScheduleSimple";
 import {toast} from "sonner";
 import { useTranslations } from 'next-intl';
+import SchedulePresetDialog, { SchedulePreset } from "@/modules/page-modules/schedules/SchedulePresetDialog";
+import { ButtonGroup } from '@/components/ui/shadcn/button-group'
 
 const today = new Date()
 
@@ -35,6 +37,9 @@ export default function ManageSchedule() {
     const [shiftsData, setShiftsData] = useState<Shift[]>([])
     const [orgHolidays, setOrgHolidays] = useState<Holiday[]>([])
     const [orgSchedule, setOrgSchedule] = useState<WorkDay[]>([])
+    const [employeeTimeOffs, setEmployeeTimeOffs] = useState<EmployeeTimeOff[]>([])
+    const [presetDialogOpen, setPresetDialogOpen] = useState(false)
+    const [currentPreset, setCurrentPreset] = useState<SchedulePreset | null>(null)
 
     useEffect(() => {
         setDaysOfMonth(getDaysInMonth(currentYear, currentMonth))
@@ -49,12 +54,13 @@ export default function ManageSchedule() {
 
     useEffect(() => {
         if (data?.schedule) {
-            console.log(data.schedule.shifts)
+            console.log(data.schedule)
             setShiftsData(data.schedule.shifts || [])
-            setIsConfirmed(data.schedule.scheduleInfo?.isConfirmed || false)
-            setScheduleId(data.schedule.scheduleInfo?.id || null)
+            setIsConfirmed(data.schedule.isConfirmed || false)
+            setScheduleId(data.schedule.id || null)
             setOrgHolidays(data.schedule.organizationHolidays || [])
             setOrgSchedule(data.schedule.organizationSchedule || [])
+            setEmployeeTimeOffs(data.schedule.employeeTimeOffs || [])
         }
     }, [data])
 
@@ -69,22 +75,57 @@ export default function ManageSchedule() {
     const unconfirmMutation = useUnconfirmSchedule()
     const generateSchedule = useGenerateSchedule()
 
+    // Load preset from localStorage on mount or when groupId changes
+    useEffect(() => {
+        const storageKey = `schedule_preset_${selectedGroupId}`
+        const stored = localStorage.getItem(storageKey)
+        if (stored) {
+            try {
+                const parsedPreset = JSON.parse(stored)
+                setCurrentPreset(parsedPreset)
+            } catch (e) {
+                console.error('Failed to parse stored preset', e)
+                setCurrentPreset(null)
+            }
+        } else {
+            setCurrentPreset(null)
+        }
+    }, [selectedGroupId])
+
     const handleGenerate = () => {
+        // Use preset if available, otherwise use default values
+        const preset = currentPreset || {
+            AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
+            MaxConsecutiveShifts: 5,
+            SchedulePattern: SchedulePattern.Custom,
+            MinDaysOffPerWeek: 2
+        }
+
         generateSchedule.mutate(
             {
                 groupId: selectedGroupId,
                 startDate: daysOfMonth[0].isoDate,
                 endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
+                AllowedShiftTypeIds: preset.AllowedShiftTypeIds,
+                MaxConsecutiveShifts: preset.MaxConsecutiveShifts,
+                SchedulePattern: preset.SchedulePattern,
+                MinDaysOffPerWeek: preset.MinDaysOffPerWeek
             },
             {
                 onSuccess: (responseData) => {
-                    if (responseData?.shifts) {
-                        setShiftsData(responseData.shifts)
+                    if (responseData) {
+                        toast.success(responseData.message)
+                        setShiftsData(responseData.data.shifts)
                         setIsConfirmed(false)
                     }
                 }
             }
         )
+    }
+
+    const handleSavePreset = (preset: SchedulePreset) => {
+        setCurrentPreset(preset)
+        toast.success(t('presetSaved'))
     }
 
     const handleConfirmToggle = () => {
@@ -139,9 +180,21 @@ export default function ManageSchedule() {
                         <Calendar className="h-4 w-4" />
                     </ToggleGroupItem>
                 </ToggleGroup>
-                <Button onClick={handleGenerate} disabled={generateSchedule.isPending}>
-                    {generateSchedule.isPending ? t('generating') : t('generateSchedule')}
-                </Button>
+                <div className="flex gap-2">
+                    <ButtonGroup>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setPresetDialogOpen(true)}
+                            title={t('presetSettings')}
+                        >
+                            <Settings className="h-4 w-4" />
+                        </Button>
+                        <Button onClick={handleGenerate} disabled={generateSchedule.isPending}>
+                            {generateSchedule.isPending ? t('generating') : t('generateSchedule')}
+                        </Button>
+                    </ButtonGroup>
+                </div>
                 <Button onClick={() => saveMutation.mutate(false)} disabled={saveMutation.isPending}>
                     {t('save')}
                 </Button>
@@ -179,6 +232,7 @@ export default function ManageSchedule() {
                     isEditable={true}
                     orgHolidays={orgHolidays}
                     orgSchedule={orgSchedule}
+                    employeeTimeOffs={employeeTimeOffs}
                 />
             ) : (
                 <SimpleView
@@ -194,8 +248,17 @@ export default function ManageSchedule() {
                     isConfirmed={isConfirmed}
                     orgHolidays={orgHolidays}
                     orgSchedule={orgSchedule}
+                    employeeTimeOffs={employeeTimeOffs}
                 />
             )}
+
+            <SchedulePresetDialog
+                open={presetDialogOpen}
+                onOpenChange={setPresetDialogOpen}
+                shiftTypes={data?.shiftTypes || []}
+                groupId={selectedGroupId}
+                onSave={handleSavePreset}
+            />
         </>
     )
 }

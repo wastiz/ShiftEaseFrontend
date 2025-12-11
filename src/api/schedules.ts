@@ -2,6 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {toast} from "sonner";
 import {
+    GenerateScheduleResponse,
     Schedule,
     ScheduleEditorData,
     ScheduleGenerateRequest,
@@ -104,10 +105,6 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
     });
 }
 
-type GenerateScheduleResponse = {
-    shifts: Shift[];
-};
-
 export function useUnconfirmSchedule() {
     const queryClient = useQueryClient();
 
@@ -130,16 +127,27 @@ export function useGenerateSchedule() {
     const queryClient = useQueryClient();
 
     return useMutation<GenerateScheduleResponse, Error, Omit<ScheduleGenerateRequest, 'id'>>({
-        mutationFn: async ({ groupId, startDate, endDate }) => {
+        mutationFn: async ({
+            groupId,
+            startDate,
+            endDate,
+            AllowedShiftTypeIds,
+            MaxConsecutiveShifts,
+            SchedulePattern,
+            MinDaysOffPerWeek
+        }) => {
             const response = await api.post<GenerateScheduleResponse>('/schedule-generator/generate', {
                 groupId,
                 startDate,
                 endDate,
+                AllowedShiftTypeIds,
+                MaxConsecutiveShifts,
+                SchedulePattern,
+                MinDaysOffPerWeek
             });
             return response.data;
         },
         onSuccess: () => {
-            toast.success('Schedule generated!');
             queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
         },
         onError: () => toast.error('Failed to generate schedule'),

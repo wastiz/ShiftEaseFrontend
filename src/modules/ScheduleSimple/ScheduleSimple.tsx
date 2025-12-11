@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
 import { ChevronLeft, ChevronRight, X, Filter } from "lucide-react";
 import { DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay } from "@/types";
+import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -26,6 +27,7 @@ import {
 import { Checkbox } from "@/components/ui/shadcn/checkbox";
 import { Label } from "@/components/ui/shadcn/label";
 import DroppableCell from "@/modules/ScheduleSimple/DroppableCell";
+import { useTranslations } from 'next-intl';
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -40,16 +42,17 @@ type SimpleViewProps = {
     isConfirmed: boolean;
     orgHolidays?: Holiday[];
     orgSchedule?: WorkDay[];
+    employeeTimeOffs?: EmployeeTimeOff[];
 };
 
 function isHoliday(date: string, holidays: Holiday[]) {
     const d = new Date(date)
-    return holidays.some(h => h.month === d.getMonth() + 1 && h.day === d.getDate())
+    return holidays.some(h => h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate())
 }
 
 function isWorkingDay(date: string, workDays: WorkDay[]) {
     const d = new Date(date)
-    const dayOfWeek = d.getDay()
+    const dayOfWeek = d.getUTCDay()
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const currentDayName = dayNames[dayOfWeek]
     return workDays.some(wd => wd.dayOfWeek === currentDayName)
@@ -57,8 +60,44 @@ function isWorkingDay(date: string, workDays: WorkDay[]) {
 
 function getHolidayName(date: string, holidays: Holiday[]) {
     const d = new Date(date)
-    const holiday = holidays.find(h => h.month === d.getMonth() + 1 && h.day === d.getDate())
+    const holiday = holidays.find(h => h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate())
     return holiday?.holidayName || 'Holiday'
+}
+
+function getEmployeeTimeOff(employeeId: number, date: string, timeOffs: EmployeeTimeOff[]): EmployeeTimeOff | undefined {
+    const dateObj = new Date(date)
+    return timeOffs.find(timeOff => {
+        if (timeOff.employeeId !== employeeId) return false
+        const startDate = new Date(timeOff.startDate)
+        const endDate = new Date(timeOff.endDate)
+        return dateObj >= startDate && dateObj <= endDate
+    })
+}
+
+function getTimeOffLabelKey(type: TimeOffType): string {
+    switch (type) {
+        case TimeOffType.Vacation:
+            return 'timeOffVacation'
+        case TimeOffType.SickLeave:
+            return 'timeOffSickLeave'
+        case TimeOffType.PersonalDay:
+            return 'timeOffPersonalDay'
+        default:
+            return 'timeOffDayOff'
+    }
+}
+
+function getTimeOffColor(type: TimeOffType): string {
+    switch (type) {
+        case TimeOffType.Vacation:
+            return 'bg-blue-100 dark:bg-blue-950 border-blue-300 dark:border-blue-700'
+        case TimeOffType.SickLeave:
+            return 'bg-orange-100 dark:bg-orange-950 border-orange-300 dark:border-orange-700'
+        case TimeOffType.PersonalDay:
+            return 'bg-purple-100 dark:bg-purple-950 border-purple-300 dark:border-purple-700'
+        default:
+            return 'bg-gray-100 dark:bg-gray-950 border-gray-300 dark:border-gray-700'
+    }
 }
 
 export default function SimpleView({
@@ -74,7 +113,9 @@ export default function SimpleView({
                                        isConfirmed,
                                        orgHolidays = [],
                                        orgSchedule = [],
+                                       employeeTimeOffs = [],
                                    }: SimpleViewProps) {
+    const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
 
@@ -365,23 +406,34 @@ export default function SimpleView({
                                     const holiday = isHoliday(day.isoDate, orgHolidays)
                                     const working = isWorkingDay(day.isoDate, orgSchedule)
                                     const isNonWorkingDay = holiday || !working
+                                    const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
 
                                     return (
                                         <TableCell
                                             key={day.isoDate}
                                             className={`p-2 ${
-                                                isNonWorkingDay ? 'bg-red-50 dark:bg-red-950/10' : ''
+                                                timeOff
+                                                    ? getTimeOffColor(timeOff.type)
+                                                    : isNonWorkingDay
+                                                        ? 'bg-red-50 dark:bg-red-950/10'
+                                                        : ''
                                             }`}
                                         >
-                                            <DroppableCell
-                                                employeeId={row.employeeId}
-                                                date={day.isoDate}
-                                                assignment={assignment}
-                                                onAssign={assignShift}
-                                                onRemove={removeShift}
-                                                onUpdateNote={updateNote}
-                                                isNonWorkingDay={isNonWorkingDay}
-                                            />
+                                            {timeOff ? (
+                                                <div className="text-xs text-center py-1 px-2 rounded border">
+                                                    <div className="font-medium">{t(getTimeOffLabelKey(timeOff.type))}</div>
+                                                </div>
+                                            ) : (
+                                                <DroppableCell
+                                                    employeeId={row.employeeId}
+                                                    date={day.isoDate}
+                                                    assignment={assignment}
+                                                    onAssign={assignShift}
+                                                    onRemove={removeShift}
+                                                    onUpdateNote={updateNote}
+                                                    isNonWorkingDay={isNonWorkingDay}
+                                                />
+                                            )}
                                         </TableCell>
                                     );
                                 })}

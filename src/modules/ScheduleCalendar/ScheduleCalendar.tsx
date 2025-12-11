@@ -7,6 +7,7 @@ import DayContainer from './DayContainer'
 import ShiftTypeSmallCard from '@/components/cards/ShiftTypeSmallCard'
 import EmployeeSmallCard from '@/components/cards/EmployeeSmallCard'
 import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
+import { EmployeeTimeOff } from '@/types/schedule'
 import { Dispatch, SetStateAction, useState, useMemo } from 'react'
 import {
     Popover,
@@ -26,13 +27,12 @@ type ScheduleCalendarProps = {
     currentYear: number
     setCurrentMonth: Dispatch<SetStateAction<number>>
     setCurrentYear: Dispatch<SetStateAction<number>>
-    autorenewal?: boolean
-    setAutorenewal?: Dispatch<SetStateAction<boolean>>
     isConfirmed: boolean
     isEditable?: boolean
     cellHeight?: number
     orgHolidays?: Holiday[]
     orgSchedule?: WorkDay[]
+    employeeTimeOffs?: EmployeeTimeOff[]
 }
 
 export default function ScheduleCalendar({
@@ -45,13 +45,12 @@ export default function ScheduleCalendar({
                                              currentYear,
                                              setCurrentMonth,
                                              setCurrentYear,
-                                             autorenewal,
-                                             setAutorenewal,
                                              isConfirmed,
                                              isEditable = true,
                                              cellHeight = 40,
                                              orgHolidays,
                                              orgSchedule,
+                                             employeeTimeOffs = [],
                                          }: ScheduleCalendarProps) {
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
@@ -282,6 +281,7 @@ export default function ScheduleCalendar({
                                     cellHeight={cellHeight}
                                     holidays={orgHolidays}
                                     workDays={orgSchedule}
+                                    employeeTimeOffs={employeeTimeOffs}
                                 />
                             ))}
                         </div>

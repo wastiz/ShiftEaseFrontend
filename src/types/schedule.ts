@@ -10,10 +10,30 @@ export type ScheduleEditorData = {
 };
 
 export type Schedule ={
-    scheduleInfo: ScheduleInfo;
+    id: number;
+    startDate: Date;
+    endDate: Date;
+    groupId: number;
+    isConfirmed: boolean;
     organizationHolidays: Holiday[];
     organizationSchedule: WorkDay[];
     shifts: Shift[];
+    employeeTimeOffs: EmployeeTimeOff[]
+}
+
+export type EmployeeTimeOff = {
+    id: number;
+    employeeId: number;
+    employeeName: string;
+    startDate: Date;
+    endDate: Date;
+    type: TimeOffType;
+}
+
+export enum TimeOffType {
+    Vacation,
+    SickLeave,
+    PersonalDay
 }
 
 export type ScheduleInfo = {
@@ -75,7 +95,26 @@ export type ScheduleGenerateRequest = {
     startDate: string
     endDate: string
     groupId: number
+    AllowedShiftTypeIds: number[];
+    MaxConsecutiveShifts: number;
+    SchedulePattern: SchedulePattern;
+    MinDaysOffPerWeek: number;
 }
+
+export enum SchedulePattern {
+    Custom = 0,
+    TwoOnTwoOff = 1,
+    FiveOnTwoOff = 2,
+    ThreeOnThreeOff = 3,
+    FourOnFourOff = 4
+}
+
+export type GenerateScheduleResponse = {
+    success: boolean;
+    message: string;
+    data: Schedule;
+
+};
 
 export interface ScheduleSummary {
     groupId: number;
