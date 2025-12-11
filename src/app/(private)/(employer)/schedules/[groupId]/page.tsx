@@ -160,7 +160,7 @@ export default function ManageSchedule() {
                         <SelectValue placeholder={t('selectGroup')} />
                     </SelectTrigger>
                     <SelectContent>
-                        {data?.groups?.map((g: any) => (
+                        {data?.groups?.map((g) => (
                             <SelectItem key={g.id} value={g.id.toString()}>
                                 {g.name}
                             </SelectItem>
@@ -170,7 +170,7 @@ export default function ManageSchedule() {
                 <ToggleGroup
                     type="single"
                     value={viewMode}
-                    onValueChange={(value) => value && setViewMode(value as any)}
+                    onValueChange={(value) => value && setViewMode(value as "calendar" | "simple")}
                     className="ml-auto"
                 >
                     <ToggleGroupItem value="simple" aria-label={t('simpleView')}>

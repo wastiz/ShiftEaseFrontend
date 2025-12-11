@@ -103,7 +103,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
             onSuccess: () => {
                 router.push("/organizations");
             },
-            onError: (err: any) => {
+            onError: (err: unknown) => {
                 const message = err?.response?.data || "Registration failed";
                 console.error("Register error:", message);
                 setErrors(prev => ({ ...prev, server: message }));
@@ -220,7 +220,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
                         {isError && (
                             <p className="text-red-500">
-                                {(error as any)?.message || "Registration failed"}
+                                {(error instanceof Error ? error : { message: "Unknown error" })?.message || "Registration failed"}
                             </p>
                         )}
                         {isSuccess && (

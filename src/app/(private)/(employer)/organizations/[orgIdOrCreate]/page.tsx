@@ -174,7 +174,7 @@ export default function AddOrganization() {
             }
 
             if (org.holidays && org.holidays.length > 0) {
-                const normalizedHolidays: Holiday[] = org.holidays.map((h: any) => ({
+                const normalizedHolidays: Holiday[] = org.holidays.map((h) => ({
                     holidayName: h.holidayName || h.name,
                     month: h.month,
                     day: h.day,
@@ -286,7 +286,7 @@ export default function AddOrganization() {
                 toast.success(isEditMode ? t('organizationUpdated') : t('organizationCreated'));
                 router.push("/organizations");
             },
-            onError: (error: any) => {
+            onError: (error: unknown) => {
                 console.error("Error:", error);
                 toast.error(isEditMode ? t('failedToUpdate') : t('failedToCreate'));
             },

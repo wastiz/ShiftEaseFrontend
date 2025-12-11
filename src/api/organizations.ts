@@ -84,7 +84,7 @@ export function useDeleteOrganization() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["organizations"] });
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error("Failed to delete organization:", error);
         },
     });

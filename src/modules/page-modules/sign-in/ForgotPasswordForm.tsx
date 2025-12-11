@@ -52,7 +52,7 @@ export default function ForgotPasswordForm({setMode, role}: ForgotPasswordFormPr
                         <Button type="submit" className={isPending ? "w-full disabled" : "w-full"}>
                             {isPending ? "Sending..." : "Send reset link"}
                         </Button>
-                        {isError && <p className="text-red-500">{(error as any)?.message || "Failed to send reset link"}</p>}
+                        {isError && <p className="text-red-500">{(error instanceof Error ? error : { message: "Unknown error" })?.message || "Failed to send reset link"}</p>}
                         {isSuccess && <p className="text-green-500">Reset link was sent</p>}
                         <Button
                             type="button"

@@ -111,7 +111,7 @@ export default function ProfileWindow({
             router.push('/sign-in');
             onClose?.();
         },
-        onError: (err: any) => {
+        onError: (err: unknown) => {
             console.error(err);
             toast.error(t('logoutFailed'));
         },

@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
                     toast.success("Password reset successfully!");
                     router.push("/sign-in");
                 },
-                onError: (err: any) => {
+                onError: (err: unknown) => {
                     setError(err?.response?.data?.message || "Failed to reset password");
                 },
             }

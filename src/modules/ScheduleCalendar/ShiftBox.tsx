@@ -13,10 +13,21 @@ import {
     DialogTrigger,
 } from '@/components/ui/shadcn/dialog'
 import NoteEditor from '@/components/NoteEditor'
+import { Shift, EmployeeMinData } from '@/types'
 
 function timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(':').map(Number)
     return hours * 60 + minutes
+}
+
+type ShiftBoxProps = {
+    shift: Shift
+    employees: EmployeeMinData[]
+    shiftsData: Shift[]
+    setShiftsData?: (shifts: Shift[] | ((prev: Shift[]) => Shift[])) => void
+    date: string
+    cellHeight?: number
+    isNextDayPart?: boolean
 }
 
 export default function ShiftBox({
@@ -27,7 +38,7 @@ export default function ShiftBox({
                                      date,
                                      cellHeight = 40,
                                      isNextDayPart = false,
-                                 }: any) {
+                                 }: ShiftBoxProps) {
     const ref = useRef<HTMLDivElement>(null)
     const [isDraggingOver, setIsDraggingOver] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -47,16 +58,16 @@ export default function ShiftBox({
             onDrop: ({ source }) => {
                 if (source.data.type === 'employee') {
                     const empId = source.data.id
-                    if (shift.employees.some((e: any) => e.id === empId)) {
+                    if (shift.employees.some((e) => e.id === empId)) {
                         toast.info('Employee already assigned to this shift')
                         return
                     }
 
                     const alreadyAssigned = shiftsData.some(
-                        (s: any) =>
+                        (s) =>
                             s.date === date &&
                             s.id !== shift.id &&
-                            s.employees.some((e: any) => e.id === empId)
+                            s.employees.some((e) => e.id === empId)
                     )
 
                     if (alreadyAssigned) {
@@ -64,22 +75,24 @@ export default function ShiftBox({
                         return
                     }
 
-                    const emp = employees.find((e: any) => e.id === empId)
+                    const emp = employees.find((e) => e.id === empId)
                     if (!emp) return
 
-                    setShiftsData((prev: any) =>
-                        prev.map((s: any) =>
-                            s.id === shift.id
-                                ? {
-                                    ...s,
-                                    employees: [
-                                        ...s.employees,
-                                        { id: emp.id, name: emp.name, note: undefined },
-                                    ],
-                                }
-                                : s
+                    if (setShiftsData) {
+                        setShiftsData((prev) =>
+                            prev.map((s) =>
+                                s.id === shift.id
+                                    ? {
+                                        ...s,
+                                        employees: [
+                                            ...s.employees,
+                                            { id: emp.id, name: emp.name, note: undefined },
+                                        ],
+                                    }
+                                    : s
+                            )
                         )
-                    )
+                    }
                     setIsDraggingOver(false)
                 }
             },
@@ -89,45 +102,51 @@ export default function ShiftBox({
     }, [shift, employees, date, shiftsData, setShiftsData])
 
     const handleRemoveShift = () => {
-        setShiftsData((prev: any) => prev.filter((s: any) => s.id !== shift.id))
+        if (setShiftsData) {
+            setShiftsData((prev) => prev.filter((s) => s.id !== shift.id))
+        }
         toast.success('Shift removed')
     }
 
     const handleRemoveEmployee = (empId: number) => {
-        setShiftsData((prev: any) =>
-            prev.map((s: any) =>
-                s.id === shift.id
-                    ? {
-                        ...s,
-                        employees: s.employees.filter((e: any) => e.id !== empId),
-                    }
-                    : s
+        if (setShiftsData) {
+            setShiftsData((prev) =>
+                prev.map((s) =>
+                    s.id === shift.id
+                        ? {
+                            ...s,
+                            employees: s.employees.filter((e) => e.id !== empId),
+                        }
+                        : s
+                )
             )
-        )
+        }
     }
 
     const handleUpdateNote = (empId: number, note: string) => {
-        setShiftsData((prev: any) =>
-            prev.map((s: any) =>
-                s.id === shift.id
-                    ? {
-                        ...s,
-                        employees: s.employees.map((e: any) =>
-                            e.id === empId ? { ...e, note } : e
-                        ),
-                    }
-                    : s
+        if (setShiftsData) {
+            setShiftsData((prev) =>
+                prev.map((s) =>
+                    s.id === shift.id
+                        ? {
+                            ...s,
+                            employees: s.employees.map((e) =>
+                                e.id === empId ? { ...e, note } : e
+                            ),
+                        }
+                        : s
+                )
             )
-        )
+        }
         toast.success('Note updated')
     }
 
     const handleAddEmployee = (empId: number) => {
         const alreadyAssigned = shiftsData.some(
-            (s: any) =>
+            (s) =>
                 s.date === date &&
                 s.id !== shift.id &&
-                s.employees.some((e: any) => e.id === empId)
+                s.employees.some((e) => e.id === empId)
         )
 
         if (alreadyAssigned) {
@@ -135,19 +154,21 @@ export default function ShiftBox({
             return
         }
 
-        const emp = employees.find((e: any) => e.id === empId)
+        const emp = employees.find((e) => e.id === empId)
         if (!emp) return
 
-        setShiftsData((prev: any) =>
-            prev.map((s: any) =>
-                s.id === shift.id
-                    ? {
-                        ...s,
-                        employees: [...s.employees, { id: emp.id, name: emp.name, note: undefined }],
-                    }
-                    : s
+        if (setShiftsData) {
+            setShiftsData((prev) =>
+                prev.map((s) =>
+                    s.id === shift.id
+                        ? {
+                            ...s,
+                            employees: [...s.employees, { id: emp.id, name: emp.name, note: undefined }],
+                        }
+                        : s
+                )
             )
-        )
+        }
         toast.success(`${emp.name} assigned to shift`)
     }
 
@@ -171,7 +192,7 @@ export default function ShiftBox({
     }
 
     const availableEmployees = employees.filter(
-        (e: any) => !shift.employees.some((se: any) => se.id === e.id)
+        (e) => !shift.employees.some((se) => se.id === e.id)
     )
 
     return (
@@ -216,7 +237,7 @@ export default function ShiftBox({
                 </div>
 
                 <div className="flex-1 space-y-1 overflow-y-auto">
-                    {shift.employees.map((emp: any) => (
+                    {shift.employees.map((emp) => (
                         <div
                             key={emp.id}
                             className="bg-background/50 rounded px-2 py-1"
@@ -266,7 +287,7 @@ export default function ShiftBox({
                                     No available employees
                                 </p>
                             ) : (
-                                availableEmployees.map((emp: any) => (
+                                availableEmployees.map((emp) => (
                                     <Button
                                         key={emp.id}
                                         variant="outline"

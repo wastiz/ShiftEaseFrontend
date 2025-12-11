@@ -58,7 +58,11 @@ const emptyEmployee = {
 
 export default function BulkAddEmployees() {
     const [showResults, setShowResults] = useState(false);
-    const [results, setResults] = useState<any>(null);
+    type BulkCreateResult = {
+        successfulEmployees: Array<{ name: string; email: string }>;
+        failedEmployees: Array<{ name: string; email: string; error: string }>;
+    };
+    const [results, setResults] = useState<BulkCreateResult | null>(null);
 
     const { data: groups } = useGetGroups();
     const bulkCreate = useBulkCreateEmployees();
@@ -190,7 +194,7 @@ export default function BulkAddEmployees() {
                                             Successfully Created ({results.successCount})
                                         </h3>
                                         <div className="space-y-2">
-                                            {results.successfulEmployees.map((emp: any, idx: number) => (
+                                            {results.successfulEmployees.map((emp, idx: number) => (
                                                 <div key={idx} className="flex items-center gap-2 p-2 border rounded">
                                                     <Badge variant="outline" className="bg-green-50">
                                                         {emp.firstName} {emp.lastName}
@@ -209,7 +213,7 @@ export default function BulkAddEmployees() {
                                             Failed to Create ({results.failedCount})
                                         </h3>
                                         <div className="space-y-2">
-                                            {results.failedEmployees.map((emp: any, idx: number) => (
+                                            {results.failedEmployees.map((emp, idx: number) => (
                                                 <Alert key={idx} variant="destructive">
                                                     <AlertDescription>
                                                         <strong>{emp.firstName} {emp.lastName}</strong> ({emp.email})

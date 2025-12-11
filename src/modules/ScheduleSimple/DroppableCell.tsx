@@ -4,6 +4,17 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import NoteEditor from "@/components/NoteEditor";
 import {Button} from "@/components/ui/shadcn/button";
 import {X} from "lucide-react";
+import { DayAssignment } from "@/helpers/scheduleHelper";
+
+type DroppableCellProps = {
+    employeeId: number;
+    date: string;
+    assignment?: DayAssignment;
+    onAssign: (employeeId: number, date: string, shiftTypeId: number) => void;
+    onRemove: (employeeId: number, date: string) => void;
+    onUpdateNote: (employeeId: number, date: string, note: string) => void;
+    isNonWorkingDay: boolean;
+}
 
 export default function DroppableCell({
                            employeeId,
@@ -13,15 +24,7 @@ export default function DroppableCell({
                            onRemove,
                            onUpdateNote,
                            isNonWorkingDay,
-                       }: {
-    employeeId: number;
-    date: string;
-    assignment: any;
-    onAssign: (employeeId: number, date: string, shiftTypeId: number) => void;
-    onRemove: (employeeId: number, date: string) => void;
-    onUpdateNote: (employeeId: number, date: string, note: string) => void;
-    isNonWorkingDay: boolean;
-}) {
+                       }: DroppableCellProps) {
     const ref = useRef<HTMLDivElement>(null);
     const [isDraggingOver, setIsDraggingOver] = useState(false);
 

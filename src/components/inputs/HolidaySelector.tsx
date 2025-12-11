@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/shadcn/tooltip"
 import { X, Info } from "lucide-react"
 import { Checkbox } from "@/components/ui/shadcn/checkbox"
+import { Holiday } from '@/types'
 
 const MONTHS = [
     { value: 1, label: "January" },
@@ -52,8 +53,8 @@ const getDaysInMonth = (month: number) => {
 }
 
 interface HolidaySelectorProps {
-    selectedHolidays: any[]
-    setSelectedHolidays: (holidays: any[]) => void
+    selectedHolidays: Holiday[]
+    setSelectedHolidays: (holidays: Holiday[]) => void
 }
 
 export default function HolidaySelector({

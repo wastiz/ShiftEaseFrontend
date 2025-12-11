@@ -3,11 +3,25 @@ import { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { toast } from 'sonner'
 import ShiftBox from './ShiftBox'
-import {Holiday, WorkDay} from "@/types";
+import {Holiday, WorkDay, Shift, ShiftType, EmployeeMinData} from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 
 const CELL_HEIGHT = 40
 const HOURS = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`)
+
+type DayContainerProps = {
+    date: string
+    dateLabel: string
+    shiftTypes: ShiftType[]
+    employees: EmployeeMinData[]
+    shiftsData: Shift[]
+    setShiftsData?: (shifts: Shift[] | ((prev: Shift[]) => Shift[])) => void
+    isEditable?: boolean
+    cellHeight?: number
+    holidays?: Holiday[]
+    workDays?: WorkDay[]
+    employeeTimeOffs?: EmployeeTimeOff[]
+}
 
 function isHoliday(date: string, holidays: Holiday[]) {
     const d = new Date(date)
@@ -81,14 +95,14 @@ export default function DayContainer({
                                          holidays = [],
                                          workDays = [],
                                          employeeTimeOffs = []
-                                     }: any) {
+                                     }: DayContainerProps) {
     const ref = useRef<HTMLDivElement>(null)
     const [isDraggingOver, setIsDraggingOver] = useState(false)
 
-    const shiftsInDay = shiftsData.filter((s: any) => s.date === date)
+    const shiftsInDay = shiftsData.filter((s) => s.date === date)
 
     const previousDay = getPreviousDay(date);
-    const previousDayShifts = shiftsData.filter((s: any) => {
+    const previousDayShifts = shiftsData.filter((s) => {
         if (s.date !== previousDay) return false;
         const startMinutes = timeToMinutes(s.startTime);
         const endMinutes = timeToMinutes(s.endTime);
@@ -106,33 +120,36 @@ export default function DayContainer({
             element: ref.current,
             onDrop: ({ source }) => {
                 if (source.data.type === 'shiftType') {
-                    const st = shiftTypes.find((x: any) => x.id === source.data.id)
+                    const st = shiftTypes.find((x) => x.id === source.data.id)
                     if (!st) return
 
-                    if (shiftsInDay.some((s: any) => s.shiftTypeId === st.id)) {
+                    if (shiftsInDay.some((s) => s.shiftTypeId === st.id)) {
                         toast.error('This shift type already exists on this day')
                         return
                     }
 
-                    setShiftsData((prev: any) => [
-                        ...prev,
-                        {
-                            id: Date.now(),
-                            shiftTypeName: st.name,
-                            shiftTypeId: st.id,
-                            startTime: st.startTime,
-                            endTime: st.endTime,
-                            date,
-                            color: st.color,
-                            employees: [],
-                        },
-                    ])
+                    if (setShiftsData) {
+                        setShiftsData((prev) => [
+                            ...prev,
+                            {
+                                id: Date.now(),
+                                shiftTypeName: st.name,
+                                shiftTypeId: st.id,
+                                startTime: st.startTime,
+                                endTime: st.endTime,
+                                date,
+                                color: st.color,
+                                employeeNeeded: 1,
+                                employees: [],
+                            },
+                        ])
+                    }
                     setIsDraggingOver(false)
                 }
 
                 if (source.data.type === 'shift') {
                     const shiftId = source.data.id
-                    const shift = shiftsData.find((s: any) => s.id === shiftId)
+                    const shift = shiftsData.find((s) => s.id === shiftId)
                     if (!shift) return
 
                     if (shift.date === date) {
@@ -140,16 +157,18 @@ export default function DayContainer({
                         return
                     }
 
-                    if (shiftsInDay.some((s: any) => s.shiftTypeId === shift.shiftTypeId)) {
+                    if (shiftsInDay.some((s) => s.shiftTypeId === shift.shiftTypeId)) {
                         toast.error('This shift type already exists on this day')
                         return
                     }
 
-                    setShiftsData((prev: any) =>
-                        prev.map((s: any) =>
-                            s.id === shiftId ? { ...s, date } : s
+                    if (setShiftsData) {
+                        setShiftsData((prev) =>
+                            prev.map((s) =>
+                                s.id === shiftId ? { ...s, date } : s
+                            )
                         )
-                    )
+                    }
                     setIsDraggingOver(false)
                 }
             },
@@ -160,7 +179,7 @@ export default function DayContainer({
 
     const totalHeight = HOURS.length * CELL_HEIGHT
 
-    const holidayInfo = holidays.find((h: any) => {
+    const holidayInfo = holidays.find((h) => {
         const d = new Date(date)
         return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
     })
@@ -211,7 +230,7 @@ export default function DayContainer({
                     />
                 ))}
 
-                {shiftsInDay.map((shift: any) => (
+                {shiftsInDay.map((shift) => (
                     <ShiftBox
                         key={shift.id}
                         shift={shift}
@@ -223,7 +242,7 @@ export default function DayContainer({
                     />
                 ))}
 
-                {previousDayShifts.map((shift: any) => (
+                {previousDayShifts.map((shift) => (
                     <ShiftBox
                         key={`${shift.id}-nextday`}
                         shift={shift}

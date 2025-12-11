@@ -181,7 +181,7 @@ export default function TimeOffDialog({
                 </div>
 
                 {viewMode === "add" ? (
-                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v )}>
                         <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="vacation">Vacation</TabsTrigger>
                             <TabsTrigger value="sick">Sick Leave</TabsTrigger>
