@@ -14,11 +14,17 @@ export interface Employee {
     onWork?: boolean;
 }
 
-export interface BulkCreateResult {
+export interface BulkCreateData {
     successCount: number;
     failedCount: number;
     successfulEmployees: EmployeeCreateSuccess[];
     failedEmployees: EmployeeCreateError[];
+}
+
+export interface BulkCreateResult {
+    success: boolean;
+    message: string;
+    data: BulkCreateData;
 }
 
 export interface EmployeeCreateSuccess {
