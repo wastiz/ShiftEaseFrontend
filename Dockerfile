@@ -10,13 +10,16 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 RUN npm run build
-RUN npm run export   # создаёт /app/out
 
-FROM nginx:alpine
+FROM node:22.21.1-alpine AS production
 
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-COPY --from=build /app/out /usr/share/nginx/html
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/package.json ./package.json
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
