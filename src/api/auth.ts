@@ -39,7 +39,7 @@ export function useLogout() {
             await api.post(`/auth/logout`);
         },
         onSuccess: () => {
-            router.push('/login');
+            router.push('/sign-in');
         }
     });
 }
