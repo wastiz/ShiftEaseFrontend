@@ -22,7 +22,6 @@ export default function EmployeePersonalPage() {
     const [daysOfMonth, setDaysOfMonth] = useState<DateData[]>(getDaysInMonth(today.getFullYear(), today.getMonth()));
     const [shiftsData, setShiftsData] = useState<Shift[]>([]);
 
-    // Используем первую группу для получения расписания
     const primaryGroupId = employeeUser.groupIds?.[0];
     const {data: scheduleData, isLoading} = useScheduleData({
         groupId: primaryGroupId,
@@ -38,7 +37,6 @@ export default function EmployeePersonalPage() {
 
     useEffect(() => {
         if (scheduleData?.schedule) {
-            // Фильтруем только смены текущего пользователя
             const myShifts = scheduleData.schedule.shifts.filter(shift =>
                 shift.employees.some(emp => emp.id === employeeUser.id)
             );
@@ -61,16 +59,14 @@ export default function EmployeePersonalPage() {
                 const bTime = new Date(`${b.date}T${b.startTime}`).getTime();
                 return aTime - bTime;
             })
-            .slice(0, 5); // Показываем следующие 5 смен
+            .slice(0, 5);
     }, [shiftsData]);
 
-    // Получаем заметки для текущего сотрудника
     const getMyNote = (shift: Shift) => {
         const myAssignment = shift.employees.find(emp => emp.id === employeeUser.id);
         return myAssignment?.note;
     };
 
-    // Получаем коллег на смене
     const getCoworkers = (shift: Shift) => {
         return shift.employees.filter(emp => emp.id !== employeeUser.id);
     };
@@ -201,7 +197,7 @@ export default function EmployeePersonalPage() {
                             currentYear={currentYear}
                             setCurrentMonth={setCurrentMonth}
                             setCurrentYear={setCurrentYear}
-                            isConfirmed={scheduleData.schedule.scheduleInfo.isConfirmed}
+                            isConfirmed={scheduleData.schedule.isConfirmed}
                             isEditable={false}
                             orgHolidays={scheduleData.schedule.organizationHolidays}
                             orgSchedule={scheduleData.schedule.organizationSchedule}

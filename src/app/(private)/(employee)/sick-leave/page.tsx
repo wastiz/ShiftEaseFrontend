@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
 import { Textarea } from '@/components/ui/shadcn/textarea';
 import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
-import { useSickLeaves, useAddSickLeave, useDeleteSickLeave } from '@/api';
+import { useSickLeaves } from '@/api';
 import { SickLeaveDto } from "@/types";
 import { toast } from 'sonner';
 import { format } from 'date-fns';

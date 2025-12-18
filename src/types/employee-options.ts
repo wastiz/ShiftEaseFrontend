@@ -15,6 +15,11 @@ export interface VacationRequestDto {
     status?: 'pending' | 'approved' | 'rejected';
 }
 
+export interface VacationRequestCreateDto {
+    startDate: string;
+    endDate: string;
+}
+
 export interface SickLeaveDto {
     id?: number;
     startDate: string;

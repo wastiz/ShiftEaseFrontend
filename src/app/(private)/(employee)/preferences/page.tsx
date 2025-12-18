@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import Header from "@/modules/Header";
 import Main from "@/modules/Main";
 import { format } from 'date-fns';
+import {useAuthStore} from "@/zustand/auth-state";
 
 const WEEK_DAYS = [
     { id: 0, name: 'Sunday', short: 'Sun' },
@@ -23,9 +24,10 @@ const WEEK_DAYS = [
 ];
 
 export default function PreferencesPage() {
-    const { data: preferences, isLoading } = usePreferences();
+    const { user } = useAuthStore();
+    const { data: preferences, isLoading } = usePreferences(user.id);
     const { data: shiftTypes } = useGetShiftTypes();
-    const savePreferences = useSavePreferences();
+    const savePreferences = useSavePreferences(user.id);
 
     const [selectedWeekDays, setSelectedWeekDays] = useState<number[]>([]);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);

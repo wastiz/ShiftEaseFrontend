@@ -36,7 +36,7 @@ import {
     useDeleteEmployee,
     useGetEmployees,
     useUpdateEmployee,
-} from "@/api/employees";
+} from "@/api/employer/employees";
 import { useGetGroups } from "@/api";
 import {
     Select,
