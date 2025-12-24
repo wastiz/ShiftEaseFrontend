@@ -27,6 +27,11 @@ export interface LoginResponse {
     user: User;
 }
 
+//Google Auth
+export interface GoogleAuthPayload {
+    token: string;
+}
+
 //Logout
 export interface LogoutResponse {
     success: boolean;

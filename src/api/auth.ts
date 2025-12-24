@@ -7,6 +7,7 @@ import {
     LoginResponse,
     ForgotPasswordPayload,
     DeleteUserPayload,
+    GoogleAuthPayload,
     Role, EmployerMeData, User,
 } from "@/types";
 import {authKeys} from "@/lib/api-keys";
@@ -26,6 +27,15 @@ export function useLogin(role: Role) {
     return useMutation<LoginResponse, Error, LoginPayload>({
         mutationFn: async (payload) => {
             const res = await api.post<LoginResponse>(`/auth/${role}/login`, payload);
+            return res.data;
+        },
+    });
+}
+
+export function useEmployerGoogleLogin() {
+    return useMutation<LoginResponse, Error, GoogleAuthPayload>({
+        mutationFn: async (payload) => {
+            const res = await api.post<LoginResponse>("/auth/employer/google", payload);
             return res.data;
         },
     });

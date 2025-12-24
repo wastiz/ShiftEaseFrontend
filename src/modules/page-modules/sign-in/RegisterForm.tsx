@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Mode, RegisterPayload } from "@/types";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEmployerRegister } from "@/api/auth";
+import { useEmployerRegister, useEmployerGoogleLogin } from "@/api/auth";
+import { GoogleLogin } from '@react-oauth/google';
 
 interface RegisterFormProps {
     setMode: (mode: Mode) => void;
@@ -21,6 +22,7 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ setMode }: RegisterFormProps) {
     const { mutate, isPending, isError, error, isSuccess } = useEmployerRegister();
+    const { mutate: googleLogin } = useEmployerGoogleLogin();
     const router = useRouter();
 
     const [form, setForm] = useState({
@@ -35,6 +37,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
         email?: string;
         phone?: string;
         password?: string;
+        server?: string;
     }>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +87,32 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
         return Object.keys(newErrors).length === 0;
     };
 
+    const handleGoogleSuccess = (credentialResponse: any) => {
+        if (credentialResponse.credential) {
+            googleLogin(
+                { token: credentialResponse.credential },
+                {
+                    onSuccess: (data) => {
+                        router.push("/organizations");
+                    },
+                    onError: (err: any) => {
+                        const errorData = err?.response?.data;
+                        const message =
+                            errorData?.message ||
+                            errorData?.title ||
+                            (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
+                            "Google authentication failed";
+                        setErrors(prev => ({ ...prev, server: message }));
+                    },
+                }
+            );
+        }
+    };
+
+    const handleGoogleError = () => {
+        setErrors(prev => ({ ...prev, server: "Google sign up failed" }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
@@ -103,8 +132,13 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
             onSuccess: () => {
                 router.push("/organizations");
             },
-            onError: (err: unknown) => {
-                const message = err?.response?.data || "Registration failed";
+            onError: (err: any) => {
+                const errorData = err?.response?.data;
+                const message =
+                    errorData?.message ||
+                    errorData?.title ||
+                    (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
+                    "Registration failed";
                 console.error("Register error:", message);
                 setErrors(prev => ({ ...prev, server: message }));
             },
@@ -218,10 +252,24 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                             {isPending ? "Signing up..." : "Sign up"}
                         </Button>
 
+                        <div className="w-full">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                                theme="outline"
+                                size="large"
+                                width="100%"
+                                text="continue_with"
+                            />
+                        </div>
+
                         {isError && (
                             <p className="text-red-500">
                                 {(error instanceof Error ? error : { message: "Unknown error" })?.message || "Registration failed"}
                             </p>
+                        )}
+                        {errors.server && (
+                            <p className="text-red-500">{errors.server}</p>
                         )}
                         {isSuccess && (
                             <p className="text-green-500">Registration successful!</p>

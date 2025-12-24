@@ -123,7 +123,7 @@ export default function SignIn() {
                             <TabsContent value="employee">
                                 <Card className="bg-glassBorder">
                                     {mode === "login" && (
-                                        <LoginForm setMode={setMode} role={"employee"}></LoginForm>
+                                        <LoginForm setMode={setMode} role={"Employee"}></LoginForm>
                                     )}
 
                                     {mode === "register" && (
@@ -133,14 +133,14 @@ export default function SignIn() {
                                     )}
 
                                     {mode === "forgot" && (
-                                        <ForgotPasswordForm setMode={setMode} role={"employee"}></ForgotPasswordForm>
+                                        <ForgotPasswordForm setMode={setMode} role={"Employee"}></ForgotPasswordForm>
                                     )}
                                 </Card>
                             </TabsContent>
                             <TabsContent value="employer">
                                 <Card className="bg-glassBorder">
                                     {mode === "login" && (
-                                        <LoginForm setMode={setMode} role={"employer"}></LoginForm>
+                                        <LoginForm setMode={setMode} role={"Employer"}></LoginForm>
                                     )}
 
                                     {mode === "register" && (
@@ -148,7 +148,7 @@ export default function SignIn() {
                                     )}
 
                                     {mode === "forgot" && (
-                                        <ForgotPasswordForm setMode={setMode} role={"employer"}></ForgotPasswordForm>
+                                        <ForgotPasswordForm setMode={setMode} role={"Employer"}></ForgotPasswordForm>
                                     )}
                                 </Card>
                             </TabsContent>

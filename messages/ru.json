@@ -29,6 +29,8 @@
     "forgotPasswordDescription": "Введите ваш email для сброса пароля",
     "employee": "сотрудника",
     "employer": "работодателя",
+    "Employee": "Сотрудник",
+    "Employer": "Работодатель",
     "emailPlaceholder": "m@example.com",
     "forgotPassword": "Забыли пароль?",
     "loggingIn": "Вход...",

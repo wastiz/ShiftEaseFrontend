@@ -29,6 +29,8 @@
     "forgotPasswordDescription": "Enter your email to reset password",
     "employee": "Employee",
     "employer": "Employer",
+    "Employee": "Employee",
+    "Employer": "Employer",
     "emailPlaceholder": "m@example.com",
     "forgotPassword": "Forgot your password?",
     "loggingIn": "Logging in...",

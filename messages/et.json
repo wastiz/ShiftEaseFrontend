@@ -29,6 +29,8 @@
     "forgotPasswordDescription": "Sisestage oma e-posti aadress parooli lähtestamiseks",
     "employee": "töötaja",
     "employer": "tööandja",
+    "Employee": "Töötaja",
+    "Employer": "Tööandja",
     "emailPlaceholder": "m@example.com",
     "forgotPassword": "Unustasid parooli?",
     "loggingIn": "Sisselogimine...",

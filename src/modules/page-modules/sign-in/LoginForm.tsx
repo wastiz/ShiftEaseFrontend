@@ -3,11 +3,12 @@ import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
 import {Mode, Role} from "@/types";
-import { useLogin } from "@/api/auth";
+import { useLogin, useEmployerGoogleLogin } from "@/api/auth";
 import { LoginPayload } from "@/types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
+import { GoogleLogin } from '@react-oauth/google';
 
 interface LoginFormProps {
     setMode: (mode: Mode) => void;
@@ -25,6 +26,33 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const { mutate, isPending, isSuccess } = useLogin(role)
+    const { mutate: googleLogin } = useEmployerGoogleLogin();
+
+    const handleGoogleSuccess = (credentialResponse: any) => {
+        if (credentialResponse.credential) {
+            googleLogin(
+                { token: credentialResponse.credential },
+                {
+                    onSuccess: (data) => {
+                        router.push("/organizations");
+                    },
+                    onError: (err: any) => {
+                        const errorData = err?.response?.data;
+                        const message =
+                            errorData?.message ||
+                            errorData?.title ||
+                            (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
+                            "Google authentication failed";
+                        setErrorMessage(message);
+                    },
+                }
+            );
+        }
+    };
+
+    const handleGoogleError = () => {
+        setErrorMessage("Google login failed");
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -37,10 +65,15 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
 
         mutate(form, {
             onSuccess: (data) => {
-                router.push(role === "employer" ? "/organizations" : "/overview");
+                router.push(role === "Employer" ? "/organizations" : "/overview");
             },
-            onError: (err: unknown) => {
-                const message = err?.response?.data || "Something went wrong";
+            onError: (err: any) => {
+                const errorData = err?.response?.data;
+                const message =
+                    errorData?.message ||
+                    errorData?.title ||
+                    (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
+                    "Something went wrong";
                 setErrorMessage(message);
             },
         });
@@ -97,9 +130,18 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                             <Button type="submit" className="w-full" disabled={isPending}>
                                 {isPending ? t('loggingIn') : tCommon('login')}
                             </Button>
-                            <Button variant="outline" className="w-full">
-                                {t('loginWithGoogle')}
-                            </Button>
+                            {role === "Employer" && (
+                                <div className="w-full">
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleSuccess}
+                                        onError={handleGoogleError}
+                                        theme="outline"
+                                        size="large"
+                                        width="100%"
+                                        text="continue_with"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Error & Success */}
