@@ -34,13 +34,14 @@ export function useGetOrganization(id: string, p0: { enabled: boolean; }) {
     });
 }
 
-export function useGetOrganizationData( id: string, p0: { enabled: boolean; }) {
+export function useGetOrganizationData( id?: string ) {
     return useQuery({
         queryKey: ["organizationDashboardData", id],
         queryFn: async () => {
             const res = await api.get<OrganizationDashboardData>(`/organizations/data/${id}`);
             return res.data;
-        }
+        },
+        enabled: !!id
     });
 }
 

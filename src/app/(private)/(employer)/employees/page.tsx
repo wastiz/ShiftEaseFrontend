@@ -23,7 +23,6 @@ import FormField from "@/components/FormField";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import Loader from "@/components/ui/Loader";
-import InfoCard from "@/components/cards/InfoCard";
 import {
     Dialog,
     DialogContent,
@@ -31,13 +30,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/shadcn/dialog";
-import {
-    useCreateEmployee,
-    useDeleteEmployee,
-    useGetEmployees,
-    useUpdateEmployee,
-} from "@/api/employer/employees";
-import { useGetGroups } from "@/api";
+
+import {useCreateEmployee, useDeleteEmployee, useGetEmployees, useGetGroups, useUpdateEmployee} from "@/api";
 import {
     Select,
     SelectContent,
