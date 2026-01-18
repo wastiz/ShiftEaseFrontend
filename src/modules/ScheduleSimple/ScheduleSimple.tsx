@@ -28,6 +28,14 @@ import { Checkbox } from "@/components/ui/shadcn/checkbox";
 import { Label } from "@/components/ui/shadcn/label";
 import DroppableCell from "@/modules/ScheduleSimple/DroppableCell";
 import { useTranslations } from 'next-intl';
+import {
+    getEmployeeTimeOff,
+    getHolidayName,
+    getTimeOffColor,
+    getTimeOffLabelKey,
+    isHoliday,
+    isWorkingDay
+} from "@/helpers/dateHelper";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -44,61 +52,6 @@ type SimpleViewProps = {
     orgSchedule?: WorkDay[];
     employeeTimeOffs?: EmployeeTimeOff[];
 };
-
-function isHoliday(date: string, holidays: Holiday[]) {
-    const d = new Date(date)
-    return holidays.some(h => h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate())
-}
-
-function isWorkingDay(date: string, workDays: WorkDay[]) {
-    const d = new Date(date)
-    const dayOfWeek = d.getUTCDay()
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const currentDayName = dayNames[dayOfWeek]
-    return workDays.some(wd => wd.dayOfWeek === currentDayName)
-}
-
-function getHolidayName(date: string, holidays: Holiday[]) {
-    const d = new Date(date)
-    const holiday = holidays.find(h => h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate())
-    return holiday?.holidayName || 'Holiday'
-}
-
-function getEmployeeTimeOff(employeeId: number, date: string, timeOffs: EmployeeTimeOff[]): EmployeeTimeOff | undefined {
-    const dateObj = new Date(date)
-    return timeOffs.find(timeOff => {
-        if (timeOff.employeeId !== employeeId) return false
-        const startDate = new Date(timeOff.startDate)
-        const endDate = new Date(timeOff.endDate)
-        return dateObj >= startDate && dateObj <= endDate
-    })
-}
-
-function getTimeOffLabelKey(type: TimeOffType): string {
-    switch (type) {
-        case TimeOffType.Vacation:
-            return 'timeOffVacation'
-        case TimeOffType.SickLeave:
-            return 'timeOffSickLeave'
-        case TimeOffType.PersonalDay:
-            return 'timeOffPersonalDay'
-        default:
-            return 'timeOffDayOff'
-    }
-}
-
-function getTimeOffColor(type: TimeOffType): string {
-    switch (type) {
-        case TimeOffType.Vacation:
-            return 'bg-blue-100 dark:bg-blue-950 border-blue-300 dark:border-blue-700'
-        case TimeOffType.SickLeave:
-            return 'bg-orange-100 dark:bg-orange-950 border-orange-300 dark:border-orange-700'
-        case TimeOffType.PersonalDay:
-            return 'bg-purple-100 dark:bg-purple-950 border-purple-300 dark:border-purple-700'
-        default:
-            return 'bg-gray-100 dark:bg-gray-950 border-gray-300 dark:border-gray-700'
-    }
-}
 
 export default function SimpleView({
                                        employees,

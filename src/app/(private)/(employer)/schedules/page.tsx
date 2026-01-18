@@ -56,7 +56,7 @@ export default function Schedules() {
     if (entitiesError) return <div className="text-red-500">{`${entitiesError}`}</div>
 
     if (!hasAllEntities) {
-        return <EntityCheckResult entities={entities || {}} />
+        return <EntityCheckResult entities={entities} />
     }
 
     if (loadingScheduleSummaries) return <Loader />
@@ -144,15 +144,9 @@ export default function Schedules() {
                                     </CardContent>
 
                                     <CardFooter>
-                                        {hasSchedules ? (
-                                            <Button onClick={() => handleEditClick(schedule.groupId)}>
-                                                Manage Schedules
-                                            </Button>
-                                        ) : (
-                                            <Button onClick={() => handleCreateClick(schedule.groupId)}>
-                                                Create Schedule
-                                            </Button>
-                                        )}
+                                        <Button onClick={() => handleEditClick(schedule.groupId)}>
+                                            Manage Schedules
+                                        </Button>
                                     </CardFooter>
                                 </Card>
                             )

@@ -5,6 +5,14 @@ import { toast } from 'sonner'
 import ShiftBox from './ShiftBox'
 import {Holiday, WorkDay, Shift, ShiftType, EmployeeMinData} from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
+import {
+    getEmployeeTimeOff,
+    getPreviousDay, getTimeOffColor,
+    getTimeOffLabelKey,
+    isHoliday,
+    isWorkingDay,
+    timeToMinutes
+} from "@/helpers/dateHelper";
 
 const CELL_HEIGHT = 40
 const HOURS = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`)
@@ -21,66 +29,6 @@ type DayContainerProps = {
     holidays?: Holiday[]
     workDays?: WorkDay[]
     employeeTimeOffs?: EmployeeTimeOff[]
-}
-
-function isHoliday(date: string, holidays: Holiday[]) {
-    const d = new Date(date)
-    return holidays.some(h => h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate())
-}
-
-function isWorkingDay(date: string, workDays: WorkDay[]) {
-    const d = new Date(date)
-    const dayOfWeek = d.getUTCDay()
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const currentDayName = dayNames[dayOfWeek]
-
-    return workDays.some(wd => wd.dayOfWeek === currentDayName)
-}
-
-function getPreviousDay(dateStr: string): string {
-    const date = new Date(dateStr);
-    date.setDate(date.getDate() - 1);
-    return date.toISOString().split('T')[0];
-}
-
-function timeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-}
-
-function getEmployeeTimeOffsForDate(date: string, timeOffs: EmployeeTimeOff[]): EmployeeTimeOff[] {
-    const dateObj = new Date(date)
-    return timeOffs.filter(timeOff => {
-        const startDate = new Date(timeOff.startDate)
-        const endDate = new Date(timeOff.endDate)
-        return dateObj >= startDate && dateObj <= endDate
-    })
-}
-
-function getTimeOffTypeLabel(type: TimeOffType): string {
-    switch (type) {
-        case TimeOffType.Vacation:
-            return 'V'
-        case TimeOffType.SickLeave:
-            return 'S'
-        case TimeOffType.PersonalDay:
-            return 'P'
-        default:
-            return 'T'
-    }
-}
-
-function getTimeOffTypeColor(type: TimeOffType): string {
-    switch (type) {
-        case TimeOffType.Vacation:
-            return 'bg-blue-500'
-        case TimeOffType.SickLeave:
-            return 'bg-orange-500'
-        case TimeOffType.PersonalDay:
-            return 'bg-purple-500'
-        default:
-            return 'bg-gray-500'
-    }
 }
 
 export default function DayContainer({
@@ -184,36 +132,42 @@ export default function DayContainer({
         return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
     })
 
-    const timeOffsForDate = getEmployeeTimeOffsForDate(date, employeeTimeOffs)
+    const timeOffsForDate = employees
+        .map(emp => {
+            const timeOff = getEmployeeTimeOff(emp.id, date, employeeTimeOffs)
+            return timeOff
+                ? { ...timeOff, employeeName: emp.name }
+                : null
+        })
+        .filter(Boolean) as (EmployeeTimeOff & { employeeName: string })[]
 
     return (
         <div ref={ref} className="border-l relative">
-            <div
-                className={`h-10 flex flex-col items-center justify-center border-b font-medium ${
-                    isDraggingOver ? 'bg-accent' : ''
-                } ${isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''}`}
-            >
+            <div className="h-10 flex flex-col items-center justify-center border-b font-medium">
                 <div>{dateLabel}</div>
+
                 {timeOffsForDate.length > 0 && (
                     <div className="flex gap-0.5 mt-0.5">
                         {timeOffsForDate.map((timeOff, idx) => (
                             <div
                                 key={idx}
-                                className={`w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center ${getTimeOffTypeColor(timeOff.type)}`}
-                                title={`${timeOff.employeeName} - ${getTimeOffTypeLabel(timeOff.type) === 'V' ? 'Vacation' : getTimeOffTypeLabel(timeOff.type) === 'S' ? 'Sick Leave' : 'Personal Day'}`}
+                                className={`w-4 h-4 rounded-sm text-[10px] font-bold flex items-center justify-center
+                        ${getTimeOffColor(timeOff.type)}`}
+                                title={`${timeOff.employeeName}`}
                             >
-                                {getTimeOffTypeLabel(timeOff.type)}
+                                {getTimeOffLabelKey(timeOff.type).charAt(0)}
                             </div>
                         ))}
                     </div>
                 )}
             </div>
 
-            <div className="relative" style={{ height: totalHeight }}>
+            <div className="relative" style={{height: totalHeight}}>
                 {isNonWorkingDay && (
                     <>
-                        <div className="absolute inset-0 bg-stripes opacity-10 pointer-events-none z-[1]" />
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-45deg] text-red-500 font-bold text-xl opacity-20 pointer-events-none z-[2] whitespace-nowrap">
+                        <div className="absolute inset-0 bg-stripes opacity-10 pointer-events-none z-[1]"/>
+                        <div
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-45deg] text-red-500 font-bold text-xl opacity-20 pointer-events-none z-[2] whitespace-nowrap">
                             {holiday ? holidayInfo?.holidayName || 'Holiday' : 'Day Off'}
                         </div>
                     </>

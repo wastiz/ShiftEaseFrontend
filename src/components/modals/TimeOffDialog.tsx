@@ -16,22 +16,18 @@ import { Input } from "@/components/ui/shadcn/input";
 import { Textarea } from "@/components/ui/shadcn/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import FormField from "@/components/FormField";
-import {
-    useAddApprovedVacation,
-    useAddApprovedSickLeave,
-    useAddApprovedPersonalDay,
-    useGetVacations,
-    useGetSickLeaves,
-    useGetPersonalDays,
-    useGetDeleteVacation,
-    useGetDeleteSickLeave,
-    useGetDeletePersonalDay,
-} from "@/api/employee-options";
 import { VacationDto, SickLeaveDto, PersonalDayDto } from "@/types";
 import { Calendar, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
+import {
+    useAddApprovedPersonalDay,
+    useAddApprovedSickLeave,
+    useAddApprovedVacation, useDeletePersonalDay, useDeleteSickLeave, useDeleteVacation, useGetPersonalDays,
+    useGetSickLeaves,
+    useGetVacations
+} from "@/api";
 
 type TimeOffDialogProps = {
     open: boolean;
@@ -57,9 +53,9 @@ export default function TimeOffDialog({
     const { data: sickLeaves = [], isLoading: sickLeavesLoading } = useGetSickLeaves(employeeId);
     const { data: personalDays = [], isLoading: personalDaysLoading } = useGetPersonalDays(employeeId);
 
-    const deleteVacationMutation = useGetDeleteVacation(employeeId);
-    const deleteSickLeaveMutation = useGetDeleteSickLeave(employeeId);
-    const deletePersonalDayMutation = useGetDeletePersonalDay(employeeId);
+    const deleteVacationMutation = useDeleteVacation(employeeId);
+    const deleteSickLeaveMutation = useDeleteSickLeave(employeeId);
+    const deletePersonalDayMutation = useDeletePersonalDay(employeeId);
 
     const {
         register: registerVacation,

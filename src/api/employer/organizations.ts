@@ -1,17 +1,17 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {Organization, OrganizationDashboardData, OrganizationFormValues} from "@/types/organizations";
+import {CheckEntitiesResult} from "@/types";
 
 export function useCheckEntities() {
-    return useQuery({
+    return useQuery<CheckEntitiesResult>({
         queryKey: ['entities'],
         queryFn: async () => {
-            const { data } = await api.get('/organizations/check-entities');
+            const { data } = await api.get<CheckEntitiesResult>('/organizations/check-entities');
             return data
         },
     })
 }
-
 
 export function useGetOrganizations() {
     return useQuery({

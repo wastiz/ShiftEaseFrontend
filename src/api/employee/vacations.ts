@@ -11,7 +11,7 @@ export const useEmployeeVacations = (employeeId: number) =>
         },
     });
 
-export const useDeleteEmployeeVacation = (employeeId: number) => {
+export const useDeleteVacation = (employeeId: number) => {
     const qc = useQueryClient();
 
     return useMutation({
@@ -75,4 +75,20 @@ export const useApproveVacationRequest = () => {
         },
     });
 };
+
+export const useAddApprovedVacation = (employeeId: number) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (vacation: VacationDto) => {
+            const { data } = await api.post(`employee-options/employer/vacations/${employeeId}`, vacation);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['vacations', employeeId] });
+        },
+    });
+};
+
+export const useGetVacations = (employeeId: number) => useEmployeeVacations(employeeId);
 
