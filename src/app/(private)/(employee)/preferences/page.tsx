@@ -8,8 +8,8 @@ import { Calendar } from '@/components/ui/shadcn/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/shadcn/popover';
 import { useGetShiftTypes, usePreferences, useSavePreferences } from '@/api';
 import { toast } from 'sonner';
-import Header from "@/modules/Header";
-import Main from "@/modules/Main";
+import Header from "@/modules/common/Header";
+import Main from "@/modules/common/Main";
 import { format } from 'date-fns';
 import {useAuthStore} from "@/zustand/auth-state";
 

@@ -5,7 +5,7 @@ import {useEffect, useState, useMemo} from "react";
 import {DateData, EmployeeMeData, Shift} from "@/types";
 import {getDaysInMonth} from "@/helpers/dateHelper";
 import {useAuthStore} from "@/zustand/auth-state";
-import ScheduleCalendar from "@/modules/ScheduleCalendar/ScheduleCalendar";
+import ScheduleCalendar from "@/modules/schedules/ScheduleCalendar/ScheduleCalendar";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
 import {Badge} from "@/components/ui/shadcn/badge";
 import {Calendar, Clock, Users, StickyNote} from "lucide-react";

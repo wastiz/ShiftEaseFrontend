@@ -28,8 +28,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/shadcn/
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/shadcn/command';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { toast } from 'sonner';
-import Header from '@/modules/Header';
-import Main from '@/modules/Main';
+import Header from '@/modules/common/Header';
+import Main from '@/modules/common/Main';
 import { useBulkCreateEmployees, useGetGroups } from '@/api';
 import { BulkCreateResult } from '@/types';
 import CSVImporter from '@/components/bulk-import/CSVImporter';

@@ -40,8 +40,8 @@ import {
     ToggleGroupItem,
 } from "@/components/ui/shadcn/toggle-group";
 import { useAddOrganization, useGetOrganization, useUpdateOrganization } from "@/api";
-import Header from "@/modules/Header";
-import Main from "@/modules/Main";
+import Header from "@/modules/common/Header";
+import Main from "@/modules/common/Main";
 import { dayNameToEnum, Holiday, OrganizationFormValues, WorkDay } from "@/types";
 import { TimePicker } from "@/components/inputs/TimePicker";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/shadcn/tooltip";

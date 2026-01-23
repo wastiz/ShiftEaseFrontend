@@ -81,7 +81,7 @@ export const useAddApprovedVacation = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (vacation: VacationDto) => {
-            const { data } = await api.post(`employee-options/employer/vacations/${employeeId}`, vacation);
+            const { data } = await api.post(`vacations/employer/${employeeId}`, vacation);
             return data;
         },
         onSuccess: () => {

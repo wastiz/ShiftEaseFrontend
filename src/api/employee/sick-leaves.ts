@@ -35,7 +35,7 @@ export const useAddApprovedSickLeave = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (sickLeave: SickLeaveDto) => {
-            const { data } = await api.post(`employee-options/employer/sick-leaves/${employeeId}`, sickLeave);
+            const { data } = await api.post(`employer/sick-leaves/${employeeId}`, sickLeave);
             return data;
         },
         onSuccess: () => {
@@ -49,7 +49,7 @@ export const useDeleteSickLeave = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (id: number) => {
-            await api.delete(`employee-options/sick-leaves/${employeeId}/${id}`);
+            await api.delete(`sick-leaves/${employeeId}/${id}`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sick-leaves', employeeId] });

@@ -6,7 +6,7 @@ import {useCheckEntities, useScheduleSummaries} from "@/api";
 import Loader from "@/components/ui/Loader";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
 import {Button} from "@/components/ui/shadcn/button";
-import Header from "@/modules/Header";
+import Header from "@/modules/common/Header";
 import api from "@/lib/api";
 import {ScheduleSummary} from "@/types";
 import { Badge } from "@/components/ui/shadcn/badge";
@@ -14,7 +14,6 @@ import { CheckCircle2, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Schedules() {
-    //test comment
     const router = useRouter()
     const [showSuccessCard, setShowSuccessCard] = useState(false)
 
@@ -37,20 +36,6 @@ export default function Schedules() {
 
     const handleEditClick = (groupId: number) => {
         router.push(`/schedules/${groupId}`)
-    }
-
-    const handleCreateClick = async (groupId: number) => {
-        try {
-            const response = await api.post(`schedules/create-empty-schedule/${groupId}`);
-
-            if (response.data.success) {
-                router.push(`/schedules/${groupId}`)
-            } else {
-                console.log('Failed to create empty schedule:', response.data.message)
-            }
-        } catch (error) {
-            console.error('Error creating empty schedule:', error)
-        }
     }
 
     if (loadingEntities) return <Loader />

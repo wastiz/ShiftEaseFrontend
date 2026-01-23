@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/shadcn/popover";
 import { Checkbox } from "@/components/ui/shadcn/checkbox";
 import { Label } from "@/components/ui/shadcn/label";
-import DroppableCell from "@/modules/ScheduleSimple/DroppableCell";
+import DroppableCell from "@/modules/schedules/ScheduleSimple/DroppableCell";
 import { useTranslations } from 'next-intl';
 import {
     getEmployeeTimeOff,
@@ -36,6 +36,9 @@ import {
     isHoliday,
     isWorkingDay
 } from "@/helpers/dateHelper";
+import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import {MonthNavigator} from "@/modules/schedules/MonthNavigator";
+import {MessageIndicator} from "@/modules/schedules/MessageIndicator";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -51,6 +54,7 @@ type SimpleViewProps = {
     orgHolidays?: Holiday[];
     orgSchedule?: WorkDay[];
     employeeTimeOffs?: EmployeeTimeOff[];
+    warningMessage: WarningMessage | null;
 };
 
 export default function SimpleView({
@@ -67,6 +71,7 @@ export default function SimpleView({
                                        orgHolidays = [],
                                        orgSchedule = [],
                                        employeeTimeOffs = [],
+                                       warningMessage,
                                    }: SimpleViewProps) {
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
@@ -195,47 +200,24 @@ export default function SimpleView({
     return (
         <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center gap-3 flex-shrink-0">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                        currentMonth === 0
-                            ? (setCurrentMonth(11), setCurrentYear(currentYear - 1))
-                            : setCurrentMonth(currentMonth - 1)
-                    }
-                >
-                    <ChevronLeft />
-                </Button>
+                <MonthNavigator
+                    currentMonth={currentMonth}
+                    currentYear={currentYear}
+                    isConfirmed={isConfirmed}
+                    onChange={(month, year) => {
+                        setCurrentMonth(month);
+                        setCurrentYear(year);
+                    }}
+                />
 
-                <div className="flex items-center gap-2">
-                    <span className="font-medium whitespace-nowrap">
-                        {new Date(currentYear, currentMonth).toLocaleString('default', {
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </span>
-                    {isConfirmed ? (
-                        <Badge variant="secondary">
-                            Confirmed
-                        </Badge>
-                    ) : (
-                        <Badge variant="outline">
-                            Unconfirmed
-                        </Badge>
-                    )}
-                </div>
 
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                        currentMonth === 11
-                            ? (setCurrentMonth(0), setCurrentYear(currentYear + 1))
-                            : setCurrentMonth(currentMonth + 1)
-                    }
-                >
-                    <ChevronRight />
-                </Button>
+                {warningMessage && (
+                    <MessageIndicator
+                        message={warningMessage.message}
+                        messageType="warning"
+                    />
+                )}
+
 
                 <Popover>
                     <PopoverTrigger asChild>

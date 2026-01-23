@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import Header from "@/modules/Header";
+import Header from "@/modules/common/Header";
 import {
     Drawer,
     DrawerClose,

@@ -23,8 +23,8 @@ import { useAuthStore } from '@/zustand/auth-state';
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import Header from "@/modules/Header";
-import Main from "@/modules/Main";
+import Header from "@/modules/common/Header";
+import Main from "@/modules/common/Main";
 
 export default function VacationPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

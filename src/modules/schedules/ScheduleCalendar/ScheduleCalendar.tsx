@@ -16,6 +16,9 @@ import {
 } from '@/components/ui/shadcn/popover'
 import { Checkbox } from '@/components/ui/shadcn/checkbox'
 import { Label } from '@/components/ui/shadcn/label'
+import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import {MonthNavigator} from "@/modules/schedules/MonthNavigator";
+import {MessageIndicator} from "@/modules/schedules/MessageIndicator";
 
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
@@ -33,6 +36,7 @@ type ScheduleCalendarProps = {
     orgHolidays?: Holiday[]
     orgSchedule?: WorkDay[]
     employeeTimeOffs?: EmployeeTimeOff[]
+    warningMessage: WarningMessage | null
 }
 
 export default function ScheduleCalendar({
@@ -51,6 +55,7 @@ export default function ScheduleCalendar({
                                              orgHolidays,
                                              orgSchedule,
                                              employeeTimeOffs = [],
+                                             warningMessage,
                                          }: ScheduleCalendarProps) {
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
@@ -150,47 +155,15 @@ export default function ScheduleCalendar({
 
                 <section className="flex-1 flex flex-col min-w-0 p-4 space-y-4">
                     <div className="flex items-center gap-3 flex-shrink-0">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() =>
-                                currentMonth === 0
-                                    ? (setCurrentMonth(11), setCurrentYear(currentYear - 1))
-                                    : setCurrentMonth(currentMonth - 1)
-                            }
-                        >
-                            <ChevronLeft />
-                        </Button>
-
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium whitespace-nowrap">
-                                {new Date(currentYear, currentMonth).toLocaleString('default', {
-                                    month: 'long',
-                                    year: 'numeric',
-                                })}
-                            </span>
-                            {isConfirmed ? (
-                                <Badge variant="secondary">
-                                    Confirmed
-                                </Badge>
-                            ) : (
-                                <Badge variant="outline">
-                                    Unconfirmed
-                                </Badge>
-                            )}
-                        </div>
-
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() =>
-                                currentMonth === 11
-                                    ? (setCurrentMonth(0), setCurrentYear(currentYear + 1))
-                                    : setCurrentMonth(currentMonth + 1)
-                            }
-                        >
-                            <ChevronRight />
-                        </Button>
+                        <MonthNavigator
+                            currentMonth={currentMonth}
+                            currentYear={currentYear}
+                            isConfirmed={isConfirmed}
+                            onChange={(month, year) => {
+                                setCurrentMonth(month);
+                                setCurrentYear(year);
+                            }}
+                        />
 
                         {isEditable && (
                             <>
@@ -246,6 +219,14 @@ export default function ScheduleCalendar({
                                 </Button>
                             </>
                         )}
+
+                        {warningMessage && (
+                            <MessageIndicator
+                                message={warningMessage.message}
+                                messageType="warning"
+                            />
+                        )}
+
                     </div>
 
                     <div className="flex-1 border rounded-lg overflow-auto">

@@ -5,21 +5,26 @@ import { Button } from '@/components/ui/shadcn/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select'
 import { useParams } from "next/navigation"
 import {useExportSchedule, useGenerateSchedule, useSaveSchedule, useScheduleData, useUnconfirmSchedule} from "@/api"
-import Header from "@/modules/Header"
+import Header from "@/modules/common/Header"
 import { Shift, SchedulePattern, EmployeeTimeOff } from "@/types/schedule"
-import ScheduleCalendar from "@/modules/ScheduleCalendar/ScheduleCalendar"
+import ScheduleCalendar from "@/modules/schedules/ScheduleCalendar/ScheduleCalendar"
 import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import {Holiday, WorkDay} from "@/types";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/shadcn/toggle-group";
 import {Calendar, Download, List, Loader2, Settings} from "lucide-react";
-import SimpleView from "@/modules/ScheduleSimple/ScheduleSimple";
+import SimpleView from "@/modules/schedules/ScheduleSimple/ScheduleSimple";
 import {toast} from "sonner";
 import { useTranslations } from 'next-intl';
 import SchedulePresetDialog, { SchedulePreset } from "@/modules/page-modules/schedules/SchedulePresetDialog";
 import { ButtonGroup } from '@/components/ui/shadcn/button-group'
 
 const today = new Date()
+export type MessageType = "warning" | "error";
+export type WarningMessage = {
+    message: string;
+    messageType: MessageType
+}
 
 export default function ManageSchedule() {
     const t = useTranslations('schedule');
@@ -40,6 +45,7 @@ export default function ManageSchedule() {
     const [employeeTimeOffs, setEmployeeTimeOffs] = useState<EmployeeTimeOff[]>([])
     const [presetDialogOpen, setPresetDialogOpen] = useState(false)
     const [currentPreset, setCurrentPreset] = useState<SchedulePreset | null>(null)
+    const [warningMessage, setWarningMessage] = useState<WarningMessage | null>(null)
 
     useEffect(() => {
         setDaysOfMonth(getDaysInMonth(currentYear, currentMonth))
@@ -92,7 +98,6 @@ export default function ManageSchedule() {
     }, [selectedGroupId])
 
     const handleGenerate = () => {
-        // Use preset if available, otherwise use default values
         const preset = currentPreset || {
             AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
             MaxConsecutiveShifts: 5,
@@ -113,9 +118,13 @@ export default function ManageSchedule() {
             {
                 onSuccess: (responseData) => {
                     if (responseData) {
+                        console.log(responseData)
                         toast.success(responseData.message)
-                        setShiftsData(responseData.data.shifts)
-                        setIsConfirmed(false)
+                        setWarningMessage({message: responseData.message, messageType: "warning"})
+                        if (responseData.data.shifts.length > 0) {
+                            setShiftsData(responseData.data.shifts)
+                            setIsConfirmed(false)
+                        }
                     }
                 }
             }
@@ -225,13 +234,12 @@ export default function ManageSchedule() {
                     currentYear={currentYear}
                     setCurrentMonth={setCurrentMonth}
                     setCurrentYear={setCurrentYear}
-                    autorenewal={autorenewal}
-                    setAutorenewal={setAutorenewal}
                     isConfirmed={isConfirmed}
                     isEditable={true}
                     orgHolidays={orgHolidays}
                     orgSchedule={orgSchedule}
                     employeeTimeOffs={employeeTimeOffs}
+                    warningMessage={warningMessage}
                 />
             ) : (
                 <SimpleView
@@ -248,6 +256,7 @@ export default function ManageSchedule() {
                     orgHolidays={orgHolidays}
                     orgSchedule={orgSchedule}
                     employeeTimeOffs={employeeTimeOffs}
+                    warningMessage={warningMessage}
                 />
             )}
 

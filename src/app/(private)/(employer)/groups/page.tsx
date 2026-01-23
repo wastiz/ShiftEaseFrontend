@@ -21,7 +21,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/shadcn/tooltip";
 import InfoCard from "@/components/cards/InfoCard";
-import Header from "@/modules/Header";
+import Header from "@/modules/common/Header";
 import { Group, GroupFormValues } from "@/types";
 import { useGetGroups, useCreateGroup, useUpdateGroup, useDeleteGroup } from "@/api";
 import {

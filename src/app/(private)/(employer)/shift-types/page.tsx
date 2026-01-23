@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useCreateShiftType, useDeleteShiftType, useGetShiftTypes, useUpdateShiftType } from "@/api";
 import { Label } from "@/components/ui/shadcn/label";
 import FormField from "@/components/FormField";
-import Header from "@/modules/Header";
+import Header from "@/modules/common/Header";
 import {TimePicker} from "@/components/inputs/TimePicker";
 import ColorPicker from "@/components/inputs/ColorPicker";
 

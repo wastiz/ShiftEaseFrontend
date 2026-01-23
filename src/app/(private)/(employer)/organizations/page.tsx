@@ -21,8 +21,8 @@ import {
     DialogFooter,
 } from "@/components/ui/shadcn/dialog"
 import toast from "react-hot-toast";
-import Header from "@/modules/Header";
-import Main from "@/modules/Main";
+import Header from "@/modules/common/Header";
+import Main from "@/modules/common/Main";
 import {useAuthStore} from "@/zustand/auth-state";
 
 export default function Organizations() {
