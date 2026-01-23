@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useState } from "react"
 import {
     LayoutDashboard,
     Bell,
@@ -23,6 +24,8 @@ import {
 import Logo from "@/components/ui/Logo";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/shadcn/collapsible";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import NotificationWindow from "@/components/NotificationWindow";
+import { useUnreadNotificationsCount } from "@/api/notification";
 
 export interface NavItem {
     title: string
@@ -57,6 +60,8 @@ export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
     const tCommon = useTranslations('common')
+    const [notificationsOpen, setNotificationsOpen] = useState(false)
+    const { data: unreadCount } = useUnreadNotificationsCount()
 
     const mappedNavMain = navMain.map(item => ({
         ...item,
@@ -64,28 +69,45 @@ export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {
     }))
 
     return (
-        <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
-                <Logo variant={isCollapsed ? "small" : "big"} className="mt-3 ml-1.5" />
-            </SidebarHeader>
+        <>
+            <Sidebar collapsible="icon" {...props}>
+                <SidebarHeader>
+                    <Logo variant={isCollapsed ? "small" : "big"} className="mt-3 ml-1.5" />
+                </SidebarHeader>
 
-            <SidebarContent>
-                <NavMain items={mappedNavMain} />
-            </SidebarContent>
+                <SidebarContent>
+                    <NavMain items={mappedNavMain} />
+                </SidebarContent>
 
-            <SidebarFooter>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip={tCommon('notifications')}>
-                        <a href="/notifications">
+                <SidebarFooter>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            tooltip={tCommon('notifications')}
+                            onClick={() => setNotificationsOpen((prev) => !prev)}
+                            className="relative"
+                        >
                             <Bell />
                             <span>{tCommon('notifications')}</span>
-                        </a>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-                <NavUser user={user} />
-            </SidebarFooter>
+                            {!!unreadCount && unreadCount > 0 && (
+                                <span className="absolute top-1 left-5 w-2 h-2 bg-orange-400 rounded-full" />
+                            )}
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <NavUser user={user} />
+                </SidebarFooter>
 
-            <SidebarRail />
-        </Sidebar>
+                <SidebarRail />
+            </Sidebar>
+
+            {notificationsOpen && (
+                <>
+                    <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setNotificationsOpen(false)}
+                    />
+                    <NotificationWindow onClose={() => setNotificationsOpen(false)} />
+                </>
+            )}
+        </>
     )
 }

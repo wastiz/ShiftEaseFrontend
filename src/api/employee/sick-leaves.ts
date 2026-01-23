@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {SickLeaveDto, SickLeaveRequestDto} from "@/types";
+import {SickLeaveDto, SickLeaveRequestCreateDto, SickLeaveRequestDto} from "@/types";
 import api from "@/lib/api";
 
 export const useSickLeaves = (employeeId: number) =>
@@ -35,7 +35,7 @@ export const useAddApprovedSickLeave = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (sickLeave: SickLeaveDto) => {
-            const { data } = await api.post(`employer/sick-leaves/${employeeId}`, sickLeave);
+            const { data } = await api.post(`sick-leaves/employer/${employeeId}`, sickLeave);
             return data;
         },
         onSuccess: () => {
@@ -53,6 +53,33 @@ export const useDeleteSickLeave = (employeeId: number) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['sick-leaves', employeeId] });
+        },
+    });
+};
+
+export const useAddSickLeaveRequest = (employeeId: number) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (dto: SickLeaveRequestCreateDto) => {
+            const { data } = await api.post(`sick-leaves/requests/${employeeId}`, dto);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['sick-leave-requests', employeeId] });
+        },
+    });
+};
+
+export const useDeleteSickLeaveRequest = (employeeId: number) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: number) => {
+            await api.delete(`sick-leaves/requests/${employeeId}/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['sick-leave-requests', employeeId] });
         },
     });
 };

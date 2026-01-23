@@ -307,6 +307,8 @@
   "notifications": {
     "title": "Teavitused",
     "noNew": "Uusi teavitusi pole",
-    "allCaughtUp": "Olete kõigega kursis!"
+    "allCaughtUp": "Olete kõigega kursis!",
+    "markRead": "Märgi loetuks",
+    "markAllRead": "Märgi kõik loetuks"
   }
 }

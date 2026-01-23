@@ -2,14 +2,13 @@
 
 import {useScheduleData} from "@/api";
 import {useEffect, useState, useMemo} from "react";
-import {DateData, EmployeeMeData, Shift} from "@/types";
-import {getDaysInMonth} from "@/helpers/dateHelper";
+import {EmployeeMeData, Shift} from "@/types";
 import {useAuthStore} from "@/zustand/auth-state";
-import ScheduleCalendar from "@/modules/schedules/ScheduleCalendar/ScheduleCalendar";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
 import {Badge} from "@/components/ui/shadcn/badge";
-import {Calendar, Clock, Users, StickyNote} from "lucide-react";
+import {Calendar as CalendarIcon, Clock, Users, StickyNote, Loader2} from "lucide-react";
 import {Separator} from "@/components/ui/shadcn/separator";
+import {Calendar} from "@/components/ui/shadcn/calendar";
 
 const today = new Date();
 
@@ -17,23 +16,20 @@ export default function EmployeePersonalPage() {
     const {user} = useAuthStore();
     const employeeUser = user as EmployeeMeData;
 
-    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-    const [currentYear, setCurrentYear] = useState(today.getFullYear());
-    const [daysOfMonth, setDaysOfMonth] = useState<DateData[]>(getDaysInMonth(today.getFullYear(), today.getMonth()));
+    const [currentMonth, setCurrentMonth] = useState(today);
+    const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
     const [shiftsData, setShiftsData] = useState<Shift[]>([]);
+
+    const calendarMonth = currentMonth.getMonth();
+    const calendarYear = currentMonth.getFullYear();
 
     const primaryGroupId = employeeUser.groupIds?.[0];
     const {data: scheduleData, isLoading} = useScheduleData({
         groupId: primaryGroupId,
-        month: currentMonth,
-        year: currentYear,
+        month: calendarMonth,
+        year: calendarYear,
         showOnlyConfirmed: false
     });
-
-    useEffect(() => {
-        const newDays = getDaysInMonth(currentYear, currentMonth);
-        setDaysOfMonth(newDays);
-    }, [currentMonth, currentYear]);
 
     useEffect(() => {
         if (scheduleData?.schedule) {
@@ -62,6 +58,20 @@ export default function EmployeePersonalPage() {
             .slice(0, 5);
     }, [shiftsData]);
 
+    const workDays = useMemo(() => {
+        return shiftsData.map(s => {
+            const d = new Date(s.date);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        });
+    }, [shiftsData]);
+
+    const selectedDayShifts = useMemo(() => {
+        if (!selectedDay) return [];
+        const sel = selectedDay.toISOString().split('T')[0];
+        return shiftsData.filter(s => s.date === sel);
+    }, [selectedDay, shiftsData]);
+
     const getMyNote = (shift: Shift) => {
         const myAssignment = shift.employees.find(emp => emp.id === employeeUser.id);
         return myAssignment?.note;
@@ -74,7 +84,7 @@ export default function EmployeePersonalPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <div className="text-lg">Загрузка...</div>
+                <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         );
     }
@@ -92,7 +102,7 @@ export default function EmployeePersonalPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
+                        <CalendarIcon className="h-5 w-5" />
                         Предстоящие смены
                     </CardTitle>
                     <CardDescription>
@@ -178,31 +188,93 @@ export default function EmployeePersonalPage() {
                 </CardContent>
             </Card>
 
-            {/* Monthly Calendar */}
+            {/* Calendar Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle>График работы на месяц</CardTitle>
+                    <CardTitle>Календарь смен</CardTitle>
                     <CardDescription>
-                        Полное расписание смен с информацией о коллегах
+                        Нажмите на день, чтобы увидеть подробности смены
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
-                    {scheduleData?.schedule && (
-                        <ScheduleCalendar
-                            shiftsData={scheduleData.schedule.shifts}
-                            shiftTypes={scheduleData.shiftTypes || []}
-                            employees={scheduleData.employees || []}
-                            daysOfMonth={daysOfMonth}
-                            currentMonth={currentMonth}
-                            currentYear={currentYear}
-                            setCurrentMonth={setCurrentMonth}
-                            setCurrentYear={setCurrentYear}
-                            isConfirmed={scheduleData.schedule.isConfirmed}
-                            isEditable={false}
-                            orgHolidays={scheduleData.schedule.organizationHolidays}
-                            orgSchedule={scheduleData.schedule.organizationSchedule}
+                <CardContent>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        <Calendar
+                            mode="single"
+                            selected={selectedDay}
+                            onSelect={setSelectedDay}
+                            month={currentMonth}
+                            onMonthChange={setCurrentMonth}
+                            modifiers={{
+                                workDay: workDays,
+                            }}
+                            modifiersClassNames={{
+                                workDay: "bg-primary/20 text-primary font-semibold",
+                            }}
+                            className="rounded-md border"
                         />
-                    )}
+
+                        {/* Selected day details */}
+                        <div className="flex-1 min-w-0">
+                            {selectedDay ? (
+                                selectedDayShifts.length > 0 ? (
+                                    <div className="space-y-3">
+                                        <h4 className="font-medium text-sm text-muted-foreground">
+                                            {selectedDay.toLocaleDateString('ru-RU', {
+                                                weekday: 'long',
+                                                day: 'numeric',
+                                                month: 'long'
+                                            })}
+                                        </h4>
+                                        {selectedDayShifts.map(shift => {
+                                            const myNote = getMyNote(shift);
+                                            const coworkers = getCoworkers(shift);
+
+                                            return (
+                                                <div key={shift.id} className="border rounded-lg p-3 space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div
+                                                            className="w-2.5 h-2.5 rounded-full"
+                                                            style={{ backgroundColor: shift.color }}
+                                                        />
+                                                        <span className="font-medium">{shift.shiftTypeName}</span>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2 text-sm">
+                                                        <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                                        <span>{shift.startTime} — {shift.endTime}</span>
+                                                    </div>
+
+                                                    {coworkers.length > 0 && (
+                                                        <div className="flex items-start gap-2 text-sm">
+                                                            <Users className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
+                                                            <span className="text-muted-foreground">
+                                                                {coworkers.map(c => c.name).join(', ')}
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    {myNote && (
+                                                        <div className="flex items-start gap-2 text-sm bg-muted/50 p-2 rounded">
+                                                            <StickyNote className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
+                                                            <span>{myNote}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm py-8">
+                                        Нет смен в этот день
+                                    </div>
+                                )
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-muted-foreground text-sm py-8">
+                                    Выберите день в календаре
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         </div>

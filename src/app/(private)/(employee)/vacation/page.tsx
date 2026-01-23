@@ -13,10 +13,9 @@ import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import {
     useEmployeeVacations,
-    useEmployeeVacationRequests,
-    useAddEmployeeVacationRequest,
-    useDeleteEmployeeVacation,
-    useDeleteEmployeeVacationRequest
+    useVacationRequests,
+    useAddVacationRequest,
+    useDeleteVacationRequest,
 } from '@/api';
 import { EmployeeMeData } from '@/types';
 import { useAuthStore } from '@/zustand/auth-state';
@@ -37,10 +36,9 @@ export default function VacationPage() {
     const employeeId = employeeUser.id;
 
     const { data: approvedVacations, isLoading: isLoadingApproved } = useEmployeeVacations(employeeId);
-    const { data: vacationRequests, isLoading: isLoadingRequests } = useEmployeeVacationRequests(employeeId);
-    const addVacationRequest = useAddEmployeeVacationRequest(employeeId);
-    const deleteApprovedVacation = useDeleteEmployeeVacation(employeeId);
-    const deleteVacationRequest = useDeleteEmployeeVacationRequest(employeeId);
+    const { data: vacationRequests, isLoading: isLoadingRequests } = useVacationRequests(employeeId);
+    const addVacationRequest = useAddVacationRequest(employeeId);
+    const deleteVacationRequest = useDeleteVacationRequest(employeeId);
 
     const isLoading = isLoadingApproved || isLoadingRequests;
 
@@ -78,17 +76,6 @@ export default function VacationPage() {
             toast.success('Request deleted successfully');
         } catch (error) {
             toast.error('Failed to delete request');
-        }
-    };
-
-    const handleDeleteApproved = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this vacation?')) return;
-
-        try {
-            await deleteApprovedVacation.mutateAsync(id);
-            toast.success('Vacation deleted successfully');
-        } catch (error) {
-            toast.error('Failed to delete vacation');
         }
     };
 
@@ -283,39 +270,23 @@ export default function VacationPage() {
                                 approvedVacations?.map((vacation) => (
                                     <Card key={vacation.id} className="hover:shadow-md transition-shadow">
                                         <CardHeader className="pb-3">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="flex-1 min-w-0">
-                                                    <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
-                                                        <Calendar className="h-5 w-5 flex-shrink-0"/>
-                                                        <span className="truncate">
-                                                            {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
-                                                            {' — '}
-                                                            {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
-                                                        </span>
-                                                    </CardTitle>
-                                                    <CardDescription className="mt-1">
-                                                        {Math.ceil(
-                                                            (new Date(vacation.endDate).getTime() -
-                                                                new Date(vacation.startDate).getTime()) /
-                                                            (1000 * 60 * 60 * 24)
-                                                        )}{' '}
-                                                        days
-                                                    </CardDescription>
-                                                </div>
-
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => vacation.id && handleDeleteApproved(vacation.id)}
-                                                    disabled={deleteApprovedVacation.isPending}
-                                                    className="flex-shrink-0"
-                                                >
-                                                    {deleteApprovedVacation.isPending ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin"/>
-                                                    ) : (
-                                                        <Trash2 className="h-4 w-4"/>
-                                                    )}
-                                                </Button>
+                                            <div className="flex-1 min-w-0">
+                                                <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
+                                                    <Calendar className="h-5 w-5 flex-shrink-0"/>
+                                                    <span className="truncate">
+                                                        {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
+                                                        {' — '}
+                                                        {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                    </span>
+                                                </CardTitle>
+                                                <CardDescription className="mt-1">
+                                                    {Math.ceil(
+                                                        (new Date(vacation.endDate).getTime() -
+                                                            new Date(vacation.startDate).getTime()) /
+                                                        (1000 * 60 * 60 * 24)
+                                                    )}{' '}
+                                                    days
+                                                </CardDescription>
                                             </div>
                                         </CardHeader>
 

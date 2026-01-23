@@ -7,6 +7,7 @@ export * from "./employee";
 export * from "./employee-options";
 export * from "./group";
 export * from "./shiftType";
+export * from "./notification";
 
 
 export type Role = "Employer" | "Employee";

@@ -18,10 +18,18 @@ export interface VacationRequestDto {
 export interface VacationRequestCreateDto {
     startDate: string;
     endDate: string;
+    reason?: string;
 }
 
 export interface SickLeaveDto {
     id?: number;
+    startDate: string;
+    endDate: string;
+    diagnosis?: string;
+    documentNumber?: string;
+}
+
+export interface SickLeaveRequestCreateDto {
     startDate: string;
     endDate: string;
     diagnosis?: string;

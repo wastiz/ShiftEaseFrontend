@@ -327,6 +327,8 @@
   "notifications": {
     "title": "Notifications",
     "noNew": "No new notifications",
-    "allCaughtUp": "You're all caught up!"
+    "allCaughtUp": "You're all caught up!",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read"
   }
 }

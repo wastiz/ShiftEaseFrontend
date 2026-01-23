@@ -34,7 +34,7 @@ export const useDeletePersonalDay = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (id: number) => {
-            await api.delete(`employee-options/personal-days/${employeeId}/${id}`);
+            await api.delete(`personal-days/${employeeId}/${id}`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['personal-days', employeeId] });
@@ -47,7 +47,7 @@ export const useAddApprovedPersonalDay = (employeeId: number) => {
 
     return useMutation({
         mutationFn: async (personalDay: PersonalDayDto) => {
-            const { data } = await api.post(`employee-options/employer/personal-days/${employeeId}`, personalDay);
+            const { data } = await api.post(`personal-days/employer/${employeeId}`, personalDay);
             return data;
         },
         onSuccess: () => {

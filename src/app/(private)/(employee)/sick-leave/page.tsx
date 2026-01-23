@@ -8,9 +8,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
 import { Textarea } from '@/components/ui/shadcn/textarea';
+import { Badge } from '@/components/ui/shadcn/badge';
 import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
-import { useSickLeaves } from '@/api';
-import { SickLeaveDto } from "@/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
+import {
+    useSickLeaves,
+    useSickLeaveRequests,
+    useAddSickLeaveRequest,
+    useDeleteSickLeaveRequest,
+} from '@/api';
+import { EmployeeMeData } from '@/types';
+import { useAuthStore } from '@/zustand/auth-state';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -24,9 +32,16 @@ export default function SickLeavePage() {
     const [diagnosis, setDiagnosis] = useState('');
     const [documentNumber, setDocumentNumber] = useState('');
 
-    const { data: sickLeaves, isLoading } = useSickLeaves();
-    const addSickLeave = useAddSickLeave();
-    const deleteSickLeave = useDeleteSickLeave();
+    const { user } = useAuthStore();
+    const employeeUser = user as EmployeeMeData;
+    const employeeId = employeeUser.id;
+
+    const { data: sickLeaves, isLoading: isLoadingSickLeaves } = useSickLeaves(employeeId);
+    const { data: sickLeaveRequests, isLoading: isLoadingRequests } = useSickLeaveRequests(employeeId);
+    const addSickLeaveRequest = useAddSickLeaveRequest(employeeId);
+    const deleteSickLeaveRequest = useDeleteSickLeaveRequest(employeeId);
+
+    const isLoading = isLoadingSickLeaves || isLoadingRequests;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,14 +52,14 @@ export default function SickLeavePage() {
         }
 
         try {
-            await addSickLeave.mutateAsync({
+            await addSickLeaveRequest.mutateAsync({
                 startDate,
                 endDate,
-                diagnosis,
-                documentNumber,
+                diagnosis: diagnosis || undefined,
+                documentNumber: documentNumber || undefined,
             });
 
-            toast.success('Sick leave added successfully');
+            toast.success('Sick leave request submitted successfully');
 
             setIsDialogOpen(false);
             setStartDate('');
@@ -52,18 +67,29 @@ export default function SickLeavePage() {
             setDiagnosis('');
             setDocumentNumber('');
         } catch (error) {
-            toast.error('Failed to add sick leave');
+            toast.error('Failed to submit sick leave request');
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this sick leave?')) return;
+    const handleDeleteRequest = async (id: number) => {
+        if (!confirm('Are you sure you want to delete this request?')) return;
 
         try {
-            await deleteSickLeave.mutateAsync(id);
-            toast.success('Sick leave deleted successfully');
+            await deleteSickLeaveRequest.mutateAsync(id);
+            toast.success('Request deleted successfully');
         } catch (error) {
-            toast.error('Failed to delete sick leave');
+            toast.error('Failed to delete request');
+        }
+    };
+
+    const getStatusBadge = (status?: string) => {
+        switch (status) {
+            case 'approved':
+                return <Badge className="bg-green-500">Approved</Badge>;
+            case 'rejected':
+                return <Badge variant="destructive">Rejected</Badge>;
+            default:
+                return <Badge variant="secondary">Pending</Badge>;
         }
     };
 
@@ -82,15 +108,15 @@ export default function SickLeavePage() {
                     <DialogTrigger asChild>
                         <Button size="sm" className="md:size-default">
                             <Plus className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">Add New</span>
+                            <span className="hidden sm:inline">New Request</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <form onSubmit={handleSubmit}>
                             <DialogHeader>
-                                <DialogTitle>New Sick Leave</DialogTitle>
+                                <DialogTitle>New Sick Leave Request</DialogTitle>
                                 <DialogDescription>
-                                    Fill in the sick leave information
+                                    Submit a sick leave request for approval
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -141,11 +167,11 @@ export default function SickLeavePage() {
                             </div>
 
                             <DialogFooter>
-                                <Button type="submit" disabled={addSickLeave.isPending}>
-                                    {addSickLeave.isPending && (
+                                <Button type="submit" disabled={addSickLeaveRequest.isPending}>
+                                    {addSickLeaveRequest.isPending && (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                                     )}
-                                    Add Sick Leave
+                                    Submit Request
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -155,13 +181,10 @@ export default function SickLeavePage() {
             <Main>
                 <div className="container max-w-4xl mx-auto p-4 pb-20 md:p-6">
                     <div className="flex flex-col gap-4 mb-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-
-                                <p className="text-muted-foreground text-sm md:text-base">
-                                    Manage your sick leave documents
-                                </p>
-                            </div>
+                        <div>
+                            <p className="text-muted-foreground text-sm md:text-base">
+                                View your sick leaves and submit requests
+                            </p>
                         </div>
 
                         <Alert>
@@ -172,30 +195,107 @@ export default function SickLeavePage() {
                         </Alert>
                     </div>
 
-                    <div className="space-y-3 md:space-y-4">
-                        {sickLeaves && sickLeaves.length === 0 ? (
-                            <Card>
-                                <CardContent className="flex flex-col items-center justify-center py-10">
-                                    <FileText className="h-12 w-12 text-muted-foreground mb-4"/>
-                                    <p className="text-muted-foreground text-center">
-                                        You don't have any sick leaves yet
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            sickLeaves?.map((sickLeave) => (
-                                <Card key={sickLeave.id} className="hover:shadow-md transition-shadow">
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-start justify-between gap-2">
+                    <Tabs defaultValue="requests" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="requests">Pending Requests</TabsTrigger>
+                            <TabsTrigger value="approved">Approved</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="requests" className="space-y-4 mt-6">
+                            {sickLeaveRequests && sickLeaveRequests.length === 0 ? (
+                                <Card>
+                                    <CardContent className="flex flex-col items-center justify-center py-10">
+                                        <FileText className="h-12 w-12 text-muted-foreground mb-4"/>
+                                        <p className="text-muted-foreground text-center">
+                                            You don't have any pending sick leave requests
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                sickLeaveRequests?.map((request) => (
+                                    <Card key={request.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
+                                                        <FileText className="h-5 w-5 flex-shrink-0"/>
+                                                        <span className="truncate">
+                                                            {format(new Date(request.startDate), 'MMM d', {locale: enUS})}
+                                                            {' — '}
+                                                            {format(new Date(request.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                        </span>
+                                                    </CardTitle>
+                                                    <CardDescription className="mt-1">
+                                                        {Math.ceil(
+                                                            (new Date(request.endDate).getTime() -
+                                                                new Date(request.startDate).getTime()) /
+                                                            (1000 * 60 * 60 * 24)
+                                                        )}{' '}
+                                                        days
+                                                    </CardDescription>
+                                                </div>
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => request.id && handleDeleteRequest(request.id)}
+                                                    disabled={deleteSickLeaveRequest.isPending}
+                                                    className="flex-shrink-0"
+                                                >
+                                                    {deleteSickLeaveRequest.isPending ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin"/>
+                                                    ) : (
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </CardHeader>
+
+                                        <CardContent className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                {getStatusBadge(request.status)}
+                                            </div>
+
+                                            {request.documentNumber && (
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <span className="text-muted-foreground">Document:</span>
+                                                    <span className="font-mono">{request.documentNumber}</span>
+                                                </div>
+                                            )}
+
+                                            {request.diagnosis && (
+                                                <p className="text-sm text-muted-foreground">
+                                                    {request.diagnosis}
+                                                </p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value="approved" className="space-y-4 mt-6">
+                            {sickLeaves && sickLeaves.length === 0 ? (
+                                <Card>
+                                    <CardContent className="flex flex-col items-center justify-center py-10">
+                                        <FileText className="h-12 w-12 text-muted-foreground mb-4"/>
+                                        <p className="text-muted-foreground text-center">
+                                            You don't have any approved sick leaves
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                sickLeaves?.map((sickLeave) => (
+                                    <Card key={sickLeave.id} className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="pb-3">
                                             <div className="flex-1 min-w-0">
-                                                <CardTitle
-                                                    className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
+                                                <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
                                                     <FileText className="h-5 w-5 flex-shrink-0"/>
                                                     <span className="truncate">
-                                                {format(new Date(sickLeave.startDate), 'MMM d', {locale: enUS})}
+                                                        {format(new Date(sickLeave.startDate), 'MMM d', {locale: enUS})}
                                                         {' — '}
                                                         {format(new Date(sickLeave.endDate), 'MMM d, yyyy', {locale: enUS})}
-                                            </span>
+                                                    </span>
                                                 </CardTitle>
                                                 <CardDescription className="mt-1">
                                                     {Math.ceil(
@@ -206,41 +306,29 @@ export default function SickLeavePage() {
                                                     days
                                                 </CardDescription>
                                             </div>
+                                        </CardHeader>
 
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => sickLeave.id && handleDelete(sickLeave.id)}
-                                                disabled={deleteSickLeave.isPending}
-                                                className="flex-shrink-0"
-                                            >
-                                                {deleteSickLeave.isPending ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin"/>
-                                                ) : (
-                                                    <Trash2 className="h-4 w-4"/>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </CardHeader>
+                                        <CardContent className="space-y-2">
+                                            <Badge className="bg-green-500">Approved</Badge>
 
-                                    <CardContent className="space-y-2">
-                                        {sickLeave.documentNumber && (
-                                            <div className="flex items-center gap-2 text-sm">
-                                                <span className="text-muted-foreground">Document:</span>
-                                                <span className="font-mono">{sickLeave.documentNumber}</span>
-                                            </div>
-                                        )}
+                                            {sickLeave.documentNumber && (
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <span className="text-muted-foreground">Document:</span>
+                                                    <span className="font-mono">{sickLeave.documentNumber}</span>
+                                                </div>
+                                            )}
 
-                                        {sickLeave.diagnosis && (
-                                            <p className="text-sm text-muted-foreground">
-                                                {sickLeave.diagnosis}
-                                            </p>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            ))
-                        )}
-                    </div>
+                                            {sickLeave.diagnosis && (
+                                                <p className="text-sm text-muted-foreground">
+                                                    {sickLeave.diagnosis}
+                                                </p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </Main>
         </>
