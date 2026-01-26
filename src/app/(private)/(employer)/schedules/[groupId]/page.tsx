@@ -18,6 +18,8 @@ import {toast} from "sonner";
 import { useTranslations } from 'next-intl';
 import SchedulePresetDialog, { SchedulePreset } from "@/modules/page-modules/schedules/SchedulePresetDialog";
 import { ButtonGroup } from '@/components/ui/shadcn/button-group'
+import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
+import { GenerateStatus, GenerateErrorCode, GenerateWarningCode } from "@/types/schedule";
 
 const today = new Date()
 export type MessageType = "warning" | "error";
@@ -46,6 +48,12 @@ export default function ManageSchedule() {
     const [presetDialogOpen, setPresetDialogOpen] = useState(false)
     const [currentPreset, setCurrentPreset] = useState<SchedulePreset | null>(null)
     const [warningMessage, setWarningMessage] = useState<WarningMessage | null>(null)
+    const [resultDialogOpen, setResultDialogOpen] = useState(false)
+    const [generateResult, setGenerateResult] = useState<{
+        status: GenerateStatus;
+        error?: GenerateErrorCode;
+        warnings?: GenerateWarningCode[];
+    } | null>(null)
 
     useEffect(() => {
         setDaysOfMonth(getDaysInMonth(currentYear, currentMonth))
@@ -116,16 +124,43 @@ export default function ManageSchedule() {
                 MinDaysOffPerWeek: preset.MinDaysOffPerWeek
             },
             {
-                onSuccess: (responseData) => {
-                    if (responseData) {
-                        console.log(responseData)
-                        toast.success(responseData.message)
-                        setWarningMessage({message: responseData.message, messageType: "warning"})
-                        if (responseData.data.shifts.length > 0) {
-                            setShiftsData(responseData.data.shifts)
-                            setIsConfirmed(false)
-                        }
+                onSuccess: (result) => {
+                    if (!result) return;
+
+                    setGenerateResult({
+                        status: result.status,
+                        error: result.error,
+                        warnings: result.warnings,
+                    });
+
+                    console.log(result.shifts)
+
+                    if (result.status === GenerateStatus.Error) {
+                        setResultDialogOpen(true);
+                        setWarningMessage({
+                            message: t(`errors.${result.error}`),
+                            messageType: "error"
+                        });
+                    } else if (result.status === GenerateStatus.Warning) {
+                        setShiftsData(result.shifts);
+                        setIsConfirmed(false);
+                        setResultDialogOpen(true);
+                        const warningMessages = result.warnings
+                            .map(w => t(`warnings.${w}`))
+                            .join("; ");
+                        setWarningMessage({
+                            message: warningMessages,
+                            messageType: "warning"
+                        });
+                    } else {
+                        setShiftsData(result.shifts);
+                        setIsConfirmed(false);
+                        setWarningMessage(null);
+                        toast.success(t('generateSuccess'));
                     }
+                },
+                onError: () => {
+                    toast.error(t('generateError'));
                 }
             }
         )
@@ -267,6 +302,16 @@ export default function ManageSchedule() {
                 groupId={selectedGroupId}
                 onSave={handleSavePreset}
             />
+
+            {generateResult && (
+                <GenerateResultDialog
+                    open={resultDialogOpen}
+                    onOpenChange={setResultDialogOpen}
+                    status={generateResult.status}
+                    error={generateResult.error}
+                    warnings={generateResult.warnings}
+                />
+            )}
         </>
     )
 }

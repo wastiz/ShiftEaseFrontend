@@ -14,13 +14,15 @@ import { Mode, RegisterPayload } from "@/types";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEmployerRegister, useEmployerGoogleLogin } from "@/api/auth";
-import { GoogleLogin } from '@react-oauth/google';
+import { useTranslations } from 'next-intl';
+import GoogleButton from '@/components/ui/GoogleButton';
 
 interface RegisterFormProps {
     setMode: (mode: Mode) => void;
 }
 
 export default function RegisterForm({ setMode }: RegisterFormProps) {
+    const t = useTranslations('auth');
     const { mutate, isPending, isError, error, isSuccess } = useEmployerRegister();
     const { mutate: googleLogin } = useEmployerGoogleLogin();
     const router = useRouter();
@@ -252,16 +254,11 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                             {isPending ? "Signing up..." : "Sign up"}
                         </Button>
 
-                        <div className="w-full">
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={handleGoogleError}
-                                theme="outline"
-                                size="large"
-                                width="100%"
-                                text="continue_with"
-                            />
-                        </div>
+                        <GoogleButton
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            text={t('registerWithGoogle')}
+                        />
 
                         {isError && (
                             <p className="text-red-500">

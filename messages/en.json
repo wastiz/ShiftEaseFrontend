@@ -35,6 +35,7 @@
     "forgotPassword": "Forgot your password?",
     "loggingIn": "Logging in...",
     "loginWithGoogle": "Login with Google",
+    "registerWithGoogle": "Register with Google",
     "loginSuccess": "Login successful!",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
@@ -309,7 +310,30 @@
     "timeOffVacation": "Vacation",
     "timeOffSickLeave": "Sick Leave",
     "timeOffPersonalDay": "Personal Day",
-    "timeOffDayOff": "Day Off"
+    "timeOffDayOff": "Day Off",
+    "generateSuccess": "Schedule generated successfully",
+    "generateWarning": "Schedule generated with warnings",
+    "generateError": "Failed to generate schedule",
+    "errors": {
+      "GroupNotFound": "Group not found. Please select a valid group.",
+      "OrganizationNotFound": "Organization not found. Please check your organization settings.",
+      "NoEmployeesInGroup": "No employees in this group. Add employees to generate a schedule.",
+      "NoShiftTypes": "No shift types configured. Create shift types first.",
+      "SelectedShiftTypesNotFound": "Selected shift types not found. Please update your preset settings.",
+      "NoWorkDaysConfigured": "No work days configured. Set up organization work schedule first.",
+      "InvalidDateRange": "Invalid date range. Please select a valid period.",
+      "AllDaysAreHolidays": "All days in the selected period are holidays.",
+      "AllDaysAreNonWorking": "All days in the selected period are non-working days.",
+      "ShiftTypesDontFitSchedule": "Selected shift types don't fit the organization schedule."
+    },
+    "warnings": {
+      "NoSuitableShiftTypes": "No suitable shift types found for some days.",
+      "NotEnoughEmployeesForMinimum": "Not enough employees to cover minimum requirements.",
+      "EmployeesAssignedWithConstraintViolations": "Some employees were assigned with constraint violations.",
+      "AllEmployeesOnTimeOff": "All employees are on time off during this period.",
+      "HighWorkloadDetected": "High workload detected. Consider adding more employees.",
+      "SomeDaysWithoutShifts": "Some days have no shifts assigned."
+    }
   },
   "profile": {
     "accountSettings": "Account Settings",

@@ -8,7 +8,7 @@ import { LoginPayload } from "@/types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
-import { GoogleLogin } from '@react-oauth/google';
+import GoogleButton from '@/components/ui/GoogleButton';
 
 interface LoginFormProps {
     setMode: (mode: Mode) => void;
@@ -131,16 +131,11 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                                 {isPending ? t('loggingIn') : tCommon('login')}
                             </Button>
                             {role === "Employer" && (
-                                <div className="w-full">
-                                    <GoogleLogin
-                                        onSuccess={handleGoogleSuccess}
-                                        onError={handleGoogleError}
-                                        theme="outline"
-                                        size="large"
-                                        width="100%"
-                                        text="continue_with"
-                                    />
-                                </div>
+                                <GoogleButton
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={handleGoogleError}
+                                    text={t('loginWithGoogle')}
+                                />
                             )}
                         </div>
 
