@@ -60,7 +60,8 @@
     "dashboard": "Dashboard",
     "preferences": "Preferences",
     "vacation": "Vacation",
-    "sickLeave": "Sick Leave"
+    "sickLeave": "Sick Leave",
+    "personalDays": "Personal Days"
   },
   "employer": {
     "organizations": {

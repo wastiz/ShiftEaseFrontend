@@ -56,5 +56,35 @@ export const useAddApprovedPersonalDay = (employeeId: number) => {
     });
 };
 
+export const useApprovePersonalDayRequest = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) =>
+            api.post(`personal-days/employer/approve-request/${id}`),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['pending-personal-day-requests'] });
+            qc.invalidateQueries({ queryKey: ['personal-days'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+        },
+    });
+};
+
+export const useRejectPersonalDayRequest = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) =>
+            api.post(`personal-days/employer/reject-request/${id}`),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['pending-personal-day-requests'] });
+            qc.invalidateQueries({ queryKey: ['personal-days'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+        },
+    });
+};
+
 export const useGetPersonalDays = (employeeId: number) => usePersonalDays(employeeId);
 

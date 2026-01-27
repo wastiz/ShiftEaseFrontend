@@ -406,7 +406,7 @@ export default function TimeOffDialog({
                                                 >
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2">
-                                                            <Badge variant="outline" className="bg-blue-50">
+                                                            <Badge variant="outline" className="bg">
                                                                 {formatDate(vacation.startDate)} - {formatDate(vacation.endDate)}
                                                             </Badge>
                                                         </div>
@@ -454,7 +454,7 @@ export default function TimeOffDialog({
                                                 >
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2">
-                                                            <Badge variant="outline" className="bg-red-50">
+                                                            <Badge variant="outline" className="bg">
                                                                 {formatDate(sick.startDate)} - {formatDate(sick.endDate)}
                                                             </Badge>
                                                         </div>
@@ -507,7 +507,7 @@ export default function TimeOffDialog({
                                                 >
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2">
-                                                            <Badge variant="outline" className="bg-amber-50">
+                                                            <Badge variant="outline" className="bg">
                                                                 {formatDate(day.date)}
                                                             </Badge>
                                                         </div>

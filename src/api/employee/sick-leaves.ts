@@ -84,4 +84,34 @@ export const useDeleteSickLeaveRequest = (employeeId: number) => {
     });
 };
 
+export const useApproveSickLeaveRequest = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) =>
+            api.post(`sick-leaves/employer/approve-request/${id}`),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['pending-sick-leave-requests'] });
+            qc.invalidateQueries({ queryKey: ['sick-leaves'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+        },
+    });
+};
+
+export const useRejectSickLeaveRequest = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) =>
+            api.post(`sick-leaves/employer/reject-request/${id}`),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['pending-sick-leave-requests'] });
+            qc.invalidateQueries({ queryKey: ['sick-leaves'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+        },
+    });
+};
+
 export const useGetSickLeaves = (employeeId: number) => useSickLeaves(employeeId);

@@ -1,32 +1,45 @@
 "use client";
 
-import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/shadcn/button";
 
 interface GoogleButtonProps {
-  onSuccess: (response: { credential: string }) => void;
-  onError: () => void;
   text: string;
   disabled?: boolean;
 }
 
+const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
+console.log(buildGoogleOAuthUrl());
+console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+
+function getRedirectUri() {
+  return `${window.location.origin}/google-callback`;
+}
+
+function buildGoogleOAuthUrl() {
+  const params = new URLSearchParams({
+    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+    redirect_uri: getRedirectUri(),
+    response_type: "code",
+    scope: "openid email profile",
+    access_type: "offline",
+    prompt: "consent",
+  });
+  return `${GOOGLE_AUTH_URL}?${params.toString()}`;
+}
+
 export default function GoogleButton({
-  onSuccess,
-  onError,
   text,
   disabled = false,
 }: GoogleButtonProps) {
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      onSuccess({ credential: tokenResponse.access_token });
-    },
-    onError: () => onError(),
-  });
+  const handleClick = () => {
+    window.location.href = buildGoogleOAuthUrl();
+  };
 
   return (
     <Button
       type="button"
-      onClick={() => login()}
+      onClick={handleClick}
       disabled={disabled}
       className="w-full bg-black hover:bg-gray-900 text-white flex items-center justify-center gap-3 h-11"
     >

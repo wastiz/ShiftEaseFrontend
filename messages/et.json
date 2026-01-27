@@ -60,7 +60,8 @@
     "dashboard": "Juhtpaneel",
     "preferences": "Eelistused",
     "vacation": "Puhkus",
-    "sickLeave": "Haigusleht"
+    "sickLeave": "Haigusleht",
+    "personalDays": "Isiklikud päevad"
   },
   "employer": {
     "organizations": {

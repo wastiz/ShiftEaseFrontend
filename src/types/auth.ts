@@ -29,7 +29,8 @@ export interface LoginResponse {
 
 //Google Auth
 export interface GoogleAuthPayload {
-    token: string;
+    code: string;
+    redirectUri: string;
 }
 
 //Logout

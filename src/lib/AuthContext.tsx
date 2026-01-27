@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/ui/Loader";
 
-const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/"];
+const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/google-callback"];
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();

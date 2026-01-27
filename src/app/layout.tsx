@@ -8,7 +8,6 @@ import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/inter/wght-italic.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages} from 'next-intl/server';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const prompt = Prompt({
     subsets: ['latin'],
@@ -27,16 +26,14 @@ export default async function RootLayout({
       return (
           <html lang={locale} className={prompt.variable}>
               <body className="dark font-sans bg-bgPrimary text-textPrimary">
-                    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-                        <NextIntlClientProvider messages={messages}>
-                            <Toaster position="bottom-right" />
-                            <TanstackProvider>
-                                <AuthProvider>
-                                    {children}
-                                </AuthProvider>
-                            </TanstackProvider>
-                        </NextIntlClientProvider>
-                    </GoogleOAuthProvider>
+                    <NextIntlClientProvider messages={messages}>
+                        <Toaster position="bottom-right" />
+                        <TanstackProvider>
+                            <AuthProvider>
+                                {children}
+                            </AuthProvider>
+                        </TanstackProvider>
+                    </NextIntlClientProvider>
               </body>
           </html>
       );

@@ -72,6 +72,8 @@ export const useApproveVacationRequest = () => {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['pending-vacation-requests'] });
             qc.invalidateQueries({ queryKey: ['vacations'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
         },
     });
 };
@@ -86,6 +88,21 @@ export const useAddApprovedVacation = (employeeId: number) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['vacations', employeeId] });
+        },
+    });
+};
+
+export const useRejectVacationRequest = () => {
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) =>
+            api.post(`vacations/employer/reject-request/${id}`),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['pending-vacation-requests'] });
+            qc.invalidateQueries({ queryKey: ['vacations'] });
+            qc.invalidateQueries({ queryKey: ['notifications'] });
+            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
         },
     });
 };

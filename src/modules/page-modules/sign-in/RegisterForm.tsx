@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Mode, RegisterPayload } from "@/types";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEmployerRegister, useEmployerGoogleLogin } from "@/api/auth";
+import { useEmployerRegister } from "@/api/auth";
 import { useTranslations } from 'next-intl';
 import GoogleButton from '@/components/ui/GoogleButton';
 
@@ -24,7 +24,6 @@ interface RegisterFormProps {
 export default function RegisterForm({ setMode }: RegisterFormProps) {
     const t = useTranslations('auth');
     const { mutate, isPending, isError, error, isSuccess } = useEmployerRegister();
-    const { mutate: googleLogin } = useEmployerGoogleLogin();
     const router = useRouter();
 
     const [form, setForm] = useState({
@@ -87,32 +86,6 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
-
-    const handleGoogleSuccess = (credentialResponse: any) => {
-        if (credentialResponse.credential) {
-            googleLogin(
-                { token: credentialResponse.credential },
-                {
-                    onSuccess: (data) => {
-                        router.push("/organizations");
-                    },
-                    onError: (err: any) => {
-                        const errorData = err?.response?.data;
-                        const message =
-                            errorData?.message ||
-                            errorData?.title ||
-                            (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
-                            "Google authentication failed";
-                        setErrors(prev => ({ ...prev, server: message }));
-                    },
-                }
-            );
-        }
-    };
-
-    const handleGoogleError = () => {
-        setErrors(prev => ({ ...prev, server: "Google sign up failed" }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -255,8 +228,6 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                         </Button>
 
                         <GoogleButton
-                            onSuccess={handleGoogleSuccess}
-                            onError={handleGoogleError}
                             text={t('registerWithGoogle')}
                         />
 

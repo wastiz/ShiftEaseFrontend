@@ -25,6 +25,7 @@ export default function EmployeeLayout({
         { title: t('preferences'), url: "/preferences", icon: "Bolt" as const },
         { title: t('sickLeave'), url: "/sick-leave", icon: "CalendarPlus2" as const },
         { title: t('vacation'), url: "/vacation", icon: "TreePalm" as const },
+        { title: t('personalDays'), url: "/personal-day", icon: "CalendarPlus2" as const },
     ];
 
     return (
