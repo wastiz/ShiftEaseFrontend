@@ -298,7 +298,11 @@ export default function AddOrganization() {
     if (isEditMode && (isLoading || !isFormInitialized)) {
         return (
             <>
-                <Header title={t('title')} />
+                <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
+                    <div className={"flex gap-2 items-center"}>
+                        <h1 className={"text-xl font-bold"}>Organizations</h1>
+                    </div>
+                </header>
                 <Main>
                     <div className="flex items-center justify-center h-96">
                         <p>{t('loadingData')}</p>
@@ -310,7 +314,11 @@ export default function AddOrganization() {
 
     return (
         <>
-            <Header title={t('title')} />
+            <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
+                <div className={"flex gap-2 items-center"}>
+                    <h1 className={"text-xl font-bold"}>Organizations</h1>
+                </div>
+            </header>
             <Main>
                 <Card className="max-w-5xl mx-auto">
                     <CardHeader>

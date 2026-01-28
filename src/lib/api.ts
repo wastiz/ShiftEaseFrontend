@@ -49,7 +49,10 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if (response.status === 401 && !originalRequest._retry) {
+        // Skip refresh logic for auth endpoints - they handle their own errors
+        const isAuthEndpoint = originalRequest.url?.startsWith('/auth/');
+
+        if (response.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });

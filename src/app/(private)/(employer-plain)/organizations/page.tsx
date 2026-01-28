@@ -24,6 +24,8 @@ import toast from "react-hot-toast";
 import Header from "@/modules/common/Header";
 import Main from "@/modules/common/Main";
 import {useAuthStore} from "@/zustand/auth-state";
+import {SidebarTrigger} from "@/components/ui/shadcn/sidebar";
+import {Separator} from "@/components/ui/shadcn/separator";
 
 export default function Organizations() {
     const router = useRouter()
@@ -69,7 +71,11 @@ export default function Organizations() {
 
     return (
         <>
-            <Header title={"Organizations"}></Header>
+            <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
+                <div className={"flex gap-2 items-center"}>
+                    <h1 className={"text-xl font-bold"}>Organizations</h1>
+                </div>
+            </header>
             <Main>
                 {organizations && organizations.length > 0 ? (
                     <>

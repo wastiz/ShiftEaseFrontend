@@ -34,26 +34,25 @@ export default function GoogleCallbackPage() {
 
         const redirectUri = `${window.location.origin}/google-callback`;
 
-        googleLogin.mutate(
-            { code, redirectUri },
-            {
-                onSuccess: () => {
-                    router.push('/organizations');
-                },
-                onError: (err: any) => {
-                    const errorData = err?.response?.data;
-                    const message =
-                        errorData?.message ||
-                        errorData?.title ||
-                        (errorData?.errors && Array.isArray(errorData.errors)
-                            ? errorData.errors.join(', ')
-                            : null) ||
-                        'Google authentication failed';
-                    setError(message);
-                    setTimeout(() => router.push('/sign-in'), 3000);
-                },
+        const performLogin = async () => {
+            try {
+                await googleLogin.mutateAsync({ code, redirectUri });
+                router.push('/organizations');
+            } catch (err: any) {
+                const errorData = err?.response?.data;
+                const message =
+                    errorData?.message ||
+                    errorData?.title ||
+                    (errorData?.errors && Array.isArray(errorData.errors)
+                        ? errorData.errors.join(', ')
+                        : null) ||
+                    'Google authentication failed';
+                setError(message);
+                setTimeout(() => router.push('/sign-in'), 3000);
             }
-        );
+        };
+
+        performLogin();
     }, [searchParams]);
 
     return (
