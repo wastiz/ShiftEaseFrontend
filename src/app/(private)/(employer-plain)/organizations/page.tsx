@@ -21,11 +21,7 @@ import {
     DialogFooter,
 } from "@/components/ui/shadcn/dialog"
 import toast from "react-hot-toast";
-import Header from "@/modules/common/Header";
 import Main from "@/modules/common/Main";
-import {useAuthStore} from "@/zustand/auth-state";
-import {SidebarTrigger} from "@/components/ui/shadcn/sidebar";
-import {Separator} from "@/components/ui/shadcn/separator";
 
 export default function Organizations() {
     const router = useRouter()

@@ -46,6 +46,8 @@ export function useLogout() {
 
     return useMutation<void, Error>({
         mutationFn: async () => {
+            localStorage.removeItem("orgId");
+            localStorage.removeItem("auth-storage");
             await api.post(`/auth/logout`);
         },
         onSuccess: () => {

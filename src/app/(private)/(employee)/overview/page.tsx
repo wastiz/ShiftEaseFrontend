@@ -1,6 +1,6 @@
 'use client'
 
-import {useScheduleData} from "@/api";
+import {useGetConfirmedSchedule, useScheduleData} from "@/api";
 import {useEffect, useState, useMemo} from "react";
 import {EmployeeMeData, Shift} from "@/types";
 import {useAuthStore} from "@/zustand/auth-state";
@@ -20,20 +20,15 @@ export default function EmployeePersonalPage() {
     const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
     const [shiftsData, setShiftsData] = useState<Shift[]>([]);
 
-    const calendarMonth = currentMonth.getMonth();
+    const calendarMonth = currentMonth.getMonth() + 1;
     const calendarYear = currentMonth.getFullYear();
 
     const primaryGroupId = employeeUser.groupIds?.[0];
-    const {data: scheduleData, isLoading} = useScheduleData({
-        groupId: primaryGroupId,
-        month: calendarMonth,
-        year: calendarYear,
-        showOnlyConfirmed: false
-    });
+    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(calendarMonth, calendarYear, primaryGroupId);
 
     useEffect(() => {
-        if (scheduleData?.schedule) {
-            const myShifts = scheduleData.schedule.shifts.filter(shift =>
+        if (scheduleData) {
+            const myShifts = scheduleData.shifts.filter(shift =>
                 shift.employees.some(emp => emp.id === employeeUser.id)
             );
             setShiftsData(myShifts);
@@ -210,11 +205,11 @@ export default function EmployeePersonalPage() {
                             modifiersClassNames={{
                                 workDay: "bg-primary/20 text-primary font-semibold",
                             }}
-                            className="rounded-md border"
+                            className="flex-1 rounded-md border"
                         />
 
                         {/* Selected day details */}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1">
                             {selectedDay ? (
                                 selectedDayShifts.length > 0 ? (
                                     <div className="space-y-3">
