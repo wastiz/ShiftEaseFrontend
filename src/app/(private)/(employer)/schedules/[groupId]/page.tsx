@@ -22,6 +22,11 @@ import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
 import { GenerateStatus, GenerateErrorCode, GenerateWarningCode } from "@/types/schedule";
 
 const today = new Date()
+
+// Default schedule generation settings
+const DEFAULT_MAX_CONSECUTIVE_SHIFTS = 5;
+const DEFAULT_MIN_DAYS_OFF_PER_WEEK = 2;
+
 export type MessageType = "warning" | "error";
 export type WarningMessage = {
     message: string;
@@ -96,8 +101,7 @@ export default function ManageSchedule() {
             try {
                 const parsedPreset = JSON.parse(stored)
                 setCurrentPreset(parsedPreset)
-            } catch (e) {
-                console.error('Failed to parse stored preset', e)
+            } catch {
                 setCurrentPreset(null)
             }
         } else {
@@ -108,9 +112,9 @@ export default function ManageSchedule() {
     const handleGenerate = () => {
         const preset = currentPreset || {
             AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
-            MaxConsecutiveShifts: 5,
+            MaxConsecutiveShifts: DEFAULT_MAX_CONSECUTIVE_SHIFTS,
             SchedulePattern: SchedulePattern.Custom,
-            MinDaysOffPerWeek: 2
+            MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK
         }
 
         generateSchedule.mutate(
@@ -132,8 +136,6 @@ export default function ManageSchedule() {
                         error: result.error,
                         warnings: result.warnings,
                     });
-
-                    console.log(result.shifts)
 
                     if (result.status === GenerateStatus.Error) {
                         setResultDialogOpen(true);

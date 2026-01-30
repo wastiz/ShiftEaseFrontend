@@ -10,7 +10,7 @@ import {
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
-import { Mode, RegisterPayload } from "@/types";
+import { Mode, RegisterPayload, ApiError, getErrorMessage } from "@/types";
 import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEmployerRegister } from "@/api/auth";
@@ -107,14 +107,8 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
             onSuccess: () => {
                 router.push("/organizations");
             },
-            onError: (err: any) => {
-                const errorData = err?.response?.data;
-                const message =
-                    errorData?.message ||
-                    errorData?.title ||
-                    (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
-                    "Registration failed";
-                console.error("Register error:", message);
+            onError: (err: Error) => {
+                const message = getErrorMessage(err as ApiError);
                 setErrors(prev => ({ ...prev, server: message }));
             },
         });

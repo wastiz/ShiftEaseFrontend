@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import {
     RegisterPayload,
@@ -6,9 +6,9 @@ import {
     LoginPayload,
     LoginResponse,
     ForgotPasswordPayload,
-    DeleteUserPayload,
     GoogleAuthPayload,
-    Role, EmployerMeData, User,
+    Role,
+    User,
 } from "@/types";
 import {authKeys} from "@/lib/api-keys";
 import {useRouter} from "next/navigation";
@@ -43,6 +43,7 @@ export function useEmployerGoogleLogin() {
 
 export function useLogout() {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     return useMutation<void, Error>({
         mutationFn: async () => {
@@ -51,6 +52,7 @@ export function useLogout() {
             await api.post(`/auth/logout`);
         },
         onSuccess: () => {
+            queryClient.clear();
             router.push('/sign-in');
         }
     });
@@ -69,11 +71,12 @@ export function useResetPassword() {
     return useMutation({
         mutationFn: async (payload: { token: string; newPassword: string }) => {
             const response = await api.post("/auth/reset-password", payload);
-            console.log(response);
             return response.data;
         },
     });
 }
+
+const AUTH_STALE_TIME = 15 * 60 * 1000; // 15 minutes
 
 export function useGetMe({ isEnabled }: { isEnabled: boolean }) {
     return useQuery({
@@ -84,36 +87,7 @@ export function useGetMe({ isEnabled }: { isEnabled: boolean }) {
         },
         enabled: isEnabled,
         retry: false,
-        staleTime: 15 * 60 * 1000,
+        staleTime: AUTH_STALE_TIME,
         refetchOnWindowFocus: false
     });
 }
-
-// export function useDeleteUser() {
-//     return useMutation({
-//         mutationFn: async (payload) => {
-//             const res = await api.post("/me/delete", payload);
-//             return res.data;
-//         },
-//     });
-// }
-//
-// export function useRefreshToken() {
-//     return useQuery({
-//         queryKey: ["refreshToken"],
-//         queryFn: async () => {
-//             const res = await api.post<RefreshTokenResponse>("/refresh");
-//             return res.data;
-//         },
-//     });
-// }
-//
-// export function useVerifyEmail(payload: VerifyEmailPayload) {
-//     return useQuery<VerifyEmailResponse, Error>({
-//         queryKey: ["verifyEmail", payload.code],
-//         queryFn: async () => {
-//             const res = await api.get<VerifyEmailResponse>(`/user/${payload.code}`);
-//             return res.data;
-//         },
-//     });
-// }

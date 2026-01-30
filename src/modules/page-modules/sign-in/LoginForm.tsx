@@ -2,7 +2,7 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from "@/component
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
-import {Mode, Role} from "@/types";
+import {Mode, Role, ApiError, getErrorMessage} from "@/types";
 import { useLogin } from "@/api/auth";
 import { LoginPayload } from "@/types";
 import { useState } from "react";
@@ -37,17 +37,11 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
         setErrorMessage(null);
 
         mutate(form, {
-            onSuccess: (data) => {
+            onSuccess: () => {
                 router.push(role === "Employer" ? "/organizations" : "/overview");
             },
-            onError: (err: any) => {
-                const errorData = err?.response?.data;
-                const message =
-                    errorData?.message ||
-                    errorData?.title ||
-                    (errorData?.errors && Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
-                    "Something went wrong";
-                setErrorMessage(message);
+            onError: (err: Error) => {
+                setErrorMessage(getErrorMessage(err as ApiError));
             },
         });
     };

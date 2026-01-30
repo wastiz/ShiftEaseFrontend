@@ -9,9 +9,6 @@ interface GoogleButtonProps {
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
-console.log(buildGoogleOAuthUrl());
-console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-
 function getRedirectUri() {
   return `${window.location.origin}/google-callback`;
 }

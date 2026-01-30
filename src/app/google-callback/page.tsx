@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEmployerGoogleLogin } from '@/api/auth';
+import { ApiError, getErrorMessage } from '@/types';
 import Loader from '@/components/ui/Loader';
 
 export default function GoogleCallbackPage() {
@@ -38,15 +39,8 @@ export default function GoogleCallbackPage() {
             try {
                 await googleLogin.mutateAsync({ code, redirectUri });
                 router.push('/organizations');
-            } catch (err: any) {
-                const errorData = err?.response?.data;
-                const message =
-                    errorData?.message ||
-                    errorData?.title ||
-                    (errorData?.errors && Array.isArray(errorData.errors)
-                        ? errorData.errors.join(', ')
-                        : null) ||
-                    'Google authentication failed';
+            } catch (err: unknown) {
+                const message = getErrorMessage(err as ApiError);
                 setError(message);
                 setTimeout(() => router.push('/sign-in'), 3000);
             }

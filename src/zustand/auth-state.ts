@@ -6,7 +6,6 @@ type AuthState = {
     user: User | null;
     setUser: (user: User) => void;
     clearAuth: () => void;
-    logout: () => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -17,11 +16,6 @@ export const useAuthStore = create<AuthState>()(
             setUser: (user) => set({ user }),
 
             clearAuth: () => set({ user: null }),
-
-            logout: () => {
-                set({ user: null });
-                window.location.href = "/auth/sign-in";
-            },
         }),
         {
             name: "auth-storage",

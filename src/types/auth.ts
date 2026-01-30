@@ -64,3 +64,28 @@ export interface ErrorResponse {
     message: string;
     errors?: string[];
 }
+
+// API Error type for axios errors
+export interface ApiErrorData {
+    message?: string;
+    title?: string;
+    errors?: string[];
+}
+
+export interface ApiError {
+    response?: {
+        data?: ApiErrorData;
+    };
+}
+
+export function getErrorMessage(err: ApiError): string {
+    const errorData = err?.response?.data;
+    return (
+        errorData?.message ||
+        errorData?.title ||
+        (errorData?.errors && Array.isArray(errorData.errors)
+            ? errorData.errors.join(', ')
+            : null) ||
+        'Something went wrong'
+    );
+}

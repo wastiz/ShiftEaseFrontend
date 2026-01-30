@@ -93,8 +93,6 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
                 })),
             };
 
-            console.log(payload)
-
             await api.post('/schedules/update-schedule', payload);
         },
         onSuccess: () => {

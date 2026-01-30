@@ -41,20 +41,9 @@ export interface User {
     email: string;
 }
 
-export interface EmployerMeData extends User {
-    authenticated: boolean;
-    id: number;
-    role: Role;
-    fullName: string;
-    email: string;
-}
+export type EmployerMeData = User;
 
 export interface EmployeeMeData extends User {
-    authenticated: boolean;
-    id: number;
-    role: Role;
-    fullName: string;
-    email: string;
     groupIds: number[];
     groupNames: string[];
     organizationId: number;

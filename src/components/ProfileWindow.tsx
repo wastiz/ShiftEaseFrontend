@@ -1,9 +1,7 @@
-import { useState, memo } from 'react';
+import { memo } from 'react';
 import { useRouter } from 'next/navigation';
-import { logout } from '@/api/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useLogout } from '@/api/auth';
 import {
-    SettingsIcon,
     LogOutIcon,
     User,
     CreditCard,
@@ -14,13 +12,11 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 
 const AnimatedLink = memo(function AnimatedLink({
-    to,
     children,
     className,
     icon,
     onClick,
 }: {
-    to: string;
     children: React.ReactNode;
     className?: string;
     icon?: React.ReactNode;
@@ -95,30 +91,24 @@ export default function ProfileWindow({
     const router = useRouter();
     const t = useTranslations('profile');
 
-    const getInitials = (first: string, last: string) => {
-        return `${first[0]}${last[0]}`.toUpperCase();
-    };
-
     const handleNavigation = (path: string) => {
         router.push(path);
         onClose?.();
     };
 
-    const { mutate: logoutMutate, isPending } = useMutation({
-        mutationFn: () => logout(),
-        onSuccess: () => {
-            toast.success(t('loggedOutSuccess'));
-            router.push('/sign-in');
-            onClose?.();
-        },
-        onError: (err: unknown) => {
-            console.error(err);
-            toast.error(t('logoutFailed'));
-        },
-    });
+    const { mutate: logoutMutate, isPending } = useLogout();
 
     const handleLogout = () => {
-        logoutMutate();
+        logoutMutate(undefined, {
+            onSuccess: () => {
+                toast.success(t('loggedOutSuccess'));
+                onClose?.();
+            },
+            onError: (err: unknown) => {
+                console.error(err);
+                toast.error(t('logoutFailed'));
+            },
+        });
     };
 
     return (
@@ -130,7 +120,6 @@ export default function ProfileWindow({
         >
             <div className="space-y-1 p-2">
                 <AnimatedLink
-                    to="/account"
                     icon={<User className="h-4 w-4" />}
                     onClick={() => handleNavigation('/account')}
                 >
@@ -138,7 +127,6 @@ export default function ProfileWindow({
                 </AnimatedLink>
 
                 <AnimatedLink
-                    to="/subscription"
                     icon={<CreditCard className="h-4 w-4" />}
                     onClick={() => handleNavigation('/subscription')}
                 >
@@ -146,7 +134,6 @@ export default function ProfileWindow({
                 </AnimatedLink>
 
                 <AnimatedLink
-                    to="/usage"
                     icon={<ChartNoAxesColumnIncreasing className="h-4 w-4" />}
                     onClick={() => handleNavigation('/usage')}
                 >

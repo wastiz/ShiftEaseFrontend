@@ -41,9 +41,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             } else {
                 setUser(data);
 
-                // Set organizationId for Employee
                 if (data.role === "Employee") {
-                    console.log(data)
                     const employeeData = data as EmployeeMeData;
                     if (employeeData.organizationId) {
                         localStorage.setItem("orgId", String(employeeData.organizationId));
