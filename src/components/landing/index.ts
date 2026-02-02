@@ -1,0 +1,9 @@
+export { default as LandingHeader } from "./LandingHeader";
+export { default as HeroHome } from "./HeroHome";
+export { default as Workflows } from "./Workflows";
+export { default as Features } from "./Features";
+export { default as Testimonials } from "./Testimonials";
+export { default as Cta } from "./Cta";
+export { default as LandingFooter } from "./LandingFooter";
+export { default as PageIllustration } from "./PageIllustration";
+export { default as Spotlight } from "./Spotlight";
