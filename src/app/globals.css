@@ -30,6 +30,7 @@
     --tealPrimary: oklch(0.8379 0.2113 168.17);
     --bluePrimary: oklch(0.618 0.182 255.65);
     --purplePrimary: oklch(0.643 0.278 301.03);
+    --coralPrimary: oklch(0.66 0.19 23);
     --glassPrimary: oklch(0 0 0 / 0.6);
     --glassBorder: oklch(1 0 0 / 0.2);
     --border: oklch(0.922 0 0);

@@ -26,9 +26,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/shadcn/sidebar"
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LanguageSwitcher from "@/components/ui/inputs/LanguageSwitcher";
 import * as React from "react";
-import {useLogout} from "@/api";
+import {useLogout} from "@/hooks/api";
 
 export function NavUser({
                           user,

@@ -1,7 +1,7 @@
 'use client';
 
-import Header from "@/modules/common/Header";
-import Main from "@/modules/common/Main";
+import Header from "@/components/ui/Header";
+import Main from "@/components/ui/Main";
 
 export default function PersonalDayPage() {
     return (

@@ -1,6 +1,6 @@
 'use client'
 
-import {useGetConfirmedSchedule, useScheduleData} from "@/api";
+import {useGetConfirmedSchedule, useScheduleData} from "@/hooks/api";
 import {useEffect, useState, useMemo} from "react";
 import {EmployeeMeData, Shift} from "@/types";
 import {useAuthStore} from "@/zustand/auth-state";

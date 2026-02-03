@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/shadcn/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select'
 import { useParams } from "next/navigation"
-import {useExportSchedule, useGenerateSchedule, useSaveSchedule, useScheduleData, useUnconfirmSchedule} from "@/api"
-import Header from "@/modules/common/Header"
+import {useExportSchedule, useGenerateSchedule, useSaveSchedule, useScheduleData, useUnconfirmSchedule} from "@/hooks/api"
+import Header from "@/components/ui/Header"
 import { Shift, SchedulePattern, EmployeeTimeOff } from "@/types/schedule"
-import ScheduleCalendar from "@/modules/schedules/ScheduleCalendar/ScheduleCalendar"
+import ScheduleCalendar from "@/components/features/schedules/ScheduleCalendar/ScheduleCalendar"
 import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import {Holiday, WorkDay} from "@/types";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/shadcn/toggle-group";
 import {Calendar, Download, List, Loader2, Settings} from "lucide-react";
-import SimpleView from "@/modules/schedules/ScheduleSimple/ScheduleSimple";
+import SimpleView from "@/components/features/schedules/ScheduleSimple/ScheduleSimple";
 import {toast} from "sonner";
 import { useTranslations } from 'next-intl';
-import SchedulePresetDialog, { SchedulePreset } from "@/modules/page-modules/schedules/SchedulePresetDialog";
+import SchedulePresetDialog, { SchedulePreset } from "@/components/features/schedules/SchedulePresetDialog";
 import { ButtonGroup } from '@/components/ui/shadcn/button-group'
 import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
 import { GenerateStatus, GenerateErrorCode, GenerateWarningCode } from "@/types/schedule";

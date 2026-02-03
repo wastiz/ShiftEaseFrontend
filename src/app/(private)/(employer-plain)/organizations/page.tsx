@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useGetOrganizations, useDeleteOrganization } from "@/api"
+import { useGetOrganizations, useDeleteOrganization } from "@/hooks/api"
 import { Organization } from "@/types"
 import { Button } from "@/components/ui/shadcn/button"
 import {
@@ -21,7 +21,7 @@ import {
     DialogFooter,
 } from "@/components/ui/shadcn/dialog"
 import toast from "react-hot-toast";
-import Main from "@/modules/common/Main";
+import Main from "@/components/ui/Main";
 
 export default function Organizations() {
     const router = useRouter()

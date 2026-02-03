@@ -6,7 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import HolidaySelector from "@/components/inputs/HolidaySelector";
+import HolidaySelector from "@/components/ui/inputs/HolidaySelector";
 import { useTranslations } from 'next-intl';
 import {
     Card,
@@ -39,11 +39,11 @@ import {
     ToggleGroup,
     ToggleGroupItem,
 } from "@/components/ui/shadcn/toggle-group";
-import { useAddOrganization, useGetOrganization, useUpdateOrganization } from "@/api";
-import Header from "@/modules/common/Header";
-import Main from "@/modules/common/Main";
+import { useAddOrganization, useGetOrganization, useUpdateOrganization } from "@/hooks/api";
+import Header from "@/components/ui/Header";
+import Main from "@/components/ui/Main";
 import { dayNameToEnum, Holiday, OrganizationFormValues, WorkDay } from "@/types";
-import { TimePicker } from "@/components/inputs/TimePicker";
+import { TimePicker } from "@/components/ui/inputs/TimePicker";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/shadcn/tooltip";
 import {Info} from "lucide-react";
 

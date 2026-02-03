@@ -19,10 +19,10 @@ import { Button } from '@/components/ui/shadcn/button';
 import { Badge } from '@/components/ui/shadcn/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
-import Header from "@/modules/common/Header";
-import Main from "@/modules/common/Main";
+import Header from "@/components/ui/Header";
+import Main from "@/components/ui/Main";
 import Link from 'next/link';
-import { useGetOrganizationData } from '@/api';
+import { useGetOrganizationData } from '@/hooks/api';
 import { useTranslations } from 'next-intl';
 
 export default function EmployerDashboard() {

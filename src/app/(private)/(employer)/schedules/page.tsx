@@ -1,12 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import EntityCheckResult from '@/components/EntityCheckResult'
-import {useCheckEntities, useScheduleSummaries} from "@/api";
+import EntityCheckResult from '@/components/features/schedules/EntityCheckResult'
+import {useCheckEntities, useScheduleSummaries} from "@/hooks/api";
 import Loader from "@/components/ui/Loader";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
 import {Button} from "@/components/ui/shadcn/button";
-import Header from "@/modules/common/Header";
+import Header from "@/components/ui/Header";
 import api from "@/lib/api";
 import {ScheduleSummary} from "@/types";
 import { Badge } from "@/components/ui/shadcn/badge";

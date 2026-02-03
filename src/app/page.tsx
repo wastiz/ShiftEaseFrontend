@@ -9,7 +9,7 @@ import {
   Cta,
   LandingFooter,
   PageIllustration,
-} from "@/components/landing";
+} from "@/components/features/landing";
 
 export default function Home() {
   return (

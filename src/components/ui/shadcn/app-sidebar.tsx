@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/shadcn/sidebar"
 import Logo from "@/components/ui/Logo";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/shadcn/collapsible";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import NotificationWindow from "@/components/NotificationWindow";
-import { useUnreadNotificationsCount } from "@/api/notification";
+import LanguageSwitcher from "@/components/ui/inputs/LanguageSwitcher";
+import NotificationWindow from "@/components/features/NotificationWindow";
+import { useUnreadNotificationsCount } from "@/hooks/api/notification";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
 
 export interface NavItem {

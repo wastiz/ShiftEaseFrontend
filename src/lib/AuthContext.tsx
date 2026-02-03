@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetMe } from "@/api";
+import { useGetMe } from "@/hooks/api";
 import { useAuthStore } from "@/zustand/auth-state";
 import { useRouter, usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";

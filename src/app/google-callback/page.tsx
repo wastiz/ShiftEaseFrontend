@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEmployerGoogleLogin } from '@/api/auth';
+import { useEmployerGoogleLogin } from '@/hooks/api/auth';
 import { ApiError, getErrorMessage } from '@/types';
 import Loader from '@/components/ui/Loader';
 

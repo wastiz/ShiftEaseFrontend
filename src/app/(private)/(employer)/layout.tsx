@@ -1,5 +1,5 @@
 import React from "react";
-import EmployerLayout from "@/components/layouts/EmployerLayout";
+import EmployerLayout from "@/components/features/layouts/EmployerLayout";
 
 export default function RootLayout({
     children,

@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/shadcn/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
 import { Calendar } from '@/components/ui/shadcn/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/shadcn/popover';
-import { useGetShiftTypes, usePreferences, useSavePreferences } from '@/api';
+import { useGetShiftTypes, usePreferences, useSavePreferences } from '@/hooks/api';
 import { toast } from 'sonner';
-import Header from "@/modules/common/Header";
-import Main from "@/modules/common/Main";
+import Header from "@/components/ui/Header";
+import Main from "@/components/ui/Main";
 import { format } from 'date-fns';
 import {useAuthStore} from "@/zustand/auth-state";
 

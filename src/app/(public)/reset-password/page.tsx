@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
 import { toast } from "sonner";
-import { useResetPassword } from "@/api/auth";
+import { useResetPassword } from "@/hooks/api/auth";
 
 export default function ResetPasswordPage() {
     const router = useRouter();

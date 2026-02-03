@@ -16,14 +16,14 @@ import {
     useSickLeaveRequests,
     useAddSickLeaveRequest,
     useDeleteSickLeaveRequest,
-} from '@/api';
+} from '@/hooks/api';
 import { EmployeeMeData } from '@/types';
 import { useAuthStore } from '@/zustand/auth-state';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import Header from "@/modules/common/Header";
-import Main from "@/modules/common/Main";
+import Header from "@/components/ui/Header";
+import Main from "@/components/ui/Main";
 
 export default function SickLeavePage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

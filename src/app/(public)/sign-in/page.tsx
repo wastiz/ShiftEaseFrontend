@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Card } from "@/components/ui/shadcn/card"
-import LoginForm from "@/modules/page-modules/sign-in/LoginForm";
-import RegisterForm from "@/modules/page-modules/sign-in/RegisterForm";
-import ForgotPasswordForm from "@/modules/page-modules/sign-in/ForgotPasswordForm";
+import LoginForm from "@/components/features/sign-in/LoginForm";
+import RegisterForm from "@/components/features/sign-in/RegisterForm";
+import ForgotPasswordForm from "@/components/features/sign-in/ForgotPasswordForm";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/shadcn/tabs";
 import {Mode} from "@/types";
 import { useTranslations } from 'next-intl';
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LanguageSwitcher from "@/components/ui/inputs/LanguageSwitcher";
 
 const variants = {
     initial: { x: 100, opacity: 0 },
@@ -23,7 +23,7 @@ export default function SignIn() {
     const tCommon = useTranslations('common');
 
     return (
-        <div className="flex flex-col gap-4 p-6 md:p-10 w-screen h-screen">
+        <div className="flex flex-col gap-4 p-6 md:p-10 w-full min-h-screen overflow-y-auto">
             <div className="flex justify-between items-center gap-2">
                 <a href="#" className="flex items-center gap-2 font-medium">
                     <img src="/images/logo.svg" alt="Logo"/>
@@ -33,7 +33,7 @@ export default function SignIn() {
                     <LanguageSwitcher/>
                 </div>
             </div>
-            <div className="flex flex-1 items-center justify-center relative min-h-[400px] overflow-hidden">
+            <div className="flex flex-1 items-center justify-center py-8">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={mode}
@@ -42,9 +42,9 @@ export default function SignIn() {
                         animate="animate"
                         exit="exit"
                         transition={{duration: 0.35}}
-                        className="absolute w-full max-w-xs"
+                        className="w-full max-w-[400px]"
                     >
-                        <Tabs defaultValue="employer" className="w-[400px]">
+                        <Tabs defaultValue="employer" className="w-full">
                             <TabsList>
                                 <TabsTrigger value="employee">{t('employee')}</TabsTrigger>
                                 <TabsTrigger value="employer">{t('employer')}</TabsTrigger>
