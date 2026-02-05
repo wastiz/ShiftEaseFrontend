@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import useMasonry from "@/hooks/useMasonry";
 import { Star, Building2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const testimonials = [
   {
@@ -56,17 +57,18 @@ const testimonials = [
   },
 ];
 
-const categories = [
-  { id: 1, name: "All Reviews" },
-  { id: 2, name: "Retail" },
-  { id: 3, name: "Healthcare" },
-  { id: 4, name: "Enterprise" },
-  { id: 5, name: "Hospitality" },
-];
-
 export default function Testimonials() {
+  const t = useTranslations('testimonials');
   const masonryContainer = useMasonry();
   const [category, setCategory] = useState<number>(1);
+
+  const categories = [
+    { id: 1, name: t('allReviews') },
+    { id: 2, name: t('retail') },
+    { id: 3, name: t('healthcare') },
+    { id: 4, name: t('enterprise') },
+    { id: 5, name: t('hospitality') },
+  ];
 
   return (
     <section id="testimonials">
@@ -75,11 +77,10 @@ export default function Testimonials() {
           {/* Section header */}
           <div className="mx-auto max-w-3xl pb-12 text-center">
             <h2 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--text-primary),var(--primary),var(--text-primary),var(--coralPrimary),var(--text-primary))] bg-[length:200%_auto] bg-clip-text pb-4 text-3xl font-semibold text-transparent md:text-4xl">
-              Trusted by Teams Everywhere
+              {t('title')}
             </h2>
             <p className="text-lg text-textSecondary">
-              See how businesses of all sizes use ShiftEase to simplify their
-              workforce management and boost employee satisfaction.
+              {t('subtitle')}
             </p>
           </div>
 

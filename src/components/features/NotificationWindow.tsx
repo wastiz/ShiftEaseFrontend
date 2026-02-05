@@ -87,9 +87,11 @@ function getNavigationPath(type: string): string | null {
 function NotificationActions({
   notification,
   onAction,
+  translations,
 }: {
   notification: NotificationDto;
   onAction?: () => void;
+  translations: { approve: string; reject: string; view: string };
 }) {
   const router = useRouter();
   const approveVacation = useApproveVacationRequest();
@@ -150,7 +152,7 @@ function NotificationActions({
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors disabled:opacity-50"
             >
               <ThumbsUp className="w-3 h-3" />
-              Approve
+              {translations.approve}
             </button>
             <button
               onClick={handleReject}
@@ -158,7 +160,7 @@ function NotificationActions({
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-50"
             >
               <ThumbsDown className="w-3 h-3" />
-              Reject
+              {translations.reject}
             </button>
           </>
         )}
@@ -168,7 +170,7 @@ function NotificationActions({
             className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-white/10 text-white/60 hover:bg-white/20 hover:text-white transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
-            View
+            {translations.view}
           </button>
         )}
       </div>
@@ -183,7 +185,7 @@ function NotificationActions({
           className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md bg-white/10 text-white/60 hover:bg-white/20 hover:text-white transition-colors"
         >
           <ExternalLink className="w-3 h-3" />
-          View
+          {translations.view}
         </button>
       </div>
     );
@@ -207,6 +209,12 @@ export default function NotificationWindow({
   const markAllAsRead = useMarkAllNotificationsAsRead();
 
   const unreadCount = notifications?.filter((n) => !n.isRead).length ?? 0;
+
+  const actionTranslations = {
+    approve: t('approve'),
+    reject: t('reject'),
+    view: t('view'),
+  };
 
   return (
     <div
@@ -281,6 +289,7 @@ export default function NotificationWindow({
                     <NotificationActions
                       notification={notification}
                       onAction={onClose}
+                      translations={actionTranslations}
                     />
                   </div>
                   <div className="shrink-0 flex flex-col items-center gap-1">

@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function HeroHome() {
+  const t = useTranslations("landing.hero");
+
   return (
     <section>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -18,9 +21,9 @@ export default function HeroHome() {
               transition={{ duration: 0.5 }}
               className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--text-primary),var(--primary),var(--text-primary),var(--coralPrimary),var(--text-primary))] bg-[length:200%_auto] bg-clip-text pb-5 text-4xl font-semibold text-transparent md:text-5xl lg:text-6xl"
             >
-              Simplify Shift Scheduling
+              {t("title")}
               <br />
-              for Your Organization
+              {t("titleLine2")}
             </motion.h1>
             <div className="mx-auto max-w-3xl">
               <motion.p
@@ -29,8 +32,7 @@ export default function HeroHome() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="mb-8 text-xl text-textSecondary"
               >
-                ShiftEase helps to create optimized schedules while giving
-                employees control over their availability. Less conflicts, more productivity. AND IT'S COMPLETELY FREE.
+                {t("description")}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -43,7 +45,7 @@ export default function HeroHome() {
                   className="btn-primary group mb-4 w-full sm:mb-0 sm:w-auto flex items-center justify-center"
                 >
                   <span className="relative inline-flex items-center">
-                    Get Started!
+                    {t("getStarted")}
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </Link>
@@ -52,7 +54,7 @@ export default function HeroHome() {
                   className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all px-6 py-3 w-full sm:w-auto bg-white/5 text-textSecondary border border-white/20 hover:bg-white/10 hover:text-textPrimary"
                 >
                   <Play className="mr-2 h-4 w-4" />
-                  See How It Works
+                  {t("learnMore")}
                 </Link>
               </motion.div>
             </div>
@@ -71,7 +73,7 @@ export default function HeroHome() {
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
                     <Play className="h-8 w-8 text-primary" />
                   </div>
-                  <p className="text-textSecondary">Product Demo Video</p>
+                  <p className="text-textSecondary">{t("demoVideo")}</p>
                 </div>
               </div>
             </div>

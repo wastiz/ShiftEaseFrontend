@@ -1,32 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { Twitter, Github, Linkedin } from "lucide-react";
-
-const footerLinks = {
-  product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Integrations", href: "#integrations" },
-    { name: "Changelog", href: "#changelog" },
-  ],
-  company: [
-    { name: "About Us", href: "#about" },
-    { name: "Careers", href: "#careers" },
-    { name: "Blog", href: "#blog" },
-    { name: "Contact", href: "#contact" },
-  ],
-  resources: [
-    { name: "Documentation", href: "#docs" },
-    { name: "Help Center", href: "#help" },
-    { name: "API Reference", href: "#api" },
-    { name: "Status", href: "#status" },
-  ],
-  legal: [
-    { name: "Privacy Policy", href: "#privacy" },
-    { name: "Terms of Service", href: "#terms" },
-    { name: "Cookie Policy", href: "#cookies" },
-  ],
-};
+import { useTranslations } from "next-intl";
 
 const socialLinks = [
   { name: "Twitter", icon: Twitter, href: "#" },
@@ -35,6 +12,34 @@ const socialLinks = [
 ];
 
 export default function LandingFooter() {
+  const t = useTranslations("landing.footer");
+
+  const footerLinks = {
+    product: [
+      { name: t("features"), href: "#features" },
+      { name: t("pricing"), href: "#pricing" },
+      { name: t("integrations"), href: "#integrations" },
+      { name: t("changelog"), href: "#changelog" },
+    ],
+    company: [
+      { name: t("aboutUs"), href: "#about" },
+      { name: t("careers"), href: "#careers" },
+      { name: t("blog"), href: "#blog" },
+      { name: t("contact"), href: "#contact" },
+    ],
+    resources: [
+      { name: t("documentation"), href: "#docs" },
+      { name: t("helpCenter"), href: "#help" },
+      { name: t("apiReference"), href: "#api" },
+      { name: t("status"), href: "#status" },
+    ],
+    legal: [
+      { name: t("privacyPolicy"), href: "#privacy" },
+      { name: t("termsOfService"), href: "#terms" },
+      { name: t("cookiePolicy"), href: "#cookies" },
+    ],
+  };
+
   return (
     <footer className="relative">
       {/* Top glow effect */}
@@ -62,8 +67,7 @@ export default function LandingFooter() {
                 <Logo />
               </div>
               <p className="mb-4 text-sm text-textSecondary">
-                Simplify shift scheduling for your team. Less conflicts, more
-                productivity.
+                {t("description")}
               </p>
               {/* Social links */}
               <ul className="flex gap-2">
@@ -84,7 +88,7 @@ export default function LandingFooter() {
             {/* Product links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-textPrimary">
-                Product
+                {t("product")}
               </h3>
               <ul className="space-y-2 text-sm">
                 {footerLinks.product.map((link) => (
@@ -103,7 +107,7 @@ export default function LandingFooter() {
             {/* Company links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-textPrimary">
-                Company
+                {t("company")}
               </h3>
               <ul className="space-y-2 text-sm">
                 {footerLinks.company.map((link) => (
@@ -122,7 +126,7 @@ export default function LandingFooter() {
             {/* Resources links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-textPrimary">
-                Resources
+                {t("resources")}
               </h3>
               <ul className="space-y-2 text-sm">
                 {footerLinks.resources.map((link) => (
@@ -141,7 +145,7 @@ export default function LandingFooter() {
             {/* Legal links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-textPrimary">
-                Legal
+                {t("legal")}
               </h3>
               <ul className="space-y-2 text-sm">
                 {footerLinks.legal.map((link) => (
@@ -162,10 +166,10 @@ export default function LandingFooter() {
           <div className="border-t border-white/10 py-6">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <p className="text-sm text-textSecondary">
-                &copy; {new Date().getFullYear()} ShiftEase. All rights reserved.
+                &copy; {new Date().getFullYear()} ShiftEase. {t("allRightsReserved")}
               </p>
               <p className="text-sm text-textSecondary">
-                Made with care for companies worldwide
+                {t("madeWith")}
               </p>
             </div>
           </div>

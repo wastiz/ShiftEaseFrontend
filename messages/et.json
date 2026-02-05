@@ -18,7 +18,32 @@
     "loading": "Laadimine...",
     "error": "Viga",
     "success": "Edukas",
-    "somethingWentWrong": "Midagi läks valesti"
+    "somethingWentWrong": "Midagi läks valesti",
+    "close": "Sulge",
+    "update": "Uuenda",
+    "saving": "Salvestamine...",
+    "deleting": "Kustutamine...",
+    "adding": "Lisamine...",
+    "submitting": "Saatmine...",
+    "required": "Kohustuslik",
+    "optional": "Valikuline",
+    "yes": "Jah",
+    "no": "Ei",
+    "confirm": "Kinnita",
+    "days": "päeva",
+    "hours": "tundi",
+    "employees": "töötajat",
+    "noData": "Andmed puuduvad",
+    "actions": "Tegevused",
+    "status": "Staatus",
+    "date": "Kuupäev",
+    "reason": "Põhjus",
+    "description": "Kirjeldus",
+    "name": "Nimi",
+    "phone": "Telefon",
+    "signIn": "Logi sisse",
+    "signUp": "Registreeru",
+    "logIn": "Logi sisse"
   },
   "auth": {
     "loginTitle": "Logi sisse oma {role} kontole",
@@ -48,7 +73,26 @@
     "sendResetLink": "Saada lähtestamise link",
     "sending": "Saatmine...",
     "resetLinkSent": "Lähtestamise link saadetud teie e-posti aadressile",
-    "backToLogin": "Tagasi sisselogimise juurde"
+    "backToLogin": "Tagasi sisselogimise juurde",
+    "createAnAccount": "Loo konto",
+    "fillOutDetails": "Täitke oma andmed registreerimiseks",
+    "fullName": "Täisnimi",
+    "signingUp": "Registreerimine...",
+    "registrationSuccessful": "Registreerimine õnnestus!",
+    "registrationFailed": "Registreerimine ebaõnnestus",
+    "unknownError": "Tundmatu viga",
+    "passwordRequirements": {
+      "length": "Vähemalt 8 tähemärki",
+      "uppercase": "Sisaldab suurtähte (A–Z)",
+      "digit": "Sisaldab numbrit (0–9)",
+      "special": "Sisaldab erimärki (!@#$...)"
+    },
+    "validation": {
+      "enterFullName": "Sisestage täisnimi (ees- ja perekonnanimi).",
+      "enterValidEmail": "Sisestage kehtiv e-posti aadress.",
+      "enterValidPhone": "Sisestage kehtiv telefoninumber.",
+      "passwordNotMeetRequirements": "Parool ei vasta nõuetele."
+    }
   },
   "nav": {
     "backToOrganizations": "Tagasi organisatsioonide juurde",
@@ -69,7 +113,18 @@
       "description": "Hallake oma organisatsioone",
       "create": "Loo organisatsioon",
       "name": "Organisatsiooni nimi",
-      "noOrganizations": "Organisatsioone ei leitud"
+      "noOrganizations": "Organisatsioone ei leitud",
+      "loading": "Laadimine...",
+      "failedToLoad": "Organisatsioonide laadimine ebaõnnestus",
+      "noImage": "Pilt puudub",
+      "noDescription": "Kirjeldus puudub",
+      "goTo": "Mine",
+      "noOrganizationsYet": "Teil pole veel organisatsioone",
+      "createFirstOrganization": "Looge oma esimene organisatsioon",
+      "deleteOrganization": "Kustuta organisatsioon",
+      "deleteWarning": "Kas olete kindel? Kõik selle organisatsiooniga seotud grupid, töötajad, vahetused ja graafikud kustutatakse. Võib-olla on lihtsam seda muuta?",
+      "deleted": "Organisatsioon edukalt kustutatud",
+      "failedToDelete": "Organisatsiooni kustutamine ebaõnnestus"
     },
     "employees": {
       "title": "Töötajad",
@@ -80,14 +135,84 @@
       "email": "E-post",
       "phone": "Telefon",
       "position": "Ametikoht",
-      "noEmployees": "Töötajaid ei leitud"
+      "noEmployees": "Töötajaid ei leitud",
+      "addBulk": "Lisa hulgi",
+      "editEmployee": "Muuda töötajat",
+      "addEmployee": "Lisa töötaja",
+      "configureDetails": "Seadista töötaja andmed",
+      "deleteEmployee": "Kustuta töötaja",
+      "deleteConfirmation": "Kas olete kindel, et soovite selle töötaja kustutada?",
+      "created": "Töötaja loodud!",
+      "updated": "Töötaja uuendatud!",
+      "deleted": "Töötaja kustutatud!",
+      "failedToCreate": "Töötaja loomine ebaõnnestus",
+      "failedToUpdate": "Töötaja uuendamine ebaõnnestus",
+      "failedToDelete": "Töötaja kustutamine ebaõnnestus",
+      "noEmployeesYet": "Töötajaid veel pole",
+      "createFirstEmployee": "Looge oma esimene töötaja",
+      "noEmployeesMatchFilters": "Ükski töötaja ei vasta filtritele",
+      "clearFilters": "Tühjenda filtrid",
+      "searchPlaceholder": "Otsi nime või e-posti järgi...",
+      "filterByGroup": "Filtreeri grupi järgi",
+      "noGroupsAvailable": "Gruppe pole saadaval",
+      "clearAll": "Tühjenda kõik",
+      "showingOfEmployees": "Näitan {filtered} / {total} töötajat",
+      "enterFirstName": "Sisesta eesnimi",
+      "enterLastName": "Sisesta perekonnanimi",
+      "enterEmail": "Sisesta e-post",
+      "enterPosition": "Sisesta ametikoht",
+      "enterPhone": "Sisesta telefon",
+      "hourlyRate": "Tunnitasu ($ / tund)",
+      "enterHourlyRate": "Sisesta tunnitasu",
+      "shiftPriority": "Vahetuse prioriteet",
+      "selectPriority": "Vali prioriteet",
+      "priorityHigh": "Kõrge",
+      "priorityMedium": "Keskmine",
+      "priorityLow": "Madal",
+      "positionTooltip": "Märkige selle töötaja ametikoht. Näiteks vanemjuht.",
+      "noGroupsSelected": "Gruppe pole valitud. Töötaja on paindlik.",
+      "selectGroups": "Vali grupid",
+      "noGroupsAvailableFlexible": "Gruppe pole saadaval — töötaja on paindlik",
+      "noGroupsCreatedYet": "Gruppe pole veel loodud. Töötaja on paindlik.",
+      "timeOff": "Vaba aeg",
+      "validation": {
+        "firstNameRequired": "Eesnimi on kohustuslik",
+        "lastNameRequired": "Perekonnanimi on kohustuslik",
+        "emailRequired": "E-post on kohustuslik",
+        "positionRequired": "Ametikoht on kohustuslik"
+      }
     },
     "groups": {
       "title": "Grupid",
       "description": "Hallake töötajate gruppe",
       "create": "Loo grupp",
       "name": "Grupi nimi",
-      "noGroups": "Gruppe ei leitud"
+      "noGroups": "Gruppe ei leitud",
+      "editGroup": "Muuda gruppi",
+      "addGroup": "Lisa grupp",
+      "configureDetails": "Seadista grupi üksikasjad",
+      "deleteGroup": "Kustuta grupp",
+      "deleteConfirmation": "Kas olete kindel, et soovite selle grupi kustutada?",
+      "created": "Grupp loodud!",
+      "updated": "Grupp uuendatud!",
+      "deleted": "Grupp kustutatud!",
+      "failedToCreate": "Grupi loomine ebaõnnestus",
+      "failedToUpdate": "Grupi uuendamine ebaõnnestus",
+      "failedToDelete": "Grupi kustutamine ebaõnnestus",
+      "noGroupsYet": "Gruppe veel pole",
+      "createFirstGroup": "Looge oma esimene grupp",
+      "usesOrganizationHours": "Kasutab organisatsiooni tunde",
+      "groupName": "Grupi nimi",
+      "enterGroupName": "Grupi nimi",
+      "descriptionOptional": "Kirjeldus (valikuline)",
+      "color": "Värv",
+      "customWorkingHours": "Kohandatud tööajad",
+      "customWorkingHoursTooltip": "Vaikimisi kasutab see grupp organisatsiooni tööaegu. Lülitage see sisse, et määrata sellele grupile spetsiifilised tunnid.",
+      "startTime": "Algusaeg",
+      "endTime": "Lõppaeg",
+      "validation": {
+        "nameRequired": "Nimi on kohustuslik"
+      }
     },
     "shiftTypes": {
       "title": "Vahetuse tüübid",
@@ -96,13 +221,102 @@
       "name": "Vahetuse nimi",
       "startTime": "Algusaeg",
       "endTime": "Lõppaeg",
-      "noShiftTypes": "Vahetuse tüüpe ei leitud"
+      "noShiftTypes": "Vahetuse tüüpe ei leitud",
+      "editShiftType": "Muuda vahetuse tüüpi",
+      "addShiftType": "Lisa vahetuse tüüp",
+      "configureDetails": "Seadista vahetuse tüübi üksikasjad",
+      "deleteShiftType": "Kustuta vahetuse tüüp",
+      "deleteConfirmation": "Kas olete kindel, et soovite selle vahetuse tüübi kustutada?",
+      "created": "Vahetuse tüüp loodud!",
+      "updated": "Vahetuse tüüp uuendatud!",
+      "deleted": "Vahetuse tüüp kustutatud!",
+      "failedToCreate": "Vahetuse tüübi loomine ebaõnnestus",
+      "failedToUpdate": "Vahetuse tüübi uuendamine ebaõnnestus",
+      "failedToDelete": "Vahetuse tüübi kustutamine ebaõnnestus",
+      "failedToLoad": "Vahetuse tüüpide laadimine ebaõnnestus",
+      "noShiftTypesYet": "Vahetuse tüüpe veel pole",
+      "createFirstShiftType": "Looge oma esimene vahetuse tüüp",
+      "shiftName": "Vahetuse nimi",
+      "enterShiftName": "Sisesta vahetuse nimi",
+      "minEmployees": "Min töötajaid",
+      "maxEmployees": "Max töötajaid",
+      "shiftColor": "Vahetuse värv",
+      "validation": {
+        "nameRequired": "Vahetuse nimi on kohustuslik",
+        "startTimeRequired": "Algusaeg on kohustuslik",
+        "endTimeRequired": "Lõppaeg on kohustuslik",
+        "minEmployeesRequired": "Min töötajaid on kohustuslik",
+        "maxEmployeesRequired": "Max töötajaid on kohustuslik",
+        "colorRequired": "Värv on kohustuslik",
+        "atLeastOneEmployee": "Vähemalt 1 töötaja on nõutav",
+        "maxMustBeGreater": "Max peab olema >= Min"
+      }
     },
     "schedules": {
       "title": "Graafikud",
       "description": "Hallake töögraafikuid",
       "create": "Loo graafik",
-      "noSchedules": "Graafikuid ei leitud"
+      "noSchedules": "Graafikuid ei leitud",
+      "allDataAvailable": "Kõik vajalikud andmed on saadaval. Saate luua graafikuid oma gruppidele.",
+      "confirmedSchedules": "Kinnitatud graafikud:",
+      "unconfirmedSchedules": "Kinnitamata graafikud:",
+      "noSchedulesYet": "Selle grupi jaoks pole veel graafikuid. Looge esimene alustamiseks.",
+      "manageSchedules": "Halda graafikuid"
+    },
+    "bulkAdd": {
+      "title": "Töötajate hulgilisamine",
+      "resultsTitle": "Hulgilisamine tulemused",
+      "importResults": "Impordi tulemused",
+      "resultsSummary": "{success} edukas, {failed} ebaõnnestunud",
+      "successfullyCreated": "Edukalt loodud ({count})",
+      "failedToCreate": "Loomine ebaõnnestus ({count})",
+      "addMoreEmployees": "Lisa veel töötajaid",
+      "goToEmployees": "Mine töötajate juurde",
+      "downloadTemplate": "Laadi mall alla",
+      "addMultipleEmployees": "Lisa mitu töötajat",
+      "fillDetails": "Täitke töötajate andmed allpool. Kasutage malle või importige CSV-st.",
+      "employees": "töötajat",
+      "applyJuniorTemplate": "Rakenda noorema töötaja mall",
+      "applySeniorTemplate": "Rakenda vanema töötaja mall",
+      "applyPartTimeTemplate": "Rakenda osalise tööaja mall",
+      "templateApplied": "Mall rakendatud kõikidele töötajatele",
+      "firstName": "Eesnimi",
+      "lastName": "Perekonnanimi",
+      "email": "E-post",
+      "phone": "Telefon",
+      "position": "Ametikoht",
+      "groups": "Grupid",
+      "hourlyRate": "Tunnitasu",
+      "priority": "Prioriteet",
+      "actions": "Tegevused",
+      "selectGroups": "Vali grupid",
+      "groupCount": "{count} gruppi",
+      "searchGroups": "Otsi gruppe...",
+      "noGroupFound": "Gruppi ei leitud.",
+      "selectPriority": "Vali prioriteet",
+      "low": "Madal",
+      "medium": "Keskmine",
+      "high": "Kõrge",
+      "addAnotherEmployee": "Lisa veel töötaja",
+      "cancel": "Tühista",
+      "creating": "Loomine...",
+      "createEmployees": "Loo {count} töötaja(t)",
+      "successCount": "Edukalt loodud {count} töötaja(t)",
+      "failedCount": "{count} töötaja(t) loomine ebaõnnestus",
+      "failedToCreate2": "Töötajate loomine ebaõnnestus",
+      "duplicateName": "Dubleeritud nimi \"{name}\" leitud ridades: {rows}",
+      "duplicateEmail": "Dubleeritud e-post \"{email}\" leitud ridades: {rows}",
+      "duplicatePhone": "Dubleeritud telefon \"{phone}\" leitud ridades: {rows}",
+      "validation": {
+        "firstNameRequired": "Eesnimi on kohustuslik",
+        "lastNameRequired": "Perekonnanimi on kohustuslik",
+        "invalidEmail": "Vigane e-post",
+        "phoneRequired": "Telefon on kohustuslik",
+        "positionRequired": "Ametikoht on kohustuslik",
+        "hourlyRateMustBePositive": "Tunnitasu peab olema positiivne",
+        "priorityRequired": "Prioriteet on kohustuslik",
+        "addAtLeastOne": "Lisage vähemalt üks töötaja"
+      }
     }
   },
   "employee": {
@@ -114,7 +328,33 @@
     },
     "preferences": {
       "title": "Eelistused",
-      "description": "Hallake oma tööeelistusi"
+      "description": "Hallake oma tööeelistusi",
+      "preferredWeekdays": "Eelistatud nädalapäevad",
+      "selectPreferredDays": "Valige päevad, mil eelistate töötada",
+      "preferredShiftTypes": "Eelistatud vahetuse tüübid",
+      "selectPreferredShifts": "Valige vahetuse tüübid, mida eelistate",
+      "daysOffPreferences": "Vabade päevade eelistused",
+      "selectDaysOff": "Valige kuupäevad, mil eelistate mitte töötada",
+      "selectDates": "Vali kuupäevad",
+      "selectedDates": "Valitud kuupäevad:",
+      "preferencesSaved": "Eelistused edukalt salvestatud",
+      "failedToSave": "Eelistuste salvestamine ebaõnnestus",
+      "weekdays": {
+        "sunday": "Pühapäev",
+        "monday": "Esmaspäev",
+        "tuesday": "Teisipäev",
+        "wednesday": "Kolmapäev",
+        "thursday": "Neljapäev",
+        "friday": "Reede",
+        "saturday": "Laupäev",
+        "sun": "P",
+        "mon": "E",
+        "tue": "T",
+        "wed": "K",
+        "thu": "N",
+        "fri": "R",
+        "sat": "L"
+      }
     },
     "vacation": {
       "title": "Puhkusetaotlused",
@@ -122,13 +362,74 @@
       "request": "Taotlege puhkust",
       "startDate": "Alguskuupäev",
       "endDate": "Lõppkuupäev",
-      "noRequests": "Puhkusetaotlusi pole"
+      "noRequests": "Puhkusetaotlusi pole",
+      "vacations": "Puhkused",
+      "manageRequests": "Hallake oma puhkusetaotlusi",
+      "advanceNotice": "Puhkusetaotlused tuleb esitada vähemalt 2 nädalat ette",
+      "pendingRequests": "Ootel taotlused",
+      "approved": "Kinnitatud",
+      "rejected": "Tagasi lükatud",
+      "pending": "Ootel",
+      "newVacationRequest": "Uus puhkusetaotlus",
+      "fillInDates": "Täitke puhkuse kuupäevad ja põhjus",
+      "reasonOptional": "Põhjus (valikuline)",
+      "specifyReason": "Täpsustage puhkuse põhjus...",
+      "submitRequest": "Esita taotlus",
+      "requestSubmitted": "Puhkusetaotlus edukalt esitatud",
+      "failedToSubmit": "Puhkusetaotluse esitamine ebaõnnestus",
+      "confirmDelete": "Kas olete kindel, et soovite selle taotluse kustutada?",
+      "requestDeleted": "Taotlus edukalt kustutatud",
+      "failedToDelete": "Taotluse kustutamine ebaõnnestus",
+      "noPendingRequests": "Teil pole ootel puhkusetaotlusi",
+      "noApprovedVacations": "Teil pole kinnitatud puhkusi",
+      "fillRequiredFields": "Palun täitke kõik kohustuslikud väljad",
+      "addNew": "Lisa uus"
     },
     "sickLeave": {
       "title": "Haigusleht",
       "description": "Teatage ja hallake haiguslehte",
       "report": "Teatage haiguslehest",
-      "noReports": "Haiguslehtede kirjeid pole"
+      "noReports": "Haiguslehtede kirjeid pole",
+      "sickLeaves": "Haiguslehed",
+      "viewAndSubmit": "Vaadake oma haiguslehti ja esitage taotlusi",
+      "documentNotice": "Haiguslehe dokumendid tuleb esitada 3 päeva jooksul",
+      "pendingRequests": "Ootel taotlused",
+      "approved": "Kinnitatud",
+      "newRequest": "Uus haiguslehe taotlus",
+      "submitForApproval": "Esitage haiguslehe taotlus kinnitamiseks",
+      "documentNumber": "Dokumendi number",
+      "diagnosisOptional": "Diagnoos (valikuline)",
+      "briefDescription": "Lühikirjeldus...",
+      "submitRequest": "Esita taotlus",
+      "requestSubmitted": "Haiguslehe taotlus edukalt esitatud",
+      "failedToSubmit": "Haiguslehe taotluse esitamine ebaõnnestus",
+      "confirmDelete": "Kas olete kindel, et soovite selle taotluse kustutada?",
+      "requestDeleted": "Taotlus edukalt kustutatud",
+      "failedToDelete": "Taotluse kustutamine ebaõnnestus",
+      "noPendingRequests": "Teil pole ootel haiguslehe taotlusi",
+      "noApprovedSickLeaves": "Teil pole kinnitatud haiguslehti",
+      "fillRequiredFields": "Palun täitke kõik kohustuslikud väljad",
+      "newRequestBtn": "Uus taotlus",
+      "document": "Dokument"
+    },
+    "personalDay": {
+      "title": "Isiklikud päevad",
+      "description": "Taotlege ja hallake oma isiklikke päevi",
+      "comingSoon": "Isiklike päevade leht on peagi tulemas."
+    },
+    "overview": {
+      "title": "Ülevaade",
+      "yourSchedule": "Teie eelseisvad vahetused ja graafik",
+      "upcomingShifts": "Eelseisvad vahetused",
+      "nextShifts": "Teie järgmised {count} vahetust",
+      "noUpcomingShifts": "Eelseisvaid vahetusi pole",
+      "next": "Järgmine",
+      "coworkers": "Kolleegid",
+      "note": "Märkus",
+      "shiftCalendar": "Vahetuste kalender",
+      "clickToSeeDetails": "Klõpsake päeval vahetuse üksikasjade vaatamiseks",
+      "noShiftsThisDay": "Sellel päeval vahetusi pole",
+      "selectDayInCalendar": "Valige kalendrist päev"
     }
   },
   "language": {
@@ -144,30 +445,58 @@
   },
   "landing": {
     "hero": {
-      "title": "Lihtsusta oma vahetuste planeerimist",
+      "title": "Lihtsusta vahetuste planeerimist",
+      "titleLine2": "oma organisatsiooni jaoks",
       "subtitle": "Halda töötajate graafikuid, jälgi vahetusi ja optimeeri oma tööjõudu lihtsalt",
-      "description": "ShiftEase on kaasaegne, intuitiivne platvorm, mis on loodud vahetuste planeerimise lihtsustamiseks. Säästa aega, vähenda konflikte ja hoia oma meeskond organiseerituna.",
-      "getStarted": "Alusta",
-      "learnMore": "Lisateave"
+      "description": "ShiftEase aitab luua optimeeritud graafikuid, andes töötajatele kontrolli oma saadavuse üle. Vähem konflikte, rohkem produktiivsust. JA SEE ON TÄIESTI TASUTA.",
+      "getStarted": "Alusta!",
+      "learnMore": "Vaata, kuidas see töötab",
+      "demoVideo": "Toote demovideo"
     },
     "features": {
-      "title": "Miks valida ShiftEase?",
-      "subtitle": "Kõik, mida vajad oma meeskonna tõhusaks juhtimiseks",
-      "easyToUse": {
-        "title": "Lihtne kasutada",
-        "description": "Intuitiivne liides, mida igaüks saab minutitega omandada. Koolitust pole vaja."
+      "title": "Kõik vahetuste haldamiseks",
+      "subtitle": "ShiftEase pakub kõiki tööriistu, mida teie meeskond vajab töötajate graafikute loomiseks, haldamiseks ja optimeerimiseks.",
+      "badge": "Täiustatud funktsioonid",
+      "smartScheduling": {
+        "title": "Nutikas planeerimine",
+        "description": "Planeerimisalgoritm, mis arvestab töötajate eelistusi, oskusi ja saadavust optimaalsete vahetuste loomiseks."
       },
-      "flexible": {
-        "title": "Paindlik planeerimine",
-        "description": "Loo, muuda ja jaga graafikuid vaid mõne klikiga. Toetus mitmesugustele vahetuste tüüpidele ja gruppidele."
+      "realTimeNotifications": {
+        "title": "Reaalajas teavitused",
+        "description": "Kohesed teavitused graafiku muudatuste, vahetuste vahetamise ja puhkusetaotluste kohta hoiavad kõiki kursis."
       },
-      "realTime": {
-        "title": "Reaalajas uuendused",
-        "description": "Kohesed teavitused hoiavad kõiki sünkroonis. Muudatused kajastuvad kohe kõigis seadmetes."
+      "analyticsDashboard": {
+        "title": "Analüütika juhtpaneel",
+        "description": "Jälgige tööjõukulusid, ületunde ja produktiivsuse näitajaid põhjalike aruandlustööriistadega."
       },
-      "analytics": {
-        "title": "Nutikas analüütika",
-        "description": "Jälgi tunde, kontrolli katvust ja tee andmetepõhiseid otsuseid sisseehitatud aruandlusvahendite abil."
+      "complianceReady": {
+        "title": "Vastavusvalmidus",
+        "description": "Sisseehitatud tööõiguse vastavus tagab, et teie graafikud vastavad kõigile nõuetele."
+      },
+      "mobileSupport": {
+        "title": "Mobiilne tugi",
+        "description": "Töötajad saavad vaadata graafikuid, taotleda muudatusi ja registreerida tööle tulemist/minekut igast seadmest."
+      },
+      "quickSetup": {
+        "title": "Kiire seadistus",
+        "description": "Pange oma meeskond tööle minutitega meie intuitiivse sisseelamisprotsessiga."
+      }
+    },
+    "workflows": {
+      "badge": "Kohandatud töövood",
+      "title": "Sujuvam planeerimisprotsess",
+      "subtitle": "Lihtne ja elegantne liides meeskonna graafikute haldamise alustamiseks minutitega. Integreerub sujuvalt teie olemasoleva töövooga.",
+      "smartScheduling": {
+        "tag": "Nutikas planeerimine",
+        "description": "Looge automaatselt optimeeritud graafikud töötajate saadavuse, oskuste ja tööseaduste vastavuse alusel."
+      },
+      "teamManagement": {
+        "tag": "Meeskonna haldamine",
+        "description": "Hallake kogu tööjõudu ühelt juhtpaneelilt. Jälgige tunde, oskusi ja tulemuslikkust vaevata."
+      },
+      "timeTracking": {
+        "tag": "Aja jälgimine",
+        "description": "Töötajad saavad registreerida tööle tulemist/minekut, taotleda puhkust ja hallata oma eelistusi ühes kohas."
       }
     },
     "screenshots": {
@@ -178,9 +507,38 @@
       "mobile": "Mobiilikogemus"
     },
     "cta": {
-      "title": "Valmis oma planeerimist sujuvamaks muutma?",
-      "subtitle": "Liitu tuhandete ettevõtetega, kes juba kasutavad ShiftEase",
-      "button": "Alusta tasuta prooviperioodi"
+      "title": "Valmis oma planeerimist muutma?",
+      "subtitle": "Liitu tuhandete meeskondadega, kes on juba lihtsustanud oma tööjõu haldamist ShiftEase'iga. Krediitkaart pole vajalik.",
+      "button": "Alusta tasuta",
+      "badge": "Alusta tasuta täna"
+    },
+    "header": {
+      "signIn": "Logi sisse",
+      "register": "Registreeru"
+    },
+    "footer": {
+      "tagline": "Lihtsusta vahetuste planeerimist oma meeskonna jaoks. Vähem konflikte, rohkem produktiivsust.",
+      "product": "Toode",
+      "features": "Funktsioonid",
+      "pricing": "Hinnad",
+      "integrations": "Integratsioonid",
+      "changelog": "Muudatuste logi",
+      "company": "Ettevõte",
+      "aboutUs": "Meist",
+      "careers": "Karjäär",
+      "blog": "Blogi",
+      "contact": "Kontakt",
+      "resources": "Ressursid",
+      "documentation": "Dokumentatsioon",
+      "helpCenter": "Abikeskus",
+      "apiReference": "API viide",
+      "status": "Staatus",
+      "legal": "Õiguslik",
+      "privacyPolicy": "Privaatsuspoliitika",
+      "termsOfService": "Kasutustingimused",
+      "cookiePolicy": "Küpsiste poliitika",
+      "copyright": "© {year} ShiftEase. Kõik õigused kaitstud.",
+      "madeWith": "Tehtud hoolega ettevõtetele üle maailma"
     }
   },
   "dashboard": {
@@ -192,7 +550,6 @@
     "addEmployees": "Lisa töötajaid",
     "acrossGroups": "{count} gruppides",
     "totalSchedules": "Graafikuid kokku",
-    "createSchedule": "Loo graafik",
     "unconfirmed": "kinnitamata",
     "groups": "Grupid",
     "createGroup": "Loo grupp",
@@ -276,7 +633,28 @@
     "organizationUpdated": "Organisatsioon uuendatud",
     "organizationCreated": "Organisatsioon loodud",
     "failedToUpdate": "Organisatsiooni uuendamine ebaõnnestus",
-    "failedToCreate": "Organisatsiooni loomine ebaõnnestus"
+    "failedToCreate": "Organisatsiooni loomine ebaõnnestus",
+    "allWeekDaysFrom": "Kõik nädalapäevad alates",
+    "timeAppliedToAllDays": "(see aeg rakendatakse kõikidele nädalapäevadele)",
+    "workScheduleTooltip": "Määrake oma organisatsiooni töögraafik (mitte töötajate graafik), st täpsustage ajad, mil organisatsioon töötab. Ülejäänud aeg loetakse mittetöötavaks ajaks ja te ei saa sellele ajale töötajaid lisada.",
+    "validation": {
+      "nameRequired": "Organisatsiooni nimi on kohustuslik",
+      "typeRequired": "Tüüp on kohustuslik"
+    }
+  },
+  "monthNav": {
+    "confirmed": "Kinnitatud",
+    "unconfirmed": "Kinnitamata"
+  },
+  "entityCheck": {
+    "progress": "Edenemine",
+    "description": "Vajalikud andmed puuduvad. Graafiku loomiseks on vajalikud grupid, töötajad ja vahetuse tüübid",
+    "groups": "Grupid",
+    "employees": "Töötajad",
+    "shiftTypes": "Vahetuse tüübid",
+    "createGroups": "Loo grupid",
+    "createEmployees": "Loo töötajad",
+    "createShiftTypes": "Loo vahetuse tüübid"
   },
   "schedule": {
     "manageSchedule": "Halda graafikut",
@@ -354,6 +732,104 @@
     "noNew": "Uusi teavitusi pole",
     "allCaughtUp": "Olete kõigega kursis!",
     "markRead": "Märgi loetuks",
-    "markAllRead": "Märgi kõik loetuks"
+    "markAllRead": "Märgi kõik loetuks",
+    "approve": "Kinnita",
+    "reject": "Lükka tagasi",
+    "view": "Vaata"
+  },
+  "notes": {
+    "note": "Märkus",
+    "noteFor": "Märkus {name} jaoks",
+    "addNote": "Lisa märkus",
+    "viewEditNote": "Vaata/Muuda märkust",
+    "placeholder": "Lisa märkus...",
+    "characters": "tähemärki",
+    "longNote": "Pikk märkus",
+    "save": "Salvesta",
+    "cancel": "Tühista"
+  },
+  "csvImport": {
+    "importCsv": "Impordi CSV",
+    "previewTitle": "Impordi andmete eelvaade",
+    "previewDescription": "Vaadake andmed enne importimist üle. Leitud {count} töötajat.",
+    "firstName": "Eesnimi",
+    "lastName": "Perekonnanimi",
+    "email": "E-post",
+    "phone": "Telefon",
+    "position": "Ametikoht",
+    "groups": "Grupid",
+    "rate": "Tasu",
+    "priority": "Prioriteet",
+    "missing": "Puudub",
+    "groupCount": "{count} gruppi",
+    "showingOf": "Näitan {shown} / {total} töötajat",
+    "andMoreWarnings": "...ja veel {count} hoiatust",
+    "cancel": "Tühista",
+    "importCount": "Impordi {count} töötajat",
+    "importedSuccess": "Imporditud {count} töötajat",
+    "noValidData": "CSV failist ei leitud kehtivaid andmeid",
+    "emptyFile": "CSV fail on tühi või ei sisalda andmeridu",
+    "emailNotFound": "E-posti veergu ei leitud - see on kohustuslik",
+    "rowMissingEmail": "Rida {row}: E-post puudub - jätan vahele",
+    "rowCouldNotDetermineName": "Rida {row}: Ei suutnud määrata ees-/perekonnanime"
+  },
+  "account": {
+    "title": "Konto",
+    "description": "Halda oma konto seadeid"
+  },
+  "testimonials": {
+    "title": "Meeskonnad üle maailma usaldavad meid",
+    "subtitle": "Vaadake, kuidas igas suuruses ettevõtted kasutavad ShiftEase'i oma tööjõu haldamise lihtsustamiseks ja töötajate rahulolu suurendamiseks.",
+    "allReviews": "Kõik arvustused",
+    "retail": "Jaemüük",
+    "healthcare": "Tervishoid",
+    "enterprise": "Ettevõtted",
+    "hospitality": "Hotellindus"
+  },
+  "timeOff": {
+    "manageTimeOff": "Halda vaba aega",
+    "addTimeOff": "Lisa vaba aeg",
+    "viewCurrentTimeOff": "Vaata praegust vaba aega",
+    "vacation": "Puhkus",
+    "sickLeave": "Haigusleht",
+    "personalDay": "Isiklik päev",
+    "startDate": "Alguskuupäev",
+    "endDate": "Lõppkuupäev",
+    "date": "Kuupäev",
+    "reasonOptional": "Põhjus (valikuline)",
+    "enterReason": "Sisestage puhkuse põhjus",
+    "enterReasonPersonal": "Sisestage isikliku päeva põhjus",
+    "diagnosisOptional": "Diagnoos (valikuline)",
+    "enterDiagnosis": "Sisestage diagnoos",
+    "documentNumberOptional": "Dokumendi number (valikuline)",
+    "enterDocumentNumber": "Sisestage dokumendi number",
+    "addVacation": "Lisa puhkus",
+    "addSickLeave": "Lisa haigusleht",
+    "addPersonalDay": "Lisa isiklik päev",
+    "vacationAdded": "Puhkus edukalt lisatud!",
+    "sickLeaveAdded": "Haigusleht edukalt lisatud!",
+    "personalDayAdded": "Isiklik päev edukalt lisatud!",
+    "failedToAddVacation": "Puhkuse lisamine ebaõnnestus",
+    "failedToAddSickLeave": "Haiguslehe lisamine ebaõnnestus",
+    "failedToAddPersonalDay": "Isikliku päeva lisamine ebaõnnestus",
+    "vacationDeleted": "Puhkus kustutatud",
+    "sickLeaveDeleted": "Haigusleht kustutatud",
+    "personalDayDeleted": "Isiklik päev kustutatud",
+    "failedToDeleteVacation": "Puhkuse kustutamine ebaõnnestus",
+    "failedToDeleteSickLeave": "Haiguslehe kustutamine ebaõnnestus",
+    "failedToDeletePersonalDay": "Isikliku päeva kustutamine ebaõnnestus",
+    "vacations": "Puhkused",
+    "sickLeaves": "Haiguslehed",
+    "personalDays": "Isiklikud päevad",
+    "noVacationsScheduled": "Puhkusi pole planeeritud",
+    "noSickLeavesRecorded": "Haiguslehti pole registreeritud",
+    "noPersonalDaysScheduled": "Isiklikke päevi pole planeeritud",
+    "diagnosis": "Diagnoos",
+    "docNumber": "Dok nr",
+    "validation": {
+      "startDateRequired": "Alguskuupäev on kohustuslik",
+      "endDateRequired": "Lõppkuupäev on kohustuslik",
+      "dateRequired": "Kuupäev on kohustuslik"
+    }
   }
 }

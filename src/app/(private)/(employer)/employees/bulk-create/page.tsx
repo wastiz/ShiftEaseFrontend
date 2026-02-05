@@ -33,6 +33,7 @@ import Main from '@/components/ui/Main';
 import { useBulkCreateEmployees, useGetGroups } from '@/hooks/api';
 import { BulkCreateResult } from '@/types';
 import CSVImporter from '@/components/features/employees/bulk-import/CSVImporter';
+import { useTranslations } from 'next-intl';
 
 const employeeSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -63,6 +64,7 @@ const emptyEmployee = {
 };
 
 export default function BulkAddEmployees() {
+    const t = useTranslations('employer.bulkAdd');
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<BulkCreateResult | null>(null);
 
@@ -103,7 +105,7 @@ export default function BulkAddEmployees() {
             ...templates[template],
         }));
         form.setValue('employees', updated);
-        toast.success('Template applied to all employees');
+        toast.success(t('templateApplied'));
     };
 
     const exportTemplate = () => {
@@ -204,14 +206,14 @@ export default function BulkAddEmployees() {
                 setShowResults(true);
 
                 if (response.data.successCount > 0) {
-                    toast.success(`Successfully created ${response.data.successCount} employee(s)`);
+                    toast.success(t('successCount', { count: response.data.successCount }));
                 }
                 if (response.data.failedCount > 0) {
-                    toast.error(`Failed to create ${response.data.failedCount} employee(s)`);
+                    toast.error(t('failedCount', { count: response.data.failedCount }));
                 }
             },
             onError: () => {
-                toast.error('Failed to create employees');
+                toast.error(t('failedToCreate2'));
             },
         });
     };
@@ -219,14 +221,14 @@ export default function BulkAddEmployees() {
     if (showResults && results) {
         return (
             <>
-                <Header title="Bulk Add Results" />
+                <Header title={t('resultsTitle')} />
                 <Main>
                     <div className="container max-w-4xl mx-auto p-4 md:p-6 space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Import Results</CardTitle>
+                                <CardTitle>{t('importResults')}</CardTitle>
                                 <CardDescription>
-                                    {results.data.successCount} successful, {results.data.failedCount} failed
+                                    {t('resultsSummary', { success: results.data.successCount, failed: results.data.failedCount })}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -234,7 +236,7 @@ export default function BulkAddEmployees() {
                                     <div className="space-y-3">
                                         <h3 className="font-semibold text-green-600 flex items-center gap-2">
                                             <CheckCircle2 className="h-5 w-5" />
-                                            Successfully Created ({results.data.successCount})
+                                            {t('successfullyCreated', { count: results.data.successCount })}
                                         </h3>
                                         <div className="space-y-2">
                                             {results.data.successfulEmployees.map((emp, idx: number) => (
@@ -253,7 +255,7 @@ export default function BulkAddEmployees() {
                                     <div className="space-y-3">
                                         <h3 className="font-semibold text-red-600 flex items-center gap-2">
                                             <XCircle className="h-5 w-5" />
-                                            Failed to Create ({results.data.failedCount})
+                                            {t('failedToCreate', { count: results.data.failedCount })}
                                         </h3>
                                         <div className="space-y-2">
                                             {results.data.failedEmployees.map((emp, idx: number) => (
@@ -271,10 +273,10 @@ export default function BulkAddEmployees() {
 
                                 <div className="flex gap-2">
                                     <Button onClick={() => setShowResults(false)}>
-                                        Add More Employees
+                                        {t('addMoreEmployees')}
                                     </Button>
                                     <Button variant="outline" onClick={() => window.location.href = '/employees'}>
-                                        Go to Employees
+                                        {t('goToEmployees')}
                                     </Button>
                                 </div>
                             </CardContent>
@@ -287,11 +289,11 @@ export default function BulkAddEmployees() {
 
     return (
         <>
-            <Header title="Bulk Add Employees">
+            <Header title={t('title')}>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={exportTemplate}>
                         <Download className="mr-2 h-4 w-4" />
-                        Download Template
+                        {t('downloadTemplate')}
                     </Button>
                     <CSVImporter onImport={handleCSVImport} />
                 </div>
@@ -304,27 +306,27 @@ export default function BulkAddEmployees() {
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <CardTitle>Add Multiple Employees</CardTitle>
+                                            <CardTitle>{t('addMultipleEmployees')}</CardTitle>
                                             <CardDescription>
-                                                Fill in employee details below. Use templates or import from CSV.
+                                                {t('fillDetails')}
                                             </CardDescription>
                                         </div>
                                         <Badge variant="secondary">
                                             <Users className="mr-1 h-3 w-3" />
-                                            {fields.length} employees
+                                            {fields.length} {t('employees')}
                                         </Badge>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex gap-2 flex-wrap">
                                         <Button type="button" variant="outline" size="sm" onClick={() => applyTemplate('junior')}>
-                                            Apply Junior Template
+                                            {t('applyJuniorTemplate')}
                                         </Button>
                                         <Button type="button" variant="outline" size="sm" onClick={() => applyTemplate('senior')}>
-                                            Apply Senior Template
+                                            {t('applySeniorTemplate')}
                                         </Button>
                                         <Button type="button" variant="outline" size="sm" onClick={() => applyTemplate('partTime')}>
-                                            Apply Part-Time Template
+                                            {t('applyPartTimeTemplate')}
                                         </Button>
                                     </div>
 
@@ -335,15 +337,15 @@ export default function BulkAddEmployees() {
                                             <thead className="bg-muted/50 sticky top-0">
                                                 <tr>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b">#</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">First Name</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">Last Name</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[200px]">Email</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">Phone</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">Position</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[180px]">Groups</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">Hourly Rate</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">Priority</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b sticky right-0 bg-muted/50">Actions</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('firstName')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('lastName')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[200px]">{t('email')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('phone')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('position')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[180px]">{t('groups')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">{t('hourlyRate')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">{t('priority')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b sticky right-0 bg-muted/50">{t('actions')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -435,16 +437,16 @@ export default function BulkAddEmployees() {
                                                                                         className="h-9 w-full justify-between text-xs"
                                                                                     >
                                                                                         {field.value && field.value.length > 0
-                                                                                            ? `${field.value.length} group(s)`
-                                                                                            : "Select groups"}
+                                                                                            ? t('groupCount', { count: field.value.length })
+                                                                                            : t('selectGroups')}
                                                                                         <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                                                                                     </Button>
                                                                                 </FormControl>
                                                                             </PopoverTrigger>
                                                                             <PopoverContent className="w-[200px] p-0">
                                                                                 <Command>
-                                                                                    <CommandInput placeholder="Search groups..." />
-                                                                                    <CommandEmpty>No group found.</CommandEmpty>
+                                                                                    <CommandInput placeholder={t('searchGroups')} />
+                                                                                    <CommandEmpty>{t('noGroupFound')}</CommandEmpty>
                                                                                     <CommandGroup className="max-h-64 overflow-auto">
                                                                                         {groups?.map((group) => {
                                                                                             const isSelected = field.value?.includes(group.id);
@@ -507,13 +509,13 @@ export default function BulkAddEmployees() {
                                                                         >
                                                                             <FormControl>
                                                                                 <SelectTrigger className="h-9">
-                                                                                    <SelectValue placeholder="Select priority" />
+                                                                                    <SelectValue placeholder={t('selectPriority')} />
                                                                                 </SelectTrigger>
                                                                             </FormControl>
                                                                             <SelectContent>
-                                                                                <SelectItem value="low">Low</SelectItem>
-                                                                                <SelectItem value="medium">Medium</SelectItem>
-                                                                                <SelectItem value="high">High</SelectItem>
+                                                                                <SelectItem value="low">{t('low')}</SelectItem>
+                                                                                <SelectItem value="medium">{t('medium')}</SelectItem>
+                                                                                <SelectItem value="high">{t('high')}</SelectItem>
                                                                             </SelectContent>
                                                                         </Select>
                                                                         <FormMessage className="text-xs" />
@@ -558,25 +560,25 @@ export default function BulkAddEmployees() {
                                         onClick={addEmployee}
                                     >
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Add Another Employee
+                                        {t('addAnotherEmployee')}
                                     </Button>
                                 </CardContent>
                             </Card>
 
                             <div className="flex justify-end gap-3">
                                 <Button type="button" variant="outline" onClick={() => window.history.back()}>
-                                    Cancel
+                                    {t('cancel')}
                                 </Button>
                                 <Button type="submit" disabled={bulkCreate.isPending}>
                                     {bulkCreate.isPending ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Creating...
+                                            {t('creating')}
                                         </>
                                     ) : (
                                         <>
                                             <Users className="mr-2 h-4 w-4" />
-                                            Create {fields.length} Employee{fields.length !== 1 ? 's' : ''}
+                                            {t('createEmployees', { count: fields.length })}
                                         </>
                                     )}
                                 </Button>

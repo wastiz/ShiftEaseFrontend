@@ -4,16 +4,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { CheckEntitiesResult } from "@/types";
-
-const requiredEntities: Array<{
-    key: keyof Pick<CheckEntitiesResult, 'groups' | 'employees' | 'shiftTypes'>;
-    label: string;
-    path: string;
-}> = [
-    { key: 'groups', label: 'Groups', path: '/groups' },
-    { key: 'employees', label: 'Employees', path: '/employees' },
-    { key: 'shiftTypes', label: 'Shift Types', path: '/shift-types' },
-];
+import { useTranslations } from "next-intl";
 
 interface EntityCheckResultProps {
     entities?: CheckEntitiesResult;
@@ -21,14 +12,26 @@ interface EntityCheckResultProps {
 
 export default function EntityCheckResult({ entities }: EntityCheckResultProps) {
     const router = useRouter();
+    const t = useTranslations('entityCheck');
 
     if (!entities) return null;
 
+    const requiredEntities: Array<{
+        key: keyof Pick<CheckEntitiesResult, 'groups' | 'employees' | 'shiftTypes'>;
+        label: string;
+        createLabel: string;
+        path: string;
+    }> = [
+        { key: 'groups', label: t('groups'), createLabel: t('createGroups'), path: '/groups' },
+        { key: 'employees', label: t('employees'), createLabel: t('createEmployees'), path: '/employees' },
+        { key: 'shiftTypes', label: t('shiftTypes'), createLabel: t('createShiftTypes'), path: '/shift-types' },
+    ];
+
     return (
         <div className="space-y-6 p-6 border rounded-lg">
-            <h4 className="text-lg font-semibold">Progress</h4>
+            <h4 className="text-lg font-semibold">{t('progress')}</h4>
             <p className="text-sm text-muted-foreground">
-                Necessary data absent. Groups, Employees and Shift Types are required for creating schedule
+                {t('description')}
             </p>
 
             <div className="space-y-3">
@@ -51,7 +54,7 @@ export default function EntityCheckResult({ entities }: EntityCheckResultProps) 
 
                             {!exists && (
                                 <Button size="sm" onClick={() => router.push(item.path)}>
-                                    Create {item.label}
+                                    {item.createLabel}
                                 </Button>
                             )}
                         </div>

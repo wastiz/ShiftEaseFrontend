@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Loader2, Save, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/shadcn/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
@@ -13,21 +14,23 @@ import Main from "@/components/ui/Main";
 import { format } from 'date-fns';
 import {useAuthStore} from "@/zustand/auth-state";
 
-const WEEK_DAYS = [
-    { id: 0, name: 'Sunday', short: 'Sun' },
-    { id: 1, name: 'Monday', short: 'Mon' },
-    { id: 2, name: 'Tuesday', short: 'Tue' },
-    { id: 3, name: 'Wednesday', short: 'Wed' },
-    { id: 4, name: 'Thursday', short: 'Thu' },
-    { id: 5, name: 'Friday', short: 'Fri' },
-    { id: 6, name: 'Saturday', short: 'Sat' },
-];
-
 export default function PreferencesPage() {
+    const t = useTranslations('employee.preferences');
+    const tCommon = useTranslations('common');
     const { user } = useAuthStore();
     const { data: preferences, isLoading } = usePreferences(user.id);
     const { data: shiftTypes } = useGetShiftTypes();
     const savePreferences = useSavePreferences(user.id);
+
+    const WEEK_DAYS = [
+        { id: 0, name: t('weekdays.sunday'), short: t('weekdays.sun') },
+        { id: 1, name: t('weekdays.monday'), short: t('weekdays.mon') },
+        { id: 2, name: t('weekdays.tuesday'), short: t('weekdays.tue') },
+        { id: 3, name: t('weekdays.wednesday'), short: t('weekdays.wed') },
+        { id: 4, name: t('weekdays.thursday'), short: t('weekdays.thu') },
+        { id: 5, name: t('weekdays.friday'), short: t('weekdays.fri') },
+        { id: 6, name: t('weekdays.saturday'), short: t('weekdays.sat') },
+    ];
 
     const [selectedWeekDays, setSelectedWeekDays] = useState<number[]>([]);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
@@ -68,12 +71,12 @@ export default function PreferencesPage() {
 
         try {
             await savePreferences.mutateAsync(bundle);
-            toast('Success', {
-                description: 'Preferences saved successfully',
+            toast(tCommon('success'), {
+                description: t('saveSuccess'),
             });
         } catch (error) {
-            toast.error("Error", {
-                description: 'Could not save preferences',
+            toast.error(tCommon('error'), {
+                description: t('saveError'),
             });
         }
     };
@@ -88,14 +91,14 @@ export default function PreferencesPage() {
 
     return (
         <>
-            <Header title="Preferences">
+            <Header title={t('title')}>
                 <Button onClick={handleSave} disabled={savePreferences.isPending}>
                     {savePreferences.isPending ? (
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     ) : (
                         <Save className="mr-2 h-5 w-5" />
                     )}
-                    Save
+                    {tCommon('save')}
                 </Button>
             </Header>
             <Main>
@@ -103,9 +106,9 @@ export default function PreferencesPage() {
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Preferred Weekdays</CardTitle>
+                                <CardTitle>{t('preferredWeekdays')}</CardTitle>
                                 <CardDescription>
-                                    Select days you prefer to work
+                                    {t('selectDaysToWork')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -137,9 +140,9 @@ export default function PreferencesPage() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Preferred Shift Types</CardTitle>
+                                <CardTitle>{t('preferredShiftTypes')}</CardTitle>
                                 <CardDescription>
-                                    Select shift types you prefer to work
+                                    {t('selectShiftTypes')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -173,9 +176,9 @@ export default function PreferencesPage() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Days Off Preferences</CardTitle>
+                                <CardTitle>{t('daysOffPreferences')}</CardTitle>
                                 <CardDescription>
-                                    Select dates when you prefer not to work
+                                    {t('selectDatesNotToWork')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -183,7 +186,7 @@ export default function PreferencesPage() {
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" className="w-full justify-start">
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            Select dates
+                                            {t('selectDates')}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
@@ -198,7 +201,7 @@ export default function PreferencesPage() {
 
                                 {dayOffDates.length > 0 && (
                                     <div className="space-y-2">
-                                        <p className="text-sm font-medium">Selected dates:</p>
+                                        <p className="text-sm font-medium">{t('selectedDates')}:</p>
                                         <div className="flex flex-wrap gap-2">
                                             {dayOffDates.sort((a, b) => a.getTime() - b.getTime()).map((date, index) => (
                                                 <div

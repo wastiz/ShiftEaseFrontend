@@ -6,6 +6,7 @@ import {ForgotPasswordPayload, Mode, Role} from "@/types";
 import {useForgotPassword} from "@/hooks/api/auth";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
+import {useTranslations} from "next-intl";
 
 interface ForgotPasswordFormProps {
     setMode: (mode: Mode) => void;
@@ -14,6 +15,8 @@ interface ForgotPasswordFormProps {
 
 export default function ForgotPasswordForm({setMode, role}: ForgotPasswordFormProps) {
     const router = useRouter();
+    const t = useTranslations('auth');
+    const tCommon = useTranslations('common');
 
     const [form, setForm] = useState<ForgotPasswordPayload>({
         email: "",
@@ -39,28 +42,28 @@ export default function ForgotPasswordForm({setMode, role}: ForgotPasswordFormPr
     return (
         <>
             <CardHeader>
-                <CardTitle>Forgot your password?</CardTitle>
-                <CardDescription>Enter your email to receive a reset link</CardDescription>
+                <CardTitle>{t('forgotPasswordTitle')}</CardTitle>
+                <CardDescription>{t('forgotPasswordDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-3">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" placeholder="m@example.com" onChange={handleChange} required />
+                            <Label htmlFor="email">{tCommon('email')}</Label>
+                            <Input id="email" type="email" placeholder={t('emailPlaceholder')} onChange={handleChange} required />
                         </div>
                         <Button type="submit" className={isPending ? "w-full disabled" : "w-full"}>
-                            {isPending ? "Sending..." : "Send reset link"}
+                            {isPending ? t('sending') : t('sendResetLink')}
                         </Button>
-                        {isError && <p className="text-red-500">{(error instanceof Error ? error : { message: "Unknown error" })?.message || "Failed to send reset link"}</p>}
-                        {isSuccess && <p className="text-green-500">Reset link was sent</p>}
+                        {isError && <p className="text-red-500">{(error instanceof Error ? error : { message: t('unknownError') })?.message || t('unknownError')}</p>}
+                        {isSuccess && <p className="text-green-500">{t('resetLinkSent')}</p>}
                         <Button
                             type="button"
                             variant="ghost"
                             className="w-full"
                             onClick={() => setMode("login")}
                         >
-                            Back to login
+                            {t('backToLogin')}
                         </Button>
                     </div>
                 </form>

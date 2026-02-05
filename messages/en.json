@@ -18,7 +18,32 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "close": "Close",
+    "update": "Update",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "adding": "Adding...",
+    "submitting": "Submitting...",
+    "required": "Required",
+    "optional": "Optional",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "days": "days",
+    "hours": "hours",
+    "employees": "employees",
+    "noData": "No data",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "reason": "Reason",
+    "description": "Description",
+    "name": "Name",
+    "phone": "Phone",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "logIn": "Log In"
   },
   "auth": {
     "loginTitle": "Login to your {role} account",
@@ -48,7 +73,26 @@
     "sendResetLink": "Send Reset Link",
     "sending": "Sending...",
     "resetLinkSent": "Reset link sent to your email",
-    "backToLogin": "Back to Login"
+    "backToLogin": "Back to Login",
+    "createAnAccount": "Create an account",
+    "fillOutDetails": "Fill out your details to register",
+    "fullName": "Full Name",
+    "signingUp": "Signing up...",
+    "registrationSuccessful": "Registration successful!",
+    "registrationFailed": "Registration failed",
+    "unknownError": "Unknown error",
+    "passwordRequirements": {
+      "length": "At least 8 characters",
+      "uppercase": "Contains an uppercase letter (A–Z)",
+      "digit": "Contains a number (0–9)",
+      "special": "Contains a character (!@#$...)"
+    },
+    "validation": {
+      "enterFullName": "Enter your full name (first and last name).",
+      "enterValidEmail": "Enter a valid email address.",
+      "enterValidPhone": "Enter a valid phone number.",
+      "passwordNotMeetRequirements": "Password does not meet all requirements."
+    }
   },
   "nav": {
     "backToOrganizations": "Back to Organizations",
@@ -69,7 +113,18 @@
       "description": "Manage your organizations",
       "create": "Create Organization",
       "name": "Organization Name",
-      "noOrganizations": "No organizations found"
+      "noOrganizations": "No organizations found",
+      "loading": "Loading...",
+      "failedToLoad": "Failed to load organizations",
+      "noImage": "No Image",
+      "noDescription": "No description",
+      "goTo": "Go to",
+      "noOrganizationsYet": "You have no organizations yet",
+      "createFirstOrganization": "Create your first organization",
+      "deleteOrganization": "Delete Organization",
+      "deleteWarning": "Are you sure? All groups, employees, shifts, and schedules associated with this organization will be deleted. Maybe it's easier to edit it?",
+      "deleted": "Organization deleted successfully",
+      "failedToDelete": "Failed to delete organization"
     },
     "employees": {
       "title": "Employees",
@@ -80,14 +135,84 @@
       "email": "Email",
       "phone": "Phone",
       "position": "Position",
-      "noEmployees": "No employees found"
+      "noEmployees": "No employees found",
+      "addBulk": "Add Bulk",
+      "editEmployee": "Edit Employee",
+      "addEmployee": "Add Employee",
+      "configureDetails": "Configure employee details",
+      "deleteEmployee": "Delete Employee",
+      "deleteConfirmation": "Are you sure you want to delete this employee?",
+      "created": "Employee created!",
+      "updated": "Employee updated!",
+      "deleted": "Employee deleted!",
+      "failedToCreate": "Failed to create employee",
+      "failedToUpdate": "Failed to update employee",
+      "failedToDelete": "Failed to delete employee",
+      "noEmployeesYet": "No employees yet",
+      "createFirstEmployee": "Create your first employee",
+      "noEmployeesMatchFilters": "No employees match your filters",
+      "clearFilters": "Clear filters",
+      "searchPlaceholder": "Search by name or email...",
+      "filterByGroup": "Filter by group",
+      "noGroupsAvailable": "No groups available",
+      "clearAll": "Clear all",
+      "showingOfEmployees": "Showing {filtered} of {total} employees",
+      "enterFirstName": "Enter first name",
+      "enterLastName": "Enter last name",
+      "enterEmail": "Enter email",
+      "enterPosition": "Enter position",
+      "enterPhone": "Enter phone",
+      "hourlyRate": "Hourly Rate ($ / hour)",
+      "enterHourlyRate": "Enter hourly rate",
+      "shiftPriority": "Shift Priority",
+      "selectPriority": "Select priority",
+      "priorityHigh": "High",
+      "priorityMedium": "Medium",
+      "priorityLow": "Low",
+      "positionTooltip": "Indicate the position of this employee. For example, senior manager.",
+      "noGroupsSelected": "No groups selected. Employee will be flexible.",
+      "selectGroups": "Select groups",
+      "noGroupsAvailableFlexible": "No groups available — employee will be flexible",
+      "noGroupsCreatedYet": "No groups created yet. Employee will be flexible.",
+      "timeOff": "Time Off",
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "emailRequired": "Email is required",
+        "positionRequired": "Position is required"
+      }
     },
     "groups": {
       "title": "Groups",
       "description": "Manage employee groups",
       "create": "Create Group",
       "name": "Group Name",
-      "noGroups": "No groups found"
+      "noGroups": "No groups found",
+      "editGroup": "Edit Group",
+      "addGroup": "Add Group",
+      "configureDetails": "Configure group details",
+      "deleteGroup": "Delete Group",
+      "deleteConfirmation": "Are you sure you want to delete this group?",
+      "created": "Group created!",
+      "updated": "Group updated!",
+      "deleted": "Group deleted!",
+      "failedToCreate": "Failed to create group",
+      "failedToUpdate": "Failed to update group",
+      "failedToDelete": "Failed to delete group",
+      "noGroupsYet": "No groups yet",
+      "createFirstGroup": "Create your first group",
+      "usesOrganizationHours": "Uses organization hours",
+      "groupName": "Group Name",
+      "enterGroupName": "Group name",
+      "descriptionOptional": "Description (optional)",
+      "color": "Color",
+      "customWorkingHours": "Custom Working Hours",
+      "customWorkingHoursTooltip": "By default, this group uses the organization's working hours. Enable this to set specific hours for this group.",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "validation": {
+        "nameRequired": "Name is required"
+      }
     },
     "shiftTypes": {
       "title": "Shift Types",
@@ -96,13 +221,102 @@
       "name": "Shift Name",
       "startTime": "Start Time",
       "endTime": "End Time",
-      "noShiftTypes": "No shift types found"
+      "noShiftTypes": "No shift types found",
+      "editShiftType": "Edit Shift Type",
+      "addShiftType": "Add Shift Type",
+      "configureDetails": "Configure shift type details",
+      "deleteShiftType": "Delete Shift Type",
+      "deleteConfirmation": "Are you sure you want to delete this shift type?",
+      "created": "Shift type created!",
+      "updated": "Shift type updated!",
+      "deleted": "Shift type deleted!",
+      "failedToCreate": "Failed to create shift type",
+      "failedToUpdate": "Failed to update shift type",
+      "failedToDelete": "Failed to delete shift type",
+      "failedToLoad": "Failed to load shift types",
+      "noShiftTypesYet": "No shift types yet",
+      "createFirstShiftType": "Create your first shift type",
+      "shiftName": "Shift Name",
+      "enterShiftName": "Enter shift name",
+      "minEmployees": "Min Employees",
+      "maxEmployees": "Max Employees",
+      "shiftColor": "Shift Color",
+      "validation": {
+        "nameRequired": "Shift name is required",
+        "startTimeRequired": "Start time is required",
+        "endTimeRequired": "End time is required",
+        "minEmployeesRequired": "Min employees is required",
+        "maxEmployeesRequired": "Max employees is required",
+        "colorRequired": "Color is required",
+        "atLeastOneEmployee": "At least 1 employee is required",
+        "maxMustBeGreater": "Max must be >= Min"
+      }
     },
     "schedules": {
       "title": "Schedules",
       "description": "Manage work schedules",
       "create": "Create Schedule",
-      "noSchedules": "No schedules found"
+      "noSchedules": "No schedules found",
+      "allDataAvailable": "All required data is available. You can create schedules for your groups.",
+      "confirmedSchedules": "Confirmed schedules:",
+      "unconfirmedSchedules": "Unconfirmed schedules:",
+      "noSchedulesYet": "No schedules yet for this group. Create the first one to get started.",
+      "manageSchedules": "Manage Schedules"
+    },
+    "bulkAdd": {
+      "title": "Bulk Add Employees",
+      "resultsTitle": "Bulk Add Results",
+      "importResults": "Import Results",
+      "resultsSummary": "{success} successful, {failed} failed",
+      "successfullyCreated": "Successfully Created ({count})",
+      "failedToCreate": "Failed to Create ({count})",
+      "addMoreEmployees": "Add More Employees",
+      "goToEmployees": "Go to Employees",
+      "downloadTemplate": "Download Template",
+      "addMultipleEmployees": "Add Multiple Employees",
+      "fillDetails": "Fill in employee details below. Use templates or import from CSV.",
+      "employees": "employees",
+      "applyJuniorTemplate": "Apply Junior Template",
+      "applySeniorTemplate": "Apply Senior Template",
+      "applyPartTimeTemplate": "Apply Part-Time Template",
+      "templateApplied": "Template applied to all employees",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "position": "Position",
+      "groups": "Groups",
+      "hourlyRate": "Hourly Rate",
+      "priority": "Priority",
+      "actions": "Actions",
+      "selectGroups": "Select groups",
+      "groupCount": "{count} group(s)",
+      "searchGroups": "Search groups...",
+      "noGroupFound": "No group found.",
+      "selectPriority": "Select priority",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "addAnotherEmployee": "Add Another Employee",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "createEmployees": "Create {count} Employee(s)",
+      "successCount": "Successfully created {count} employee(s)",
+      "failedCount": "Failed to create {count} employee(s)",
+      "failedToCreate2": "Failed to create employees",
+      "duplicateName": "Duplicate name \"{name}\" found in rows: {rows}",
+      "duplicateEmail": "Duplicate email \"{email}\" found in rows: {rows}",
+      "duplicatePhone": "Duplicate phone \"{phone}\" found in rows: {rows}",
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "invalidEmail": "Invalid email",
+        "phoneRequired": "Phone is required",
+        "positionRequired": "Position is required",
+        "hourlyRateMustBePositive": "Hourly rate must be positive",
+        "priorityRequired": "Priority is required",
+        "addAtLeastOne": "Add at least one employee"
+      }
     }
   },
   "employee": {
@@ -114,7 +328,33 @@
     },
     "preferences": {
       "title": "Preferences",
-      "description": "Manage your work preferences"
+      "description": "Manage your work preferences",
+      "preferredWeekdays": "Preferred Weekdays",
+      "selectPreferredDays": "Select days you prefer to work",
+      "preferredShiftTypes": "Preferred Shift Types",
+      "selectPreferredShifts": "Select shift types you prefer to work",
+      "daysOffPreferences": "Days Off Preferences",
+      "selectDaysOff": "Select dates when you prefer not to work",
+      "selectDates": "Select dates",
+      "selectedDates": "Selected dates:",
+      "preferencesSaved": "Preferences saved successfully",
+      "failedToSave": "Could not save preferences",
+      "weekdays": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
     },
     "vacation": {
       "title": "Vacation Requests",
@@ -122,13 +362,74 @@
       "request": "Request Vacation",
       "startDate": "Start Date",
       "endDate": "End Date",
-      "noRequests": "No vacation requests"
+      "noRequests": "No vacation requests",
+      "vacations": "Vacations",
+      "manageRequests": "Manage your vacation requests",
+      "advanceNotice": "Vacation requests must be submitted at least 2 weeks in advance",
+      "pendingRequests": "Pending Requests",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "newVacationRequest": "New Vacation Request",
+      "fillInDates": "Fill in the vacation dates and reason",
+      "reasonOptional": "Reason (optional)",
+      "specifyReason": "Specify the reason for vacation...",
+      "submitRequest": "Submit Request",
+      "requestSubmitted": "Vacation request submitted successfully",
+      "failedToSubmit": "Failed to submit vacation request",
+      "confirmDelete": "Are you sure you want to delete this request?",
+      "requestDeleted": "Request deleted successfully",
+      "failedToDelete": "Failed to delete request",
+      "noPendingRequests": "You don't have any pending vacation requests",
+      "noApprovedVacations": "You don't have any approved vacations",
+      "fillRequiredFields": "Please fill in all required fields",
+      "addNew": "Add New"
     },
     "sickLeave": {
       "title": "Sick Leave",
       "description": "Report and manage sick leave",
       "report": "Report Sick Leave",
-      "noReports": "No sick leave reports"
+      "noReports": "No sick leave reports",
+      "sickLeaves": "Sick Leaves",
+      "viewAndSubmit": "View your sick leaves and submit requests",
+      "documentNotice": "Sick leave documents must be provided within 3 days",
+      "pendingRequests": "Pending Requests",
+      "approved": "Approved",
+      "newRequest": "New Sick Leave Request",
+      "submitForApproval": "Submit a sick leave request for approval",
+      "documentNumber": "Document Number",
+      "diagnosisOptional": "Diagnosis (optional)",
+      "briefDescription": "Brief description...",
+      "submitRequest": "Submit Request",
+      "requestSubmitted": "Sick leave request submitted successfully",
+      "failedToSubmit": "Failed to submit sick leave request",
+      "confirmDelete": "Are you sure you want to delete this request?",
+      "requestDeleted": "Request deleted successfully",
+      "failedToDelete": "Failed to delete request",
+      "noPendingRequests": "You don't have any pending sick leave requests",
+      "noApprovedSickLeaves": "You don't have any approved sick leaves",
+      "fillRequiredFields": "Please fill in all required fields",
+      "newRequestBtn": "New Request",
+      "document": "Document"
+    },
+    "personalDay": {
+      "title": "Personal Days",
+      "description": "Request and manage your personal days",
+      "comingSoon": "Personal days page coming soon."
+    },
+    "overview": {
+      "title": "Overview",
+      "yourSchedule": "Your upcoming shifts and schedule",
+      "upcomingShifts": "Upcoming Shifts",
+      "nextShifts": "Your next {count} shifts",
+      "noUpcomingShifts": "No upcoming shifts",
+      "next": "Next",
+      "coworkers": "Coworkers",
+      "note": "Note",
+      "shiftCalendar": "Shift Calendar",
+      "clickToSeeDetails": "Click on a day to see shift details",
+      "noShiftsThisDay": "No shifts this day",
+      "selectDayInCalendar": "Select a day in the calendar"
     }
   },
   "language": {
@@ -144,30 +445,58 @@
   },
   "landing": {
     "hero": {
-      "title": "Simplify Your Shift Scheduling",
+      "title": "Simplify Shift Scheduling",
+      "titleLine2": "for Your Organization",
       "subtitle": "Manage employee schedules, track shifts, and optimize your workforce with ease",
-      "description": "ShiftEase is a modern, intuitive platform designed to make shift scheduling effortless. Save time, reduce conflicts, and keep your team organized.",
-      "getStarted": "Get Started",
-      "learnMore": "Learn More"
+      "description": "ShiftEase helps to create optimized schedules while giving employees control over their availability. Less conflicts, more productivity. AND IT'S COMPLETELY FREE.",
+      "getStarted": "Get Started!",
+      "learnMore": "See How It Works",
+      "demoVideo": "Product Demo Video"
     },
     "features": {
-      "title": "Why Choose ShiftEase?",
-      "subtitle": "Everything you need to manage your team efficiently",
-      "easyToUse": {
-        "title": "Easy to Use",
-        "description": "Intuitive interface that anyone can master in minutes. No training required."
+      "title": "Everything You Need to Manage Shifts",
+      "subtitle": "ShiftEase provides all the tools your team needs to create, manage, and optimize employee schedules with ease.",
+      "badge": "Advanced Features",
+      "smartScheduling": {
+        "title": "Smart Scheduling",
+        "description": "Algorithm for scheduling that considers employee preferences, skills, and availability to create optimal shifts."
       },
-      "flexible": {
-        "title": "Flexible Scheduling",
-        "description": "Create, modify, and share schedules with just a few clicks. Support for multiple shift types and groups."
+      "realTimeNotifications": {
+        "title": "Real-time Notifications",
+        "description": "Instant alerts for schedule changes, shift swaps, and time-off requests keep everyone in the loop."
       },
-      "realTime": {
-        "title": "Real-Time Updates",
-        "description": "Instant notifications keep everyone in sync. Changes are reflected immediately across all devices."
+      "analyticsDashboard": {
+        "title": "Analytics Dashboard",
+        "description": "Track labor costs, overtime, and productivity metrics with comprehensive reporting tools."
       },
-      "analytics": {
-        "title": "Smart Analytics",
-        "description": "Track hours, monitor coverage, and make data-driven decisions with built-in reporting tools."
+      "complianceReady": {
+        "title": "Compliance Ready",
+        "description": "Built-in labor law compliance ensures your schedules meet all regulatory requirements."
+      },
+      "mobileSupport": {
+        "title": "Mobile Support",
+        "description": "Employees can view schedules, request changes, and clock in/out from any device."
+      },
+      "quickSetup": {
+        "title": "Quick Setup",
+        "description": "Get your team up and running in minutes with our intuitive onboarding process."
+      }
+    },
+    "workflows": {
+      "badge": "Tailored Workflows",
+      "title": "Streamline Your Scheduling Process",
+      "subtitle": "Simple and elegant interface to start managing your team's schedules in minutes. Integrates seamlessly with your existing workflow.",
+      "smartScheduling": {
+        "tag": "Smart Scheduling",
+        "description": "Create optimized schedules automatically based on employee availability, skills, and labor laws compliance."
+      },
+      "teamManagement": {
+        "tag": "Team Management",
+        "description": "Manage your entire workforce from one dashboard. Track hours, skills, and performance effortlessly."
+      },
+      "timeTracking": {
+        "tag": "Time Tracking",
+        "description": "Employees can clock in/out, request time off, and manage their preferences all in one place."
       }
     },
     "screenshots": {
@@ -178,9 +507,38 @@
       "mobile": "Mobile Experience"
     },
     "cta": {
-      "title": "Ready to Streamline Your Scheduling?",
-      "subtitle": "Join thousands of businesses already using ShiftEase",
-      "button": "Start Free Trial"
+      "title": "Ready to Transform Your Scheduling?",
+      "subtitle": "Join thousands of teams who have simplified their workforce management with ShiftEase. No credit card required.",
+      "button": "Get Started Free",
+      "badge": "Start Free Today"
+    },
+    "header": {
+      "signIn": "Sign In",
+      "register": "Register"
+    },
+    "footer": {
+      "tagline": "Simplify shift scheduling for your team. Less conflicts, more productivity.",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "integrations": "Integrations",
+      "changelog": "Changelog",
+      "company": "Company",
+      "aboutUs": "About Us",
+      "careers": "Careers",
+      "blog": "Blog",
+      "contact": "Contact",
+      "resources": "Resources",
+      "documentation": "Documentation",
+      "helpCenter": "Help Center",
+      "apiReference": "API Reference",
+      "status": "Status",
+      "legal": "Legal",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "copyright": "© {year} ShiftEase. All rights reserved.",
+      "madeWith": "Made with care for companies worldwide"
     }
   },
   "dashboard": {
@@ -192,7 +550,6 @@
     "addEmployees": "Add employees",
     "acrossGroups": "Across {count} groups",
     "totalSchedules": "Total Schedules",
-    "createSchedule": "Create schedule",
     "unconfirmed": "unconfirmed",
     "groups": "Groups",
     "createGroup": "Create group",
@@ -276,7 +633,28 @@
     "organizationUpdated": "Organization updated",
     "organizationCreated": "Organization created",
     "failedToUpdate": "Failed to update organization",
-    "failedToCreate": "Failed to create organization"
+    "failedToCreate": "Failed to create organization",
+    "allWeekDaysFrom": "All week days from",
+    "timeAppliedToAllDays": "(this time will be applied to all week days)",
+    "workScheduleTooltip": "Set your organisation's working schedule (not the employees' schedule), i.e. specify the times when the organisation is working. The rest of the time will be considered non-working time, and you will not be able to add employees for that time.",
+    "validation": {
+      "nameRequired": "Organization name is required",
+      "typeRequired": "Type is required"
+    }
+  },
+  "monthNav": {
+    "confirmed": "Confirmed",
+    "unconfirmed": "Unconfirmed"
+  },
+  "entityCheck": {
+    "progress": "Progress",
+    "description": "Necessary data absent. Groups, Employees and Shift Types are required for creating schedule",
+    "groups": "Groups",
+    "employees": "Employees",
+    "shiftTypes": "Shift Types",
+    "createGroups": "Create Groups",
+    "createEmployees": "Create Employees",
+    "createShiftTypes": "Create Shift Types"
   },
   "schedule": {
     "manageSchedule": "Manage Schedule",
@@ -354,6 +732,104 @@
     "noNew": "No new notifications",
     "allCaughtUp": "You're all caught up!",
     "markRead": "Mark as read",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all as read",
+    "approve": "Approve",
+    "reject": "Reject",
+    "view": "View"
+  },
+  "notes": {
+    "note": "Note",
+    "noteFor": "Note for {name}",
+    "addNote": "Add note",
+    "viewEditNote": "View/Edit note",
+    "placeholder": "Add a note...",
+    "characters": "characters",
+    "longNote": "Long note",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "csvImport": {
+    "importCsv": "Import CSV",
+    "previewTitle": "Preview Import Data",
+    "previewDescription": "Review the parsed data before importing. Found {count} employees.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "position": "Position",
+    "groups": "Groups",
+    "rate": "Rate",
+    "priority": "Priority",
+    "missing": "Missing",
+    "groupCount": "{count} group(s)",
+    "showingOf": "Showing {shown} of {total} employees",
+    "andMoreWarnings": "...and {count} more warnings",
+    "cancel": "Cancel",
+    "importCount": "Import {count} Employees",
+    "importedSuccess": "Imported {count} employees",
+    "noValidData": "No valid data found in CSV file",
+    "emptyFile": "CSV file is empty or has no data rows",
+    "emailNotFound": "Email column not found - this is required",
+    "rowMissingEmail": "Row {row}: Missing email - skipping",
+    "rowCouldNotDetermineName": "Row {row}: Could not determine first/last name"
+  },
+  "account": {
+    "title": "Account",
+    "description": "Manage your account settings"
+  },
+  "testimonials": {
+    "title": "Trusted by Teams Everywhere",
+    "subtitle": "See how businesses of all sizes use ShiftEase to simplify their workforce management and boost employee satisfaction.",
+    "allReviews": "All Reviews",
+    "retail": "Retail",
+    "healthcare": "Healthcare",
+    "enterprise": "Enterprise",
+    "hospitality": "Hospitality"
+  },
+  "timeOff": {
+    "manageTimeOff": "Manage Time Off",
+    "addTimeOff": "Add Time Off",
+    "viewCurrentTimeOff": "View Current Time Off",
+    "vacation": "Vacation",
+    "sickLeave": "Sick Leave",
+    "personalDay": "Personal Day",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "date": "Date",
+    "reasonOptional": "Reason (Optional)",
+    "enterReason": "Enter reason for vacation",
+    "enterReasonPersonal": "Enter reason for personal day",
+    "diagnosisOptional": "Diagnosis (Optional)",
+    "enterDiagnosis": "Enter diagnosis",
+    "documentNumberOptional": "Document Number (Optional)",
+    "enterDocumentNumber": "Enter document number",
+    "addVacation": "Add Vacation",
+    "addSickLeave": "Add Sick Leave",
+    "addPersonalDay": "Add Personal Day",
+    "vacationAdded": "Vacation added successfully!",
+    "sickLeaveAdded": "Sick leave added successfully!",
+    "personalDayAdded": "Personal day added successfully!",
+    "failedToAddVacation": "Failed to add vacation",
+    "failedToAddSickLeave": "Failed to add sick leave",
+    "failedToAddPersonalDay": "Failed to add personal day",
+    "vacationDeleted": "Vacation deleted",
+    "sickLeaveDeleted": "Sick leave deleted",
+    "personalDayDeleted": "Personal day deleted",
+    "failedToDeleteVacation": "Failed to delete vacation",
+    "failedToDeleteSickLeave": "Failed to delete sick leave",
+    "failedToDeletePersonalDay": "Failed to delete personal day",
+    "vacations": "Vacations",
+    "sickLeaves": "Sick Leaves",
+    "personalDays": "Personal Days",
+    "noVacationsScheduled": "No vacations scheduled",
+    "noSickLeavesRecorded": "No sick leaves recorded",
+    "noPersonalDaysScheduled": "No personal days scheduled",
+    "diagnosis": "Diagnosis",
+    "docNumber": "Doc #",
+    "validation": {
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "dateRequired": "Date is required"
+    }
   }
 }

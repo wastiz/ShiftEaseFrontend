@@ -2,6 +2,7 @@
 
 import {useGetConfirmedSchedule, useScheduleData} from "@/hooks/api";
 import {useEffect, useState, useMemo} from "react";
+import {useTranslations, useLocale} from "next-intl";
 import {EmployeeMeData, Shift} from "@/types";
 import {useAuthStore} from "@/zustand/auth-state";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
@@ -13,6 +14,9 @@ import {Calendar} from "@/components/ui/shadcn/calendar";
 const today = new Date();
 
 export default function EmployeePersonalPage() {
+    const t = useTranslations('employee.overview');
+    const locale = useLocale();
+    const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'et' ? 'et-EE' : 'en-US';
     const {user} = useAuthStore();
     const employeeUser = user as EmployeeMeData;
 
@@ -87,9 +91,9 @@ export default function EmployeePersonalPage() {
     return (
         <div className="flex flex-col gap-6 p-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Обзор</h1>
+                <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
                 <p className="text-muted-foreground">
-                    Ваши предстоящие смены и расписание
+                    {t('subtitle')}
                 </p>
             </div>
 
@@ -98,16 +102,16 @@ export default function EmployeePersonalPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <CalendarIcon className="h-5 w-5" />
-                        Предстоящие смены
+                        {t('upcomingShifts')}
                     </CardTitle>
                     <CardDescription>
-                        Ваши следующие {upcomingShifts.length} смены
+                        {t('yourNextShifts', { count: upcomingShifts.length })}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {upcomingShifts.length === 0 ? (
                         <p className="text-muted-foreground text-center py-8">
-                            Нет предстоящих смен
+                            {t('noUpcomingShifts')}
                         </p>
                     ) : (
                         <div className="space-y-4">
@@ -129,7 +133,7 @@ export default function EmployeePersonalPage() {
                                                         {shift.shiftTypeName}
                                                     </h3>
                                                     <p className="text-sm text-muted-foreground">
-                                                        {shiftDate.toLocaleDateString('ru-RU', {
+                                                        {shiftDate.toLocaleDateString(dateLocale, {
                                                             weekday: 'long',
                                                             year: 'numeric',
                                                             month: 'long',
@@ -139,7 +143,7 @@ export default function EmployeePersonalPage() {
                                                 </div>
                                             </div>
                                             {index === 0 && (
-                                                <Badge variant="default">Следующая</Badge>
+                                                <Badge variant="default">{t('next')}</Badge>
                                             )}
                                         </div>
 
@@ -155,7 +159,7 @@ export default function EmployeePersonalPage() {
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <Users className="h-4 w-4 text-muted-foreground" />
                                                     <span className="text-muted-foreground">
-                                                        Коллеги: {coworkers.map(c => c.name).join(', ')}
+                                                        {t('coworkers')}: {coworkers.map(c => c.name).join(', ')}
                                                     </span>
                                                 </div>
                                             )}
@@ -168,7 +172,7 @@ export default function EmployeePersonalPage() {
                                                     <StickyNote className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                                                     <div>
                                                         <p className="font-medium text-xs text-muted-foreground mb-1">
-                                                            Заметка:
+                                                            {t('note')}:
                                                         </p>
                                                         <p>{myNote}</p>
                                                     </div>
@@ -186,9 +190,9 @@ export default function EmployeePersonalPage() {
             {/* Calendar Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Календарь смен</CardTitle>
+                    <CardTitle>{t('shiftCalendar')}</CardTitle>
                     <CardDescription>
-                        Нажмите на день, чтобы увидеть подробности смены
+                        {t('clickDayForDetails')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -214,7 +218,7 @@ export default function EmployeePersonalPage() {
                                 selectedDayShifts.length > 0 ? (
                                     <div className="space-y-3">
                                         <h4 className="font-medium text-sm text-muted-foreground">
-                                            {selectedDay.toLocaleDateString('ru-RU', {
+                                            {selectedDay.toLocaleDateString(dateLocale, {
                                                 weekday: 'long',
                                                 day: 'numeric',
                                                 month: 'long'
@@ -260,12 +264,12 @@ export default function EmployeePersonalPage() {
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-muted-foreground text-sm py-8">
-                                        Нет смен в этот день
+                                        {t('noShiftsThisDay')}
                                     </div>
                                 )
                             ) : (
                                 <div className="flex items-center justify-center h-full text-muted-foreground text-sm py-8">
-                                    Выберите день в календаре
+                                    {t('selectDayInCalendar')}
                                 </div>
                             )}
                         </div>

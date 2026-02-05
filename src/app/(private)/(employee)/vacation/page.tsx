@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Calendar, Plus, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/shadcn/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
@@ -21,11 +22,16 @@ import { EmployeeMeData } from '@/types';
 import { useAuthStore } from '@/zustand/auth-state';
 import { toast } from "sonner";
 import { format } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS, ru, et } from 'date-fns/locale';
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
 
 export default function VacationPage() {
+    const t = useTranslations('employee.vacation');
+    const tCommon = useTranslations('common');
+    const locale = useLocale();
+    const dateLocale = locale === 'ru' ? ru : locale === 'et' ? et : enUS;
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -46,7 +52,7 @@ export default function VacationPage() {
         e.preventDefault();
 
         if (!startDate || !endDate) {
-            toast.error('Please fill in all required fields');
+            toast.error(t('fillRequiredFields'));
             return;
         }
 
@@ -57,36 +63,36 @@ export default function VacationPage() {
                 reason,
             });
 
-            toast.success('Vacation request submitted successfully');
+            toast.success(t('requestSubmitted'));
 
             setIsDialogOpen(false);
             setStartDate('');
             setEndDate('');
             setReason('');
         } catch (error) {
-            toast.error('Failed to submit vacation request');
+            toast.error(t('submitFailed'));
         }
     };
 
     const handleDeleteRequest = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this request?')) return;
+        if (!confirm(t('confirmDelete'))) return;
 
         try {
             await deleteVacationRequest.mutateAsync(id);
-            toast.success('Request deleted successfully');
+            toast.success(t('requestDeleted'));
         } catch (error) {
-            toast.error('Failed to delete request');
+            toast.error(t('deleteFailed'));
         }
     };
 
     const getStatusBadge = (status?: string) => {
         switch (status) {
             case 'approved':
-                return <Badge className="bg-green-500">Approved</Badge>;
+                return <Badge className="bg-green-500">{tCommon('approved')}</Badge>;
             case 'rejected':
-                return <Badge variant="destructive">Rejected</Badge>;
+                return <Badge variant="destructive">{tCommon('rejected')}</Badge>;
             default:
-                return <Badge variant="secondary">Pending</Badge>;
+                return <Badge variant="secondary">{tCommon('pending')}</Badge>;
         }
     };
 
@@ -100,26 +106,26 @@ export default function VacationPage() {
 
     return (
         <>
-            <Header title={"Vacations"}>
+            <Header title={t('title')}>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                         <Button size="sm" className="md:size-default">
                             <Plus className="h-4 w-4 mr-2"/>
-                            <span className="hidden sm:inline">Add New</span>
+                            <span className="hidden sm:inline">{t('addNew')}</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <form onSubmit={handleSubmit}>
                             <DialogHeader>
-                                <DialogTitle>New Vacation Request</DialogTitle>
+                                <DialogTitle>{t('newRequest')}</DialogTitle>
                                 <DialogDescription>
-                                    Fill in the vacation dates and reason
+                                    {t('fillDatesAndReason')}
                                 </DialogDescription>
                             </DialogHeader>
 
                             <div className="grid gap-4 py-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="startDate">Start Date *</Label>
+                                    <Label htmlFor="startDate">{t('startDate')} *</Label>
                                     <Input
                                         id="startDate"
                                         type="date"
@@ -130,7 +136,7 @@ export default function VacationPage() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="endDate">End Date *</Label>
+                                    <Label htmlFor="endDate">{t('endDate')} *</Label>
                                     <Input
                                         id="endDate"
                                         type="date"
@@ -142,10 +148,10 @@ export default function VacationPage() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="reason">Reason (optional)</Label>
+                                    <Label htmlFor="reason">{t('reasonOptional')}</Label>
                                     <Textarea
                                         id="reason"
-                                        placeholder="Specify the reason for vacation..."
+                                        placeholder={t('specifyReason')}
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
                                         rows={3}
@@ -158,7 +164,7 @@ export default function VacationPage() {
                                     {addVacationRequest.isPending && (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                                     )}
-                                    Submit Request
+                                    {t('submitRequest')}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -171,7 +177,7 @@ export default function VacationPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-muted-foreground text-sm md:text-base">
-                                    Manage your vacation requests
+                                    {t('manageRequests')}
                                 </p>
                             </div>
                         </div>
@@ -179,15 +185,15 @@ export default function VacationPage() {
                         <Alert>
                             <AlertCircle className="h-4 w-4"/>
                             <AlertDescription>
-                                Vacation requests must be submitted at least 2 weeks in advance
+                                {t('advanceNotice')}
                             </AlertDescription>
                         </Alert>
                     </div>
 
                     <Tabs defaultValue="requests" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="requests">Pending Requests</TabsTrigger>
-                            <TabsTrigger value="approved">Approved</TabsTrigger>
+                            <TabsTrigger value="requests">{t('pendingRequests')}</TabsTrigger>
+                            <TabsTrigger value="approved">{tCommon('approved')}</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="requests" className="space-y-4 mt-6">
@@ -196,7 +202,7 @@ export default function VacationPage() {
                                     <CardContent className="flex flex-col items-center justify-center py-10">
                                         <Calendar className="h-12 w-12 text-muted-foreground mb-4"/>
                                         <p className="text-muted-foreground text-center">
-                                            You don't have any pending vacation requests
+                                            {t('noPendingRequests')}
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -209,9 +215,9 @@ export default function VacationPage() {
                                                     <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
                                                         <Calendar className="h-5 w-5 flex-shrink-0"/>
                                                         <span className="truncate">
-                                                            {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
+                                                            {format(new Date(vacation.startDate), 'MMM d', {locale: dateLocale})}
                                                             {' — '}
-                                                            {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                            {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: dateLocale})}
                                                         </span>
                                                     </CardTitle>
                                                     <CardDescription className="mt-1">
@@ -220,7 +226,7 @@ export default function VacationPage() {
                                                                 new Date(vacation.startDate).getTime()) /
                                                             (1000 * 60 * 60 * 24)
                                                         )}{' '}
-                                                        days
+                                                        {t('days')}
                                                     </CardDescription>
                                                 </div>
 
@@ -262,7 +268,7 @@ export default function VacationPage() {
                                     <CardContent className="flex flex-col items-center justify-center py-10">
                                         <Calendar className="h-12 w-12 text-muted-foreground mb-4"/>
                                         <p className="text-muted-foreground text-center">
-                                            You don't have any approved vacations
+                                            {t('noApprovedVacations')}
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -274,9 +280,9 @@ export default function VacationPage() {
                                                 <CardTitle className="text-lg md:text-xl flex items-center gap-2 flex-wrap">
                                                     <Calendar className="h-5 w-5 flex-shrink-0"/>
                                                     <span className="truncate">
-                                                        {format(new Date(vacation.startDate), 'MMM d', {locale: enUS})}
+                                                        {format(new Date(vacation.startDate), 'MMM d', {locale: dateLocale})}
                                                         {' — '}
-                                                        {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: enUS})}
+                                                        {format(new Date(vacation.endDate), 'MMM d, yyyy', {locale: dateLocale})}
                                                     </span>
                                                 </CardTitle>
                                                 <CardDescription className="mt-1">
@@ -285,13 +291,13 @@ export default function VacationPage() {
                                                             new Date(vacation.startDate).getTime()) /
                                                         (1000 * 60 * 60 * 24)
                                                     )}{' '}
-                                                    days
+                                                    {t('days')}
                                                 </CardDescription>
                                             </div>
                                         </CardHeader>
 
                                         <CardContent className="space-y-2">
-                                            <Badge className="bg-green-500">Approved</Badge>
+                                            <Badge className="bg-green-500">{tCommon('approved')}</Badge>
 
                                             {vacation.reason && (
                                                 <p className="text-sm text-muted-foreground">

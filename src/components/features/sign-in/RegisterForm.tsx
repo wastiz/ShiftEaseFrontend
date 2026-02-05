@@ -23,6 +23,7 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ setMode }: RegisterFormProps) {
     const t = useTranslations('auth');
+    const tCommon = useTranslations('common');
     const { mutate, isPending, isError, error, isSuccess } = useEmployerRegister();
     const router = useRouter();
 
@@ -62,17 +63,17 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
         const parts = form.fullName.trim().split(/\s+/);
         if (parts.length < 2) {
-            newErrors.fullName = "Enter your full name (first and last name).";
+            newErrors.fullName = t('validation.enterFullName');
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(form.email)) {
-            newErrors.email = "Enter a valid email address.";
+            newErrors.email = t('validation.enterValidEmail');
         }
 
-        const phoneRegex = /^\+?\d{7,15}$/; // простой паттерн для международного формата
+        const phoneRegex = /^\+?\d{7,15}$/;
         if (!phoneRegex.test(form.phone)) {
-            newErrors.phone = "Enter a valid phone number.";
+            newErrors.phone = t('validation.enterValidPhone');
         }
 
         if (
@@ -81,7 +82,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
             !passwordCriteria.digit ||
             !passwordCriteria.special
         ) {
-            newErrors.password = "Password does not meet all requirements.";
+            newErrors.password = t('validation.passwordNotMeetRequirements');
         }
 
         setErrors(newErrors);
@@ -137,15 +138,15 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
     return (
         <>
             <CardHeader>
-                <CardTitle>Create an account</CardTitle>
-                <CardDescription>Fill out your details to register</CardDescription>
+                <CardTitle>{t('createAnAccount')}</CardTitle>
+                <CardDescription>{t('fillOutDetails')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-6">
                         {/* Full Name */}
                         <div className="grid gap-1">
-                            <Label htmlFor="fullName">Full Name</Label>
+                            <Label htmlFor="fullName">{tCommon('fullName')}</Label>
                             <Input
                                 id="fullName"
                                 type="text"
@@ -160,7 +161,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
                         {/* Email */}
                         <div className="grid gap-1">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">{tCommon('email')}</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -175,7 +176,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
                         {/* Phone */}
                         <div className="grid gap-1">
-                            <Label htmlFor="phone">Phone</Label>
+                            <Label htmlFor="phone">{tCommon('phone')}</Label>
                             <Input
                                 id="phone"
                                 type="tel"
@@ -190,7 +191,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
                         {/* Password */}
                         <div className="grid gap-1">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">{tCommon('password')}</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -200,16 +201,16 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                             />
                             <div className="mt-2 flex flex-col gap-1">
                                 <Criterion ok={passwordCriteria.length}>
-                                    At least 8 characters
+                                    {t('passwordRequirements.length')}
                                 </Criterion>
                                 <Criterion ok={passwordCriteria.uppercase}>
-                                    Contains an uppercase letter (A–Z)
+                                    {t('passwordRequirements.uppercase')}
                                 </Criterion>
                                 <Criterion ok={passwordCriteria.digit}>
-                                    Contains a number (0–9)
+                                    {t('passwordRequirements.digit')}
                                 </Criterion>
                                 <Criterion ok={passwordCriteria.special}>
-                                    Contains a character (!@#$...)
+                                    {t('passwordRequirements.special')}
                                 </Criterion>
                             </div>
                             {errors.password && (
@@ -218,7 +219,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? "Signing up..." : "Sign up"}
+                            {isPending ? t('signingUp') : t('signUp')}
                         </Button>
 
                         <GoogleButton
@@ -227,25 +228,25 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
 
                         {isError && (
                             <p className="text-red-500">
-                                {(error instanceof Error ? error : { message: "Unknown error" })?.message || "Registration failed"}
+                                {(error instanceof Error ? error : { message: tCommon('unknownError') })?.message || t('registrationFailed')}
                             </p>
                         )}
                         {errors.server && (
                             <p className="text-red-500">{errors.server}</p>
                         )}
                         {isSuccess && (
-                            <p className="text-green-500">Registration successful!</p>
+                            <p className="text-green-500">{t('registrationSuccess')}</p>
                         )}
                     </div>
 
                     <div className="mt-4 text-center text-sm">
-                        Already have an account?{" "}
+                        {t('alreadyHaveAccount')}{" "}
                         <button
                             type="button"
                             onClick={() => setMode("login")}
                             className="underline underline-offset-4"
                         >
-                            Log in
+                            {tCommon('login')}
                         </button>
                     </div>
                 </form>

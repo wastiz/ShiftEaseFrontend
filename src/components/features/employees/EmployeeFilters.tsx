@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslations } from "next-intl"
 import { Search, X, Filter } from "lucide-react"
 import { Input } from "@/components/ui/shadcn/input"
 import { Badge } from "@/components/ui/shadcn/badge"
@@ -31,6 +32,7 @@ export function EmployeeFilters({
     totalCount,
     filteredCount,
 }: EmployeeFiltersProps) {
+    const t = useTranslations('employer.employees')
     const hasActiveFilters = filters.search || filters.groupIds.length > 0
 
     const selectedGroups = useMemo(
@@ -67,7 +69,7 @@ export function EmployeeFilters({
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search by name or email..."
+                        placeholder={t('searchPlaceholder')}
                         value={filters.search}
                         onChange={(e) => updateSearch(e.target.value)}
                         className="pl-9"
@@ -87,7 +89,7 @@ export function EmployeeFilters({
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="gap-2">
                             <Filter className="h-4 w-4" />
-                            Groups
+                            {t('groups')}
                             {filters.groupIds.length > 0 && (
                                 <Badge variant="secondary" className="ml-1 px-1.5">
                                     {filters.groupIds.length}
@@ -97,10 +99,10 @@ export function EmployeeFilters({
                     </PopoverTrigger>
                     <PopoverContent className="w-64 p-3" align="end">
                         <div className="space-y-2">
-                            <p className="text-sm font-medium">Filter by group</p>
+                            <p className="text-sm font-medium">{t('filterByGroup')}</p>
                             {groups.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    No groups available
+                                    {t('noGroupsAvailable')}
                                 </p>
                             ) : (
                                 <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -130,7 +132,7 @@ export function EmployeeFilters({
                 {/* Clear filters */}
                 {hasActiveFilters && (
                     <Button variant="ghost" size="sm" onClick={clearFilters}>
-                        Clear all
+                        {t('clearAll')}
                     </Button>
                 )}
             </div>
@@ -160,7 +162,7 @@ export function EmployeeFilters({
 
                     {hasActiveFilters && (
                         <span className="text-sm text-muted-foreground ml-2">
-                            Showing {filteredCount} of {totalCount} employees
+                            {t('showingOfEmployees', { filtered: filteredCount, total: totalCount })}
                         </span>
                     )}
                 </div>

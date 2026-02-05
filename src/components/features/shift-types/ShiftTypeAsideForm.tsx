@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { useTranslations } from "next-intl"
 import { ShiftType, ShiftTypeFormValues } from "@/types"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
 import { Button } from "@/components/ui/shadcn/button"
@@ -28,6 +29,8 @@ export function ShiftTypeAsideForm({
     isUpdating,
     isDeleting,
 }: ShiftTypeAsideFormProps) {
+    const t = useTranslations('employer.shiftTypes')
+    const tCommon = useTranslations('common')
     const formId = "shift-type-form"
 
     const {
@@ -86,9 +89,9 @@ export function ShiftTypeAsideForm({
         <AsideDrawer
             open={open}
             onOpenChange={onOpenChange}
-            title={selectedShift ? "Edit Shift Type" : "Add Shift Type"}
-            description="Configure shift type details"
-            trigger={<Button>+ Add Shift Type</Button>}
+            title={selectedShift ? t('editShiftType') : t('addShiftType')}
+            description={t('configureShiftTypeDetails')}
+            trigger={<Button>+ {t('addShiftType')}</Button>}
             footer={
                 <>
                     {selectedShift && (
@@ -98,7 +101,7 @@ export function ShiftTypeAsideForm({
                             disabled={isDeleting}
                             onClick={() => onDelete(selectedShift.id)}
                         >
-                            {isDeleting ? "Deleting..." : "Delete"}
+                            {isDeleting ? tCommon('deleting') : tCommon('delete')}
                         </Button>
                     )}
                     <Button
@@ -107,10 +110,10 @@ export function ShiftTypeAsideForm({
                         disabled={isCreating || isUpdating}
                     >
                         {isCreating || isUpdating
-                            ? "Saving..."
+                            ? tCommon('saving')
                             : selectedShift
-                              ? "Update"
-                              : "Create"}
+                              ? tCommon('update')
+                              : tCommon('create')}
                     </Button>
                 </>
             }

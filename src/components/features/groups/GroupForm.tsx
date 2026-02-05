@@ -1,5 +1,6 @@
 import { Control, Controller, FieldErrors, UseFormRegister } from "react-hook-form"
 import { Info } from "lucide-react"
+import { useTranslations } from "next-intl"
 import FormField from "@/components/ui/FormField"
 import { Label } from "@/components/ui/shadcn/label"
 import { Input } from "@/components/ui/shadcn/input"
@@ -29,6 +30,9 @@ export function GroupForm({
     setHasCustomTime,
     onSubmit,
 }: GroupFormProps) {
+    const t = useTranslations('employer.groups');
+    const tCommon = useTranslations('common');
+
     return (
         <form
             id={formId}
@@ -38,11 +42,11 @@ export function GroupForm({
             {/* Name */}
             <FormField>
                 <Label>
-                    Group Name <span className="text-red-500 ml-1">*</span>
+                    {t('groupName')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
-                    {...register("name", { required: "Name is required" })}
-                    placeholder="Group name"
+                    {...register("name", { required: t('nameRequired') })}
+                    placeholder={t('groupNamePlaceholder')}
                 />
                 {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -51,10 +55,10 @@ export function GroupForm({
 
             {/* Description */}
             <FormField>
-                <Label>Description</Label>
+                <Label>{tCommon('description')}</Label>
                 <Textarea
                     {...register("description")}
-                    placeholder="Description (optional)"
+                    placeholder={t('descriptionPlaceholder')}
                 />
             </FormField>
 
@@ -65,7 +69,7 @@ export function GroupForm({
                     control={control}
                     render={({ field }) => (
                         <ColorPicker
-                            label="Color"
+                            label={t('color')}
                             value={field.value || "#3b82f6"}
                             onChange={field.onChange}
                         />
@@ -77,7 +81,7 @@ export function GroupForm({
             <div className="border-t pt-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Label>Custom Working Hours</Label>
+                        <Label>{t('customWorkingHours')}</Label>
 
                         <TooltipProvider>
                             <Tooltip>
@@ -86,8 +90,7 @@ export function GroupForm({
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                     <p>
-                                        By default, this group uses the organization's working hours.
-                                        Enable this to set specific hours for this group.
+                                        {t('customWorkingHoursTooltip')}
                                     </p>
                                 </TooltipContent>
                             </Tooltip>
@@ -103,7 +106,7 @@ export function GroupForm({
                 {hasCustomTime && (
                     <div className="space-y-4 pl-4 border-l-2">
                         <FormField>
-                            <Label>Start Time</Label>
+                            <Label>{t('startTime')}</Label>
                             <Controller
                                 name="startTime"
                                 control={control}
@@ -117,7 +120,7 @@ export function GroupForm({
                         </FormField>
 
                         <FormField>
-                            <Label>End Time</Label>
+                            <Label>{t('endTime')}</Label>
                             <Controller
                                 name="endTime"
                                 control={control}

@@ -12,9 +12,11 @@ import {ScheduleSummary} from "@/types";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { CheckCircle2, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function Schedules() {
     const router = useRouter()
+    const t = useTranslations('employer.schedules')
     const [showSuccessCard, setShowSuccessCard] = useState(false)
 
     const { data: entities, isLoading: loadingEntities, error: entitiesError } = useCheckEntities()
@@ -50,7 +52,7 @@ export default function Schedules() {
 
     return (
         <>
-            <Header title={"Schedules"}></Header>
+            <Header title={t('title')}></Header>
             <main className="p-4 space-y-6">
                 {showSuccessCard && (
                     <div className="transition-all duration-500 ease-in-out animate-in slide-in-from-top">
@@ -59,7 +61,7 @@ export default function Schedules() {
                                 <div className="flex items-center gap-2 text-green-700">
                                     <CheckCircle2 className="h-5 w-5" />
                                     <p className="font-medium">
-                                        All required data is available. You can create schedules for your groups.
+                                        {t('allDataAvailable')}
                                     </p>
                                 </div>
                                 <Button
@@ -90,7 +92,7 @@ export default function Schedules() {
                                             <>
                                                 {schedule.confirmedSchedules.length > 0 && (
                                                     <div>
-                                                        <p className="font-medium mb-2">Confirmed schedules:</p>
+                                                        <p className="font-medium mb-2">{t('confirmedSchedules')}</p>
                                                         <div className="flex flex-wrap gap-2">
                                                             {schedule.confirmedSchedules.map((item) => (
                                                                 <Badge
@@ -107,7 +109,7 @@ export default function Schedules() {
 
                                                 {schedule.unconfirmedSchedules.length > 0 && (
                                                     <div>
-                                                        <p className="font-medium mb-2">Unconfirmed schedules:</p>
+                                                        <p className="font-medium mb-2">{t('unconfirmedSchedules')}</p>
                                                         <div className="flex flex-wrap gap-2">
                                                             {schedule.unconfirmedSchedules.map((item) => (
                                                                 <Badge
@@ -124,14 +126,14 @@ export default function Schedules() {
                                             </>
                                         ) : (
                                             <p className="text-muted-foreground">
-                                                No schedules yet for this group. Create the first one to get started.
+                                                {t('noSchedulesYet')}
                                             </p>
                                         )}
                                     </CardContent>
 
                                     <CardFooter>
                                         <Button onClick={() => handleEditClick(schedule.groupId)}>
-                                            Manage Schedules
+                                            {t('manageSchedules')}
                                         </Button>
                                     </CardFooter>
                                 </Card>

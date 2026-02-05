@@ -1,4 +1,5 @@
 import { Control, Controller, FieldErrors, UseFormRegister } from "react-hook-form"
+import { useTranslations } from "next-intl"
 import FormField from "@/components/ui/FormField"
 import { Label } from "@/components/ui/shadcn/label"
 import { Input } from "@/components/ui/shadcn/input"
@@ -23,6 +24,8 @@ export function ShiftTypeForm({
     minEmployees,
     onSubmit,
 }: ShiftTypeFormProps) {
+    const t = useTranslations('employer.shiftTypes');
+
     return (
         <form
             id={formId}
@@ -32,13 +35,13 @@ export function ShiftTypeForm({
             {/* Shift name */}
             <FormField>
                 <Label>
-                    Shift Name <span className="text-red-500 ml-1">*</span>
+                    {t('shiftName')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
                     {...register("name", {
-                        required: "Shift name is required",
+                        required: t('shiftNameRequired'),
                     })}
-                    placeholder="Enter shift name"
+                    placeholder={t('enterShiftName')}
                 />
                 {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -48,12 +51,12 @@ export function ShiftTypeForm({
             {/* Start time */}
             <FormField>
                 <Label>
-                    Start Time <span className="text-red-500 ml-1">*</span>
+                    {t('startTime')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Controller
                     name="startTime"
                     control={control}
-                    rules={{ required: "Start time is required" }}
+                    rules={{ required: t('startTimeRequired') }}
                     render={({ field }) => (
                         <TimePicker
                             value={field.value ?? ""}
@@ -69,12 +72,12 @@ export function ShiftTypeForm({
             {/* End time */}
             <FormField>
                 <Label>
-                    End Time <span className="text-red-500 ml-1">*</span>
+                    {t('endTime')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Controller
                     name="endTime"
                     control={control}
-                    rules={{ required: "End time is required" }}
+                    rules={{ required: t('endTimeRequired') }}
                     render={({ field }) => (
                         <TimePicker
                             value={field.value ?? ""}
@@ -91,15 +94,15 @@ export function ShiftTypeForm({
             <div className="grid grid-cols-2 gap-4">
                 <FormField>
                     <Label>
-                        Min Employees <span className="text-red-500 ml-1">*</span>
+                        {t('minEmployees')} <span className="text-red-500 ml-1">*</span>
                     </Label>
                     <Input
                         type="number"
                         min={1}
                         {...register("minEmployees", {
                             valueAsNumber: true,
-                            required: "Min employees is required",
-                            min: { value: 1, message: "At least 1 employee is required" },
+                            required: t('minEmployeesRequired'),
+                            min: { value: 1, message: t('atLeast1Employee') },
                         })}
                     />
                     {errors.minEmployees && (
@@ -111,21 +114,21 @@ export function ShiftTypeForm({
 
                 <FormField>
                     <Label>
-                        Max Employees <span className="text-red-500 ml-1">*</span>
+                        {t('maxEmployees')} <span className="text-red-500 ml-1">*</span>
                     </Label>
                     <Input
                         type="number"
                         min={minEmployees || 1}
                         {...register("maxEmployees", {
                             valueAsNumber: true,
-                            required: "Max employees is required",
+                            required: t('maxEmployeesRequired'),
                             min: {
                                 value: minEmployees || 1,
-                                message: `Must be at least ${minEmployees || 1}`,
+                                message: t('mustBeAtLeast', { count: minEmployees || 1 }),
                             },
                             validate: (value) =>
                                 value >= (minEmployees || 1) ||
-                                "Max must be >= Min",
+                                t('maxMustBeGreaterThanMin'),
                         })}
                     />
                     {errors.maxEmployees && (
@@ -141,10 +144,10 @@ export function ShiftTypeForm({
                 <Controller
                     name="color"
                     control={control}
-                    rules={{ required: "Color is required" }}
+                    rules={{ required: t('colorRequired') }}
                     render={({ field }) => (
                         <ColorPicker
-                            label="Shift Color"
+                            label={t('shiftColor')}
                             value={field.value || "#000000"}
                             onChange={field.onChange}
                         />

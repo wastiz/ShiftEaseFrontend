@@ -8,6 +8,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/shadcn/popover'
+import { useTranslations } from 'next-intl'
 
 type NoteEditorProps = {
     note?: string
@@ -17,6 +18,7 @@ type NoteEditorProps = {
 }
 
 export default function NoteEditor({ note, onSave, entityName, buttonClassName }: NoteEditorProps) {
+    const t = useTranslations('notes')
     const [isOpen, setIsOpen] = useState(false)
     const [currentNote, setCurrentNote] = useState('')
 
@@ -46,7 +48,7 @@ export default function NoteEditor({ note, onSave, entityName, buttonClassName }
                     variant="ghost"
                     size="icon"
                     className={`${buttonClassName} ${hasNote ? 'text-primary' : ''}`}
-                    title={hasNote ? 'View/Edit note' : 'Add note'}
+                    title={hasNote ? t('viewEditNote') : t('addNote')}
                 >
                     <StickyNote className="h-3 w-3" />
                 </Button>
@@ -55,12 +57,12 @@ export default function NoteEditor({ note, onSave, entityName, buttonClassName }
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <h4 className="font-medium text-sm">
-                            {entityName ? `Note for ${entityName}` : 'Note'}
+                            {entityName ? t('noteFor', { name: entityName }) : t('note')}
                         </h4>
                     </div>
 
                     <Textarea
-                        placeholder="Add a note..."
+                        placeholder={t('placeholder')}
                         value={currentNote}
                         onChange={(e) => setCurrentNote(e.target.value)}
                         className="min-h-[100px] resize-none"
@@ -68,9 +70,9 @@ export default function NoteEditor({ note, onSave, entityName, buttonClassName }
                     />
 
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{currentNote.length} characters</span>
+                        <span>{currentNote.length} {t('characters')}</span>
                         {currentNote.length > 500 && (
-                            <span className="text-orange-500">Long note</span>
+                            <span className="text-orange-500">{t('longNote')}</span>
                         )}
                     </div>
 
@@ -81,7 +83,7 @@ export default function NoteEditor({ note, onSave, entityName, buttonClassName }
                             className="flex-1"
                         >
                             <Save className="h-3 w-3 mr-1" />
-                            Save
+                            {t('save')}
                         </Button>
                         <Button
                             onClick={handleCancel}
@@ -90,7 +92,7 @@ export default function NoteEditor({ note, onSave, entityName, buttonClassName }
                             className="flex-1"
                         >
                             <X className="h-3 w-3 mr-1" />
-                            Cancel
+                            {t('cancel')}
                         </Button>
                     </div>
                 </div>

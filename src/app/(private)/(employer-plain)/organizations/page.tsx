@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { useGetOrganizations, useDeleteOrganization } from "@/hooks/api"
 import { Organization } from "@/types"
 import { Button } from "@/components/ui/shadcn/button"
@@ -24,6 +25,8 @@ import toast from "react-hot-toast";
 import Main from "@/components/ui/Main";
 
 export default function Organizations() {
+    const t = useTranslations('employer.organizations')
+    const tCommon = useTranslations('common')
     const router = useRouter()
     const { data: organizations, isLoading, isError, refetch } = useGetOrganizations()
     const deleteOrganization = useDeleteOrganization()
@@ -40,11 +43,11 @@ export default function Organizations() {
         if (!deleteId) return
         deleteOrganization.mutate(deleteId, {
             onSuccess: () => {
-                toast.success("Organization deleted successfully")
+                toast.success(t('deleted'))
                 setIsDialogOpen(false)
             },
             onError: () => {
-                toast.error("Failed to delete organization")
+                toast.error(t('failedToDelete'))
             },
         })
     }
@@ -62,14 +65,14 @@ export default function Organizations() {
         router.push("organizations/create")
     }
 
-    if (isLoading) return <p className="p-4">Loading...</p>
-    if (isError) return <p className="p-4 text-red-500">Failed to load organizations</p>
+    if (isLoading) return <p className="p-4">{t('loading')}</p>
+    if (isError) return <p className="p-4 text-red-500">{t('failedToLoad')}</p>
 
     return (
         <>
             <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
                 <div className={"flex gap-2 items-center"}>
-                    <h1 className={"text-xl font-bold"}>Organizations</h1>
+                    <h1 className={"text-xl font-bold"}>{t('title')}</h1>
                 </div>
             </header>
             <Main>
@@ -87,24 +90,24 @@ export default function Organizations() {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-40 rounded-md bg-muted">
-                                                <span className="text-muted-foreground text-sm">No Image</span>
+                                                <span className="text-muted-foreground text-sm">{t('noImage')}</span>
                                             </div>
                                         )}
                                         <CardTitle className="mt-4">{org.name}</CardTitle>
-                                        <CardDescription>{org.description || "No description"}</CardDescription>
+                                        <CardDescription>{org.description || t('noDescription')}</CardDescription>
                                     </CardHeader>
 
                                     <CardFooter className="flex justify-between">
                                         <div className="flex gap-2">
                                             <Button size="sm" variant="default" onClick={() => handleNavigate(org.id)}>
-                                                Go to
+                                                {t('goTo')}
                                             </Button>
                                             <Button size="sm" variant="secondary" onClick={() => handleEdit(org.id)}>
-                                                Edit
+                                                {tCommon('edit')}
                                             </Button>
                                             <Button size="sm" variant="destructive"
                                                     onClick={() => openDeleteDialog(org.id)}>
-                                                Delete
+                                                {tCommon('delete')}
                                             </Button>
                                         </div>
                                     </CardFooter>
@@ -118,8 +121,8 @@ export default function Organizations() {
                     </>
                 ) : (
                     <div className="h-full text-center pt-40 space-y-4">
-                        <p className="text-lg">You have no organizations yet</p>
-                        <Button onClick={handleAdd}>Create your first organization</Button>
+                        <p className="text-lg">{t('noOrganizationsYet')}</p>
+                        <Button onClick={handleAdd}>{t('createFirstOrganization')}</Button>
                     </div>
                 )}
 
@@ -127,18 +130,17 @@ export default function Organizations() {
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Delete Organization</DialogTitle>
+                            <DialogTitle>{t('deleteOrganization')}</DialogTitle>
                             <DialogDescription>
-                                Are you sure? All groups, employees, shifts, and schedules associated
-                                with this organization will be deleted. Maybe it’s easier to edit it?
+                                {t('deleteWarning')}
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
                             <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>
-                                Cancel
+                                {tCommon('cancel')}
                             </Button>
                             <Button variant="destructive" onClick={handleDelete}>
-                                Delete
+                                {tCommon('delete')}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

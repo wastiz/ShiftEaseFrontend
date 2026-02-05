@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
+import { useTranslations } from "next-intl";
 
 export default function LandingHeader() {
+  const t = useTranslations("landing.header");
+
   return (
     <header className="z-30 mt-2 w-full md:mt-5">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -20,7 +23,7 @@ export default function LandingHeader() {
                 href="/sign-in"
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all px-3 py-[7px] bg-transparent text-textSecondary border border-white/20 hover:bg-white/10 hover:text-textPrimary"
               >
-                Sign In
+                {t("signIn")}
               </Link>
             </li>
             <li>
@@ -28,7 +31,7 @@ export default function LandingHeader() {
                 href="/sign-in"
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all px-3 py-[7px] bg-primary text-white hover:brightness-110"
               >
-                Register
+                {t("register")}
               </Link>
             </li>
           </ul>

@@ -44,13 +44,13 @@ import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
 import { dayNameToEnum, Holiday, OrganizationFormValues, WorkDay } from "@/types";
 import { TimePicker } from "@/components/ui/inputs/TimePicker";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/shadcn/tooltip";
-import {Info} from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
+import { Info } from "lucide-react";
 
 const formSchema = z.object({
-    name: z.string().min(1, "Organization name is required"),
+    name: z.string().min(1, "nameRequired"),
     description: z.string().optional(),
-    organizationType: z.string().min(1, "Type is required"),
+    organizationType: z.string().min(1, "typeRequired"),
     website: z.string().optional(),
     phone: z.string().optional(),
     address: z.string().optional(),
@@ -300,7 +300,7 @@ export default function AddOrganization() {
             <>
                 <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
                     <div className={"flex gap-2 items-center"}>
-                        <h1 className={"text-xl font-bold"}>Organizations</h1>
+                        <h1 className={"text-xl font-bold"}>{t('title')}</h1>
                     </div>
                 </header>
                 <Main>
@@ -316,7 +316,7 @@ export default function AddOrganization() {
         <>
             <header className={`w-full h-1/15 flex items-center justify-between shrink-0 border-b px-4 py-4`}>
                 <div className={"flex gap-2 items-center"}>
-                    <h1 className={"text-xl font-bold"}>Organizations</h1>
+                    <h1 className={"text-xl font-bold"}>{t('title')}</h1>
                 </div>
             </header>
             <Main>
@@ -528,7 +528,7 @@ export default function AddOrganization() {
                                                 </TooltipTrigger>
                                                 <TooltipContent className="max-w-xs">
                                                     <p>
-                                                        Set your organisation's working schedule (not the employees' schedule), i.e. specify the times when the organisation is working. The rest of the time will be considered non-working time, and you will not be able to add employees for that time.
+                                                        {t('workScheduleTooltip')}
                                                     </p>
                                                 </TooltipContent>
                                             </Tooltip>
@@ -547,7 +547,7 @@ export default function AddOrganization() {
 
                                     {scheduleMode === "fullTime" && (
                                         <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-                                            <span className="font-medium">All week days from</span>
+                                            <span className="font-medium">{t('allWeekDaysFrom')}</span>
                                             <TimePicker
                                                 value={fullTimeStartTime}
                                                 onChange={(time) => handleFullTimeTimeChange("startTime", time)}
@@ -558,7 +558,7 @@ export default function AddOrganization() {
                                                 onChange={(time) => handleFullTimeTimeChange("endTime", time)}
                                             />
                                             <span className="text-sm text-muted-foreground ml-2">
-                                                (this time will be applied to all week days)
+                                                {t('timeAppliedToAllDays')}
                                             </span>
                                         </div>
                                     )}

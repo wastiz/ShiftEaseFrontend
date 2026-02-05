@@ -1,5 +1,6 @@
 import { Control, Controller, FieldErrors, UseFormRegister } from "react-hook-form"
 import { Info, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 import FormField from "@/components/ui/FormField"
 import { Label } from "@/components/ui/shadcn/label"
 import { Input } from "@/components/ui/shadcn/input"
@@ -39,18 +40,21 @@ export function EmployeeForm({
     selectedGroupIds,
     onSubmit,
 }: EmployeeFormProps) {
+    const t = useTranslations('employer.employees');
+    const tCommon = useTranslations('common');
+
     return (
         <form id={formId} onSubmit={onSubmit} className="space-y-4 w-full">
             {/* First Name */}
             <FormField>
                 <Label htmlFor="firstName">
-                    First Name <span className="text-red-500 ml-1">*</span>
+                    {t('firstName')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
                     id="firstName"
-                    placeholder="Enter first name"
+                    placeholder={t('enterFirstName')}
                     {...register("firstName", {
-                        required: "First name is required",
+                        required: t('firstNameRequired'),
                     })}
                 />
                 {errors.firstName && (
@@ -61,13 +65,13 @@ export function EmployeeForm({
             {/* Last Name */}
             <FormField>
                 <Label htmlFor="lastName">
-                    Last Name <span className="text-red-500 ml-1">*</span>
+                    {t('lastName')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
                     id="lastName"
-                    placeholder="Enter last name"
+                    placeholder={t('enterLastName')}
                     {...register("lastName", {
-                        required: "Last name is required",
+                        required: t('lastNameRequired'),
                     })}
                 />
                 {errors.lastName && (
@@ -78,14 +82,14 @@ export function EmployeeForm({
             {/* Email */}
             <FormField>
                 <Label htmlFor="email">
-                    Email <span className="text-red-500 ml-1">*</span>
+                    {tCommon('email')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
                     id="email"
                     type="email"
-                    placeholder="Enter email"
+                    placeholder={t('enterEmail')}
                     {...register("email", {
-                        required: "Email is required",
+                        required: t('emailRequired'),
                     })}
                 />
                 {errors.email && (
@@ -96,7 +100,7 @@ export function EmployeeForm({
             {/* Position */}
             <FormField>
                 <Label htmlFor="position" className="flex items-center gap-1">
-                    Position <span className="text-red-500">*</span>
+                    {t('position')} <span className="text-red-500">*</span>
 
                     <TooltipProvider>
                         <Tooltip>
@@ -105,8 +109,7 @@ export function EmployeeForm({
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
                                 <p>
-                                    Indicate the position of this employee. For example, senior
-                                    manager.
+                                    {t('positionTooltip')}
                                 </p>
                             </TooltipContent>
                         </Tooltip>
@@ -115,9 +118,9 @@ export function EmployeeForm({
 
                 <Input
                     id="position"
-                    placeholder="Enter position"
+                    placeholder={t('enterPosition')}
                     {...register("position", {
-                        required: "Position is required",
+                        required: t('positionRequired'),
                     })}
                 />
                 {errors.position && (
@@ -127,23 +130,23 @@ export function EmployeeForm({
 
             {/* Phone */}
             <FormField>
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">{tCommon('phone')}</Label>
                 <Input
                     id="phone"
                     type="tel"
-                    placeholder="Enter phone"
+                    placeholder={t('enterPhone')}
                     {...register("phone")}
                 />
             </FormField>
 
             {/* Hourly Rate */}
             <FormField>
-                <Label htmlFor="hourlyRate">Hourly Rate ($ / hour)</Label>
+                <Label htmlFor="hourlyRate">{t('hourlyRate')}</Label>
                 <Input
                     id="hourlyRate"
                     type="number"
                     step="0.01"
-                    placeholder="Enter hourly rate"
+                    placeholder={t('enterHourlyRate')}
                     {...register("hourlyRate", {
                         valueAsNumber: true,
                     })}
@@ -152,19 +155,19 @@ export function EmployeeForm({
 
             {/* Shift Priority */}
             <FormField>
-                <Label>Shift Priority</Label>
+                <Label>{t('shiftPriority')}</Label>
                 <Controller
                     name="priority"
                     control={control}
                     render={({ field }) => (
                         <Select value={field.value} onValueChange={field.onChange}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select priority" />
+                                <SelectValue placeholder={t('selectPriority')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="high">High</SelectItem>
-                                <SelectItem value="medium">Medium</SelectItem>
-                                <SelectItem value="low">Low</SelectItem>
+                                <SelectItem value="high">{t('priorityHigh')}</SelectItem>
+                                <SelectItem value="medium">{t('priorityMedium')}</SelectItem>
+                                <SelectItem value="low">{t('priorityLow')}</SelectItem>
                             </SelectContent>
                         </Select>
                     )}
@@ -174,8 +177,8 @@ export function EmployeeForm({
             {/* Groups */}
             <FormField>
                 <Label>
-                    Groups
-                    <span className="ml-2 text-xs text-muted-foreground">(Optional)</span>
+                    {t('groups')}
+                    <span className="ml-2 text-xs text-muted-foreground">({tCommon('optional')})</span>
                 </Label>
 
                 {/* Selected groups */}
@@ -227,8 +230,8 @@ export function EmployeeForm({
                                 <SelectValue
                                     placeholder={
                                         groups.length === 0
-                                            ? "No groups available — employee will be flexible"
-                                            : "Select groups"
+                                            ? t('noGroupsAvailable')
+                                            : t('selectGroups')
                                     }
                                 />
                             </SelectTrigger>
@@ -236,7 +239,7 @@ export function EmployeeForm({
                             <SelectContent>
                                 {groups.length === 0 ? (
                                     <div className="p-2 text-sm text-muted-foreground">
-                                        No groups created yet. Employee will be flexible.
+                                        {t('noGroupsCreated')}
                                     </div>
                                 ) : (
                                     groups.map((group) => {
@@ -270,7 +273,7 @@ export function EmployeeForm({
 
                 {selectedGroupIds.length === 0 && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                        No groups selected. Employee will be flexible.
+                        {t('noGroupsSelected')}
                     </p>
                 )}
             </FormField>

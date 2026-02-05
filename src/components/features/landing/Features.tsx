@@ -9,47 +9,44 @@ import {
   Smartphone,
   Zap,
 } from "lucide-react";
-
-const features = [
-  {
-    icon: CalendarCheck,
-    title: "Smart Scheduling",
-    description:
-      "Algorithm for scheduling that considers employee preferences, skills, and availability to create optimal shifts.",
-  },
-  {
-    icon: Bell,
-    title: "Real-time Notifications",
-    description:
-      "Instant alerts for schedule changes, shift swaps, and time-off requests keep everyone in the loop.",
-  },
-  {
-    icon: BarChart3,
-    title: "Analytics Dashboard",
-    description:
-      "Track labor costs, overtime, and productivity metrics with comprehensive reporting tools.",
-  },
-  {
-    icon: Shield,
-    title: "Compliance Ready",
-    description:
-      "Built-in labor law compliance ensures your schedules meet all regulatory requirements.",
-  },
-  {
-    icon: Smartphone,
-    title: "Mobile Support",
-    description:
-      "Employees can view schedules, request changes, and clock in/out from any device.",
-  },
-  {
-    icon: Zap,
-    title: "Quick Setup",
-    description:
-      "Get your team up and running in minutes with our intuitive onboarding process.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function Features() {
+  const t = useTranslations("landing.features");
+
+  const features = [
+    {
+      icon: CalendarCheck,
+      title: t("smartScheduling"),
+      description: t("smartSchedulingDesc"),
+    },
+    {
+      icon: Bell,
+      title: t("realTimeNotifications"),
+      description: t("realTimeNotificationsDesc"),
+    },
+    {
+      icon: BarChart3,
+      title: t("analyticsDashboard"),
+      description: t("analyticsDashboardDesc"),
+    },
+    {
+      icon: Shield,
+      title: t("complianceReady"),
+      description: t("complianceReadyDesc"),
+    },
+    {
+      icon: Smartphone,
+      title: t("mobileSupport"),
+      description: t("mobileSupportDesc"),
+    },
+    {
+      icon: Zap,
+      title: t("quickSetup"),
+      description: t("quickSetupDesc"),
+    },
+  ];
+
   return (
     <section id="features" className="relative">
       {/* Background decoration */}
@@ -73,15 +70,14 @@ export default function Features() {
           <div className="mx-auto max-w-3xl pb-4 text-center md:pb-12">
             <div className="inline-flex items-center gap-3 pb-3 before:h-px before:w-8 before:bg-gradient-to-r before:from-transparent before:to-primary/50 after:h-px after:w-8 after:bg-gradient-to-l after:from-transparent after:to-primary/50">
               <span className="inline-flex bg-gradient-to-r from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
-                Advanced Features
+                {t("badge")}
               </span>
             </div>
             <h2 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--text-primary),var(--primary),var(--text-primary),var(--coralPrimary),var(--text-primary))] bg-[length:200%_auto] bg-clip-text pb-4 text-3xl font-semibold text-transparent md:text-4xl">
-              Everything You Need to Manage Shifts
+              {t("title")}
             </h2>
             <p className="text-lg text-textSecondary">
-              ShiftEase provides all the tools your team needs to create, manage,
-              and optimize employee schedules with ease.
+              {t("subtitle")}
             </p>
           </div>
 

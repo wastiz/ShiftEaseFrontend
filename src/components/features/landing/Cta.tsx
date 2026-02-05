@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function Cta() {
+  const t = useTranslations("landing.cta");
+
   return (
     <section className="relative overflow-hidden">
       {/* Background glow */}
@@ -39,17 +42,16 @@ export default function Cta() {
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 border border-primary/20">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium text-primary">
-                  Start Free Today
+                  {t("badge")}
                 </span>
               </div>
 
               <h2 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--text-primary),var(--primary),var(--text-primary),var(--coralPrimary),var(--text-primary))] bg-[length:200%_auto] bg-clip-text pb-4 text-3xl font-semibold text-transparent md:text-4xl">
-                Ready to Transform Your Scheduling?
+                {t("title")}
               </h2>
 
               <p className="mb-8 text-lg text-textSecondary">
-                Join thousands of teams who have simplified their workforce
-                management with ShiftEase. No credit card required.
+                {t("subtitle")}
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -58,16 +60,10 @@ export default function Cta() {
                   className="btn-primary group flex items-center justify-center"
                 >
                   <span className="relative inline-flex items-center">
-                    Get Started Free
+                    {t("button")}
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </span>
                 </Link>
-                {/*<Link*/}
-                {/*  href="/sign-in"*/}
-                {/*  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all px-6 py-3 bg-white/5 text-textSecondary border border-white/20 hover:bg-white/10 hover:text-textPrimary"*/}
-                {/*>*/}
-                {/*  Contact Sales*/}
-                {/*</Link>*/}
               </div>
             </div>
           </motion.div>

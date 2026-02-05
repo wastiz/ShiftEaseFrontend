@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
 import { Badge } from '@/components/ui/shadcn/badge';
 import { Upload, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 type EmployeeData = {
     firstName: string;
@@ -73,6 +74,7 @@ const findColumnIndex = (headers: string[], fieldMappings: string[]): number => 
 };
 
 export default function CSVImporter({ onImport }: CSVImporterProps) {
+    const t = useTranslations('csvImport');
     const [isOpen, setIsOpen] = useState(false);
     const [previewData, setPreviewData] = useState<EmployeeData[]>([]);
     const [warnings, setWarnings] = useState<string[]>([]);
@@ -184,7 +186,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
             const { data, warnings } = parseCSV(text);
 
             if (data.length === 0) {
-                toast.error('No valid data found in CSV file');
+                toast.error(t('noValidData'));
                 return;
             }
 
@@ -203,7 +205,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
         setIsOpen(false);
         setPreviewData([]);
         setWarnings([]);
-        toast.success(`Imported ${previewData.length} employees`);
+        toast.success(t('importedSuccess', { count: previewData.length }));
     };
 
     const handleCancel = () => {
@@ -217,7 +219,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
             <Button variant="outline" size="sm" asChild>
                 <label className="cursor-pointer">
                     <Upload className="mr-2 h-4 w-4" />
-                    Import CSV
+                    {t('importCsv')}
                     <input
                         type="file"
                         accept=".csv"
@@ -232,10 +234,10 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <CheckCircle2 className="h-5 w-5 text-green-600" />
-                            Preview Import Data
+                            {t('previewTitle')}
                         </DialogTitle>
                         <DialogDescription>
-                            Review the parsed data before importing. Found {previewData.length} employees.
+                            {t('previewDescription', { count: previewData.length })}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -249,7 +251,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                                     ))}
                                     {warnings.length > 5 && (
                                         <div className="text-sm font-semibold">
-                                            ...and {warnings.length - 5} more warnings
+                                            {t('andMoreWarnings', { count: warnings.length - 5 })}
                                         </div>
                                     )}
                                 </div>
@@ -263,28 +265,28 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-12">#</TableHead>
-                                        <TableHead>First Name</TableHead>
-                                        <TableHead>Last Name</TableHead>
-                                        <TableHead>Email</TableHead>
-                                        <TableHead>Phone</TableHead>
-                                        <TableHead>Position</TableHead>
-                                        <TableHead>Groups</TableHead>
-                                        <TableHead>Rate</TableHead>
-                                        <TableHead>Priority</TableHead>
+                                        <TableHead>{t('firstName')}</TableHead>
+                                        <TableHead>{t('lastName')}</TableHead>
+                                        <TableHead>{t('email')}</TableHead>
+                                        <TableHead>{t('phone')}</TableHead>
+                                        <TableHead>{t('position')}</TableHead>
+                                        <TableHead>{t('groups')}</TableHead>
+                                        <TableHead>{t('rate')}</TableHead>
+                                        <TableHead>{t('priority')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {previewData.slice(0, 10).map((emp, idx) => (
                                         <TableRow key={idx}>
                                             <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
-                                            <TableCell>{emp.firstName || <span className="text-red-500">Missing</span>}</TableCell>
-                                            <TableCell>{emp.lastName || <span className="text-red-500">Missing</span>}</TableCell>
+                                            <TableCell>{emp.firstName || <span className="text-red-500">{t('missing')}</span>}</TableCell>
+                                            <TableCell>{emp.lastName || <span className="text-red-500">{t('missing')}</span>}</TableCell>
                                             <TableCell>{emp.email}</TableCell>
                                             <TableCell>{emp.phone || '-'}</TableCell>
                                             <TableCell>{emp.position || '-'}</TableCell>
                                             <TableCell>
                                                 {emp.groupIds.length > 0 ? (
-                                                    <Badge variant="secondary">{emp.groupIds.length} group(s)</Badge>
+                                                    <Badge variant="secondary">{t('groupCount', { count: emp.groupIds.length })}</Badge>
                                                 ) : (
                                                     '-'
                                                 )}
@@ -305,7 +307,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                         </div>
                         {previewData.length > 10 && (
                             <div className="p-3 bg-muted text-sm text-center">
-                                Showing 10 of {previewData.length} employees
+                                {t('showingOf', { shown: 10, total: previewData.length })}
                             </div>
                         )}
                     </div>
@@ -313,11 +315,11 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                     <DialogFooter>
                         <Button variant="outline" onClick={handleCancel}>
                             <X className="mr-2 h-4 w-4" />
-                            Cancel
+                            {t('cancel')}
                         </Button>
                         <Button onClick={handleConfirmImport}>
                             <CheckCircle2 className="mr-2 h-4 w-4" />
-                            Import {previewData.length} Employees
+                            {t('importCount', { count: previewData.length })}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

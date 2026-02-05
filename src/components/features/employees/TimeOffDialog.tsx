@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import {
     Dialog,
@@ -42,6 +43,10 @@ export default function TimeOffDialog({
     employeeId,
     employeeName,
 }: TimeOffDialogProps) {
+    const t = useTranslations('timeOff');
+    const tCommon = useTranslations('common');
+    const locale = useLocale();
+    const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'et' ? 'et-EE' : 'en-US';
     const [activeTab, setActiveTab] = useState<"vacation" | "sick" | "personal">("vacation");
     const [viewMode, setViewMode] = useState<"add" | "view">("add");
 
@@ -81,12 +86,12 @@ export default function TimeOffDialog({
     const onSubmitVacation = (data: VacationDto) => {
         addVacationMutation.mutate(data, {
             onSuccess: () => {
-                toast.success("Vacation added successfully!");
+                toast.success(t('vacationAddedSuccess'));
                 resetVacation();
                 setViewMode("view");
             },
             onError: () => {
-                toast.error("Failed to add vacation");
+                toast.error(t('vacationAddFailed'));
             },
         });
     };
@@ -94,12 +99,12 @@ export default function TimeOffDialog({
     const onSubmitSick = (data: SickLeaveDto) => {
         addSickLeaveMutation.mutate(data, {
             onSuccess: () => {
-                toast.success("Sick leave added successfully!");
+                toast.success(t('sickLeaveAddedSuccess'));
                 resetSick();
                 setViewMode("view");
             },
             onError: () => {
-                toast.error("Failed to add sick leave");
+                toast.error(t('sickLeaveAddFailed'));
             },
         });
     };
@@ -107,12 +112,12 @@ export default function TimeOffDialog({
     const onSubmitPersonal = (data: PersonalDayDto) => {
         addPersonalDayMutation.mutate(data, {
             onSuccess: () => {
-                toast.success("Personal day added successfully!");
+                toast.success(t('personalDayAddedSuccess'));
                 resetPersonal();
                 setViewMode("view");
             },
             onError: () => {
-                toast.error("Failed to add personal day");
+                toast.error(t('personalDayAddFailed'));
             },
         });
     };
@@ -120,18 +125,18 @@ export default function TimeOffDialog({
     const handleDelete = (id: number, type: "vacation" | "sick" | "personal") => {
         if (type === "vacation") {
             deleteVacationMutation.mutate(id, {
-                onSuccess: () => toast.success("Vacation deleted"),
-                onError: () => toast.error("Failed to delete vacation"),
+                onSuccess: () => toast.success(t('vacationDeleted')),
+                onError: () => toast.error(t('vacationDeleteFailed')),
             });
         } else if (type === "sick") {
             deleteSickLeaveMutation.mutate(id, {
-                onSuccess: () => toast.success("Sick leave deleted"),
-                onError: () => toast.error("Failed to delete sick leave"),
+                onSuccess: () => toast.success(t('sickLeaveDeleted')),
+                onError: () => toast.error(t('sickLeaveDeleteFailed')),
             });
         } else {
             deletePersonalDayMutation.mutate(id, {
-                onSuccess: () => toast.success("Personal day deleted"),
-                onError: () => toast.error("Failed to delete personal day"),
+                onSuccess: () => toast.success(t('personalDayDeleted')),
+                onError: () => toast.error(t('personalDayDeleteFailed')),
             });
         }
     };
@@ -145,7 +150,7 @@ export default function TimeOffDialog({
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return new Date(dateString).toLocaleDateString(dateLocale, {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -156,7 +161,7 @@ export default function TimeOffDialog({
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="sm:max-w-[700px] max-h-[90vh]">
                 <DialogHeader>
-                    <DialogTitle>Manage Time Off - {employeeName}</DialogTitle>
+                    <DialogTitle>{t('manageTimeOff')} - {employeeName}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex gap-2 mb-4">
@@ -165,23 +170,23 @@ export default function TimeOffDialog({
                         onClick={() => setViewMode("add")}
                         size="sm"
                     >
-                        Add Time Off
+                        {t('addTimeOff')}
                     </Button>
                     <Button
                         variant={viewMode === "view" ? "default" : "outline"}
                         onClick={() => setViewMode("view")}
                         size="sm"
                     >
-                        View Current Time Off
+                        {t('viewCurrentTimeOff')}
                     </Button>
                 </div>
 
                 {viewMode === "add" ? (
                     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v )}>
                         <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="vacation">Vacation</TabsTrigger>
-                            <TabsTrigger value="sick">Sick Leave</TabsTrigger>
-                            <TabsTrigger value="personal">Personal Day</TabsTrigger>
+                            <TabsTrigger value="vacation">{t('vacation')}</TabsTrigger>
+                            <TabsTrigger value="sick">{t('sickLeave')}</TabsTrigger>
+                            <TabsTrigger value="personal">{t('personalDay')}</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="vacation">
@@ -192,14 +197,14 @@ export default function TimeOffDialog({
                             >
                                 <FormField>
                                     <Label htmlFor="vacation-startDate">
-                                        Start Date
+                                        {t('startDate')}
                                         <span className="text-red-500 ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="vacation-startDate"
                                         type="date"
                                         {...registerVacation("startDate", {
-                                            required: "Start date is required",
+                                            required: t('startDateRequired'),
                                         })}
                                     />
                                     {vacationErrors.startDate && (
@@ -211,14 +216,14 @@ export default function TimeOffDialog({
 
                                 <FormField>
                                     <Label htmlFor="vacation-endDate">
-                                        End Date
+                                        {t('endDate')}
                                         <span className="text-red-500 ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="vacation-endDate"
                                         type="date"
                                         {...registerVacation("endDate", {
-                                            required: "End date is required",
+                                            required: t('endDateRequired'),
                                         })}
                                     />
                                     {vacationErrors.endDate && (
@@ -229,10 +234,10 @@ export default function TimeOffDialog({
                                 </FormField>
 
                                 <FormField>
-                                    <Label htmlFor="vacation-reason">Reason (Optional)</Label>
+                                    <Label htmlFor="vacation-reason">{t('reasonOptional')}</Label>
                                     <Textarea
                                         id="vacation-reason"
-                                        placeholder="Enter reason for vacation"
+                                        placeholder={t('enterVacationReason')}
                                         {...registerVacation("reason")}
                                     />
                                 </FormField>
@@ -240,14 +245,14 @@ export default function TimeOffDialog({
 
                             <DialogFooter className="mt-6">
                                 <Button variant="outline" onClick={handleClose}>
-                                    Cancel
+                                    {tCommon('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     form="vacation-form"
                                     disabled={addVacationMutation.isPending}
                                 >
-                                    {addVacationMutation.isPending ? "Adding..." : "Add Vacation"}
+                                    {addVacationMutation.isPending ? t('adding') : t('addVacation')}
                                 </Button>
                             </DialogFooter>
                         </TabsContent>
@@ -260,14 +265,14 @@ export default function TimeOffDialog({
                             >
                                 <FormField>
                                     <Label htmlFor="sick-startDate">
-                                        Start Date
+                                        {t('startDate')}
                                         <span className="text-red-500 ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="sick-startDate"
                                         type="date"
                                         {...registerSick("startDate", {
-                                            required: "Start date is required",
+                                            required: t('startDateRequired'),
                                         })}
                                     />
                                     {sickErrors.startDate && (
@@ -279,14 +284,14 @@ export default function TimeOffDialog({
 
                                 <FormField>
                                     <Label htmlFor="sick-endDate">
-                                        End Date
+                                        {t('endDate')}
                                         <span className="text-red-500 ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="sick-endDate"
                                         type="date"
                                         {...registerSick("endDate", {
-                                            required: "End date is required",
+                                            required: t('endDateRequired'),
                                         })}
                                     />
                                     {sickErrors.endDate && (
@@ -297,21 +302,21 @@ export default function TimeOffDialog({
                                 </FormField>
 
                                 <FormField>
-                                    <Label htmlFor="sick-diagnosis">Diagnosis (Optional)</Label>
+                                    <Label htmlFor="sick-diagnosis">{t('diagnosisOptional')}</Label>
                                     <Textarea
                                         id="sick-diagnosis"
-                                        placeholder="Enter diagnosis"
+                                        placeholder={t('enterDiagnosis')}
                                         {...registerSick("diagnosis")}
                                     />
                                 </FormField>
 
                                 <FormField>
                                     <Label htmlFor="sick-documentNumber">
-                                        Document Number (Optional)
+                                        {t('documentNumberOptional')}
                                     </Label>
                                     <Input
                                         id="sick-documentNumber"
-                                        placeholder="Enter document number"
+                                        placeholder={t('enterDocumentNumber')}
                                         {...registerSick("documentNumber")}
                                     />
                                 </FormField>
@@ -319,14 +324,14 @@ export default function TimeOffDialog({
 
                             <DialogFooter className="mt-6">
                                 <Button variant="outline" onClick={handleClose}>
-                                    Cancel
+                                    {tCommon('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     form="sick-form"
                                     disabled={addSickLeaveMutation.isPending}
                                 >
-                                    {addSickLeaveMutation.isPending ? "Adding..." : "Add Sick Leave"}
+                                    {addSickLeaveMutation.isPending ? t('adding') : t('addSickLeave')}
                                 </Button>
                             </DialogFooter>
                         </TabsContent>
@@ -339,14 +344,14 @@ export default function TimeOffDialog({
                             >
                                 <FormField>
                                     <Label htmlFor="personal-date">
-                                        Date
+                                        {t('date')}
                                         <span className="text-red-500 ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="personal-date"
                                         type="date"
                                         {...registerPersonal("date", {
-                                            required: "Date is required",
+                                            required: t('dateRequired'),
                                         })}
                                     />
                                     {personalErrors.date && (
@@ -357,10 +362,10 @@ export default function TimeOffDialog({
                                 </FormField>
 
                                 <FormField>
-                                    <Label htmlFor="personal-reason">Reason (Optional)</Label>
+                                    <Label htmlFor="personal-reason">{t('reasonOptional')}</Label>
                                     <Textarea
                                         id="personal-reason"
-                                        placeholder="Enter reason for personal day"
+                                        placeholder={t('enterPersonalDayReason')}
                                         {...registerPersonal("reason")}
                                     />
                                 </FormField>
@@ -368,14 +373,14 @@ export default function TimeOffDialog({
 
                             <DialogFooter className="mt-6">
                                 <Button variant="outline" onClick={handleClose}>
-                                    Cancel
+                                    {tCommon('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     form="personal-form"
                                     disabled={addPersonalDayMutation.isPending}
                                 >
-                                    {addPersonalDayMutation.isPending ? "Adding..." : "Add Personal Day"}
+                                    {addPersonalDayMutation.isPending ? t('adding') : t('addPersonalDay')}
                                 </Button>
                             </DialogFooter>
                         </TabsContent>
@@ -388,15 +393,15 @@ export default function TimeOffDialog({
                                 <CardHeader>
                                     <CardTitle className="text-lg flex items-center gap-2">
                                         <Calendar className="h-5 w-5 text-blue-500" />
-                                        Vacations
+                                        {t('vacations')}
                                         <Badge variant="secondary">{vacations.length}</Badge>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {vacationsLoading ? (
-                                        <p className="text-sm text-muted-foreground">Loading...</p>
+                                        <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                                     ) : vacations.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No vacations scheduled</p>
+                                        <p className="text-sm text-muted-foreground">{t('noVacationsScheduled')}</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {vacations.map((vacation) => (
@@ -436,15 +441,15 @@ export default function TimeOffDialog({
                                 <CardHeader>
                                     <CardTitle className="text-lg flex items-center gap-2">
                                         <Calendar className="h-5 w-5 text-red-500" />
-                                        Sick Leaves
+                                        {t('sickLeaves')}
                                         <Badge variant="secondary">{sickLeaves.length}</Badge>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {sickLeavesLoading ? (
-                                        <p className="text-sm text-muted-foreground">Loading...</p>
+                                        <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                                     ) : sickLeaves.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No sick leaves recorded</p>
+                                        <p className="text-sm text-muted-foreground">{t('noSickLeavesRecorded')}</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {sickLeaves.map((sick) => (
@@ -460,12 +465,12 @@ export default function TimeOffDialog({
                                                         </div>
                                                         {sick.diagnosis && (
                                                             <p className="text-sm text-muted-foreground mt-1">
-                                                                Diagnosis: {sick.diagnosis}
+                                                                {t('diagnosis')}: {sick.diagnosis}
                                                             </p>
                                                         )}
                                                         {sick.documentNumber && (
                                                             <p className="text-sm text-muted-foreground">
-                                                                Doc #: {sick.documentNumber}
+                                                                {t('docNumber')}: {sick.documentNumber}
                                                             </p>
                                                         )}
                                                     </div>
@@ -489,15 +494,15 @@ export default function TimeOffDialog({
                                 <CardHeader>
                                     <CardTitle className="text-lg flex items-center gap-2">
                                         <Calendar className="h-5 w-5 text-amber-500" />
-                                        Personal Days
+                                        {t('personalDays')}
                                         <Badge variant="secondary">{personalDays.length}</Badge>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {personalDaysLoading ? (
-                                        <p className="text-sm text-muted-foreground">Loading...</p>
+                                        <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                                     ) : personalDays.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No personal days scheduled</p>
+                                        <p className="text-sm text-muted-foreground">{t('noPersonalDaysScheduled')}</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {personalDays.map((day) => (
@@ -535,7 +540,7 @@ export default function TimeOffDialog({
 
                         <DialogFooter className="mt-6">
                             <Button variant="outline" onClick={handleClose}>
-                                Close
+                                {tCommon('close')}
                             </Button>
                         </DialogFooter>
                     </ScrollArea>

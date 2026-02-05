@@ -3,29 +3,29 @@
 import { motion } from "framer-motion";
 import Spotlight from "./Spotlight";
 import { Calendar, Users, Clock, ArrowRight } from "lucide-react";
-
-const workflows = [
-  {
-    icon: Calendar,
-    tag: "Smart Scheduling",
-    description:
-      "Create optimized schedules automatically based on employee availability, skills, and labor laws compliance.",
-  },
-  {
-    icon: Users,
-    tag: "Team Management",
-    description:
-      "Manage your entire workforce from one dashboard. Track hours, skills, and performance effortlessly.",
-  },
-  {
-    icon: Clock,
-    tag: "Time Tracking",
-    description:
-      "Employees can clock in/out, request time off, and manage their preferences all in one place.",
-  },
-];
+import { useTranslations } from "next-intl";
 
 export default function Workflows() {
+  const t = useTranslations("landing.workflows");
+
+  const workflows = [
+    {
+      icon: Calendar,
+      tag: t("smartScheduling"),
+      description: t("smartSchedulingDesc"),
+    },
+    {
+      icon: Users,
+      tag: t("teamManagement"),
+      description: t("teamManagementDesc"),
+    },
+    {
+      icon: Clock,
+      tag: t("timeTracking"),
+      description: t("timeTrackingDesc"),
+    },
+  ];
+
   return (
     <section id="workflows">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -34,15 +34,14 @@ export default function Workflows() {
           <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
             <div className="inline-flex items-center gap-3 pb-3 before:h-px before:w-8 before:bg-gradient-to-r before:from-transparent before:to-primary/50 after:h-px after:w-8 after:bg-gradient-to-l after:from-transparent after:to-primary/50">
               <span className="inline-flex bg-gradient-to-r from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
-                Tailored Workflows
+                {t("badge")}
               </span>
             </div>
             <h2 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--text-primary),var(--primary),var(--text-primary),var(--coralPrimary),var(--text-primary))] bg-[length:200%_auto] bg-clip-text pb-4 text-3xl font-semibold text-transparent md:text-4xl">
-              Streamline Your Scheduling Process
+              {t("title")}
             </h2>
             <p className="text-lg text-textSecondary">
-              Simple and elegant interface to start managing your team&apos;s schedules
-              in minutes. Integrates seamlessly with your existing workflow.
+              {t("subtitle")}
             </p>
           </div>
 
