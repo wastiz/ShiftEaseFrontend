@@ -538,7 +538,8 @@
       "termsOfService": "Kasutustingimused",
       "cookiePolicy": "Küpsiste poliitika",
       "copyright": "© {year} ShiftEase. Kõik õigused kaitstud.",
-      "madeWith": "Tehtud hoolega ettevõtetele üle maailma"
+      "madeWith": "Tehtud hoolega ettevõtetele üle maailma",
+      "description": "ShiftEase"
     }
   },
   "dashboard": {

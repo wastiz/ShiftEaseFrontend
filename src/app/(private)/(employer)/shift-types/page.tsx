@@ -22,6 +22,7 @@ import {
     useGetShiftTypes,
     useUpdateShiftType,
 } from "@/hooks/api";
+import {roundToMinutes} from "@/helpers/dateHelper";
 
 export default function ShiftTypes() {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -124,12 +125,12 @@ export default function ShiftTypes() {
 
                 {shifts.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {shifts.map((shift) => (
+                        {shifts.map((shift  ) => (
                             <ShiftTypeCard
                                 key={shift.id}
                                 name={shift.name}
                                 employees={`${shift.minEmployees}-${shift.maxEmployees}`}
-                                timeRange={`${shift.startTime} - ${shift.endTime}`}
+                                timeRange={`${roundToMinutes(shift.startTime)} - ${roundToMinutes(shift.endTime)}`}
                                 color={shift.color}
                                 actions={[
                                     {

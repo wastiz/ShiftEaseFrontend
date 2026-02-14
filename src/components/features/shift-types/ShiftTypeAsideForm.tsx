@@ -94,16 +94,6 @@ export function ShiftTypeAsideForm({
             trigger={<Button>+ {t('addShiftType')}</Button>}
             footer={
                 <>
-                    {selectedShift && (
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            disabled={isDeleting}
-                            onClick={() => onDelete(selectedShift.id)}
-                        >
-                            {isDeleting ? tCommon('deleting') : tCommon('delete')}
-                        </Button>
-                    )}
                     <Button
                         type="submit"
                         form={formId}
@@ -115,6 +105,16 @@ export function ShiftTypeAsideForm({
                               ? tCommon('update')
                               : tCommon('create')}
                     </Button>
+                    {selectedShift && (
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={() => onDelete(selectedShift.id)}
+                        >
+                            {isDeleting ? tCommon('deleting') : tCommon('delete')}
+                        </Button>
+                    )}
                 </>
             }
         >

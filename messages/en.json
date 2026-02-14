@@ -538,7 +538,8 @@
       "termsOfService": "Terms of Service",
       "cookiePolicy": "Cookie Policy",
       "copyright": "© {year} ShiftEase. All rights reserved.",
-      "madeWith": "Made with care for companies worldwide"
+      "madeWith": "Made with care for companies worldwide",
+      "description": "ShiftEase"
     }
   },
   "dashboard": {

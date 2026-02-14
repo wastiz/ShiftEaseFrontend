@@ -94,4 +94,8 @@ export function getTimeOffColor(type: TimeOffType): string {
             return 'bg-gray-100 dark:bg-gray-950 border-gray-300 dark:border-gray-700'
     }
 }
+export function roundToMinutes(time: string): string {
+    const [hours, minutes] = time.split(':');
+    return `${hours}:${minutes}`;
+}
 

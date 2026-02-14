@@ -11,18 +11,18 @@ export default function Workflows() {
   const workflows = [
     {
       icon: Calendar,
-      tag: t("smartScheduling"),
-      description: t("smartSchedulingDesc"),
+      tag: t("smartScheduling.tag"),
+      description: t("smartScheduling.description"),
     },
     {
       icon: Users,
-      tag: t("teamManagement"),
-      description: t("teamManagementDesc"),
+      tag: t("teamManagement.tag"),
+      description: t("teamManagement.description"),
     },
     {
       icon: Clock,
-      tag: t("timeTracking"),
-      description: t("timeTrackingDesc"),
+      tag: t("timeTracking.tag"),
+      description: t("timeTracking.description"),
     },
   ];
 
@@ -33,7 +33,7 @@ export default function Workflows() {
           {/* Section header */}
           <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
             <div className="inline-flex items-center gap-3 pb-3 before:h-px before:w-8 before:bg-gradient-to-r before:from-transparent before:to-primary/50 after:h-px after:w-8 after:bg-gradient-to-l after:from-transparent after:to-primary/50">
-              <span className="inline-flex bg-gradient-to-r from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
+              <span className="inline-flex bg-primary from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
                 {t("badge")}
               </span>
             </div>
@@ -76,7 +76,7 @@ export default function Workflows() {
                   <div className="p-6">
                     <div className="mb-3">
                       <span className="inline-flex rounded-full bg-white/5 px-3 py-1 text-xs font-medium border border-white/10">
-                        <span className="bg-gradient-to-r from-primary to-coralPrimary bg-clip-text text-transparent">
+                        <span className="bg-primary from-primary to-coralPrimary bg-clip-text text-transparent">
                           {workflow.tag}
                         </span>
                       </span>

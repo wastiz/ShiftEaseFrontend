@@ -166,7 +166,7 @@ export default function LandingFooter() {
           <div className="border-t border-white/10 py-6">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <p className="text-sm text-textSecondary">
-                &copy; {new Date().getFullYear()} ShiftEase. {t("allRightsReserved")}
+                &copy; {new Date().getFullYear()} ShiftEase. {t("copyright")}
               </p>
               <p className="text-sm text-textSecondary">
                 {t("madeWith")}

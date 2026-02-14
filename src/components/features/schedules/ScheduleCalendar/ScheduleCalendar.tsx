@@ -1,11 +1,8 @@
 'use client'
 
 import { Button } from '@/components/ui/shadcn/button'
-import { Badge } from '@/components/ui/shadcn/badge'
-import { ChevronLeft, ChevronRight, PanelLeft, PanelTop, Filter } from 'lucide-react'
+import { PanelLeft, PanelTop, Filter } from 'lucide-react'
 import DayContainer from './DayContainer'
-import ShiftTypeSmallCard from '@/components/ui/cards/ShiftTypeSmallCard'
-import EmployeeSmallCard from '@/components/ui/cards/EmployeeSmallCard'
 import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
 import { EmployeeTimeOff } from '@/types/schedule'
 import { Dispatch, SetStateAction, useState, useMemo } from 'react'
@@ -19,6 +16,7 @@ import { Label } from '@/components/ui/shadcn/label'
 import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
 import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
 import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
+import ScheduleData from "@/components/features/schedules/ScheduleData";
 
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
@@ -57,6 +55,7 @@ export default function ScheduleCalendar({
                                              employeeTimeOffs = [],
                                              warningMessage,
                                          }: ScheduleCalendarProps) {
+
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
 
@@ -83,152 +82,89 @@ export default function ScheduleCalendar({
 
     return (
         <div className="flex flex-col h-[calc(100vh-62px)]">
-            {isEditable && (
-                <div
-                    className={`border-b space-y-3 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${
-                        layoutPosition === 'top' ? 'max-h-[200px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
-                    }`}
-                >
-                    <div className="flex gap-4 overflow-x-auto">
-                        <div className="flex-shrink-0">
-                            <h4 className="font-semibold mb-2">Shift Types</h4>
-                            <div className="flex gap-2">
-                                {shiftTypes.map((st) => (
-                                    <ShiftTypeSmallCard
-                                        key={st.id}
-                                        name={st.name}
-                                        id={st.id}
-                                        startTime={st.startTime}
-                                        endTime={st.endTime}
-                                        color={st.color}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto">
-                        <div className="flex-shrink-0">
-                            <h4 className="font-semibold mb-2">Employees</h4>
-                            <div className="flex gap-2">
-                                {filteredEmployees.map((emp) => (
-                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name} position={emp.position}/>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            <div className="flex flex-1 gap-4 min-h-0">
+            <div className="flex items-center gap-3 flex-shrink-0 m-4">
+                <MonthNavigator
+                    currentMonth={currentMonth}
+                    currentYear={currentYear}
+                    isConfirmed={isConfirmed}
+                    onChange={(month, year) => {
+                        setCurrentMonth(month);
+                        setCurrentYear(year);
+                    }}
+                />
+
                 {isEditable && (
-                    <aside
-                        className={`flex-shrink-0 space-y-6 border-r overflow-y-auto transition-all duration-300 ease-in-out ${
-                            layoutPosition === 'left' ? 'w-64 opacity-100 p-4' : 'w-0 opacity-0 p-0 border-0'
-                        }`}
-                    >
-                        <div>
-                            <h4 className="font-semibold mb-2">Shift Types</h4>
-                            <div className="space-y-2">
-                                {shiftTypes.map((st) => (
-                                    <ShiftTypeSmallCard
-                                        key={st.id}
-                                        name={st.name}
-                                        id={st.id}
-                                        startTime={st.startTime}
-                                        endTime={st.endTime}
-                                        color={st.color}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="font-semibold mb-2">Employees</h4>
-                            <div className="space-y-2">
-                                {filteredEmployees.map((emp) => (
-                                    <EmployeeSmallCard key={emp.id} id={emp.id} name={emp.name} position={emp.position}/>
-                                ))}
-                            </div>
-                        </div>
-                    </aside>
+                    <>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="icon" className="ml-auto">
+                                    <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80">
+                                <div className="space-y-3">
+                                    <h4 className="font-medium text-sm">Filter by Shift Types</h4>
+                                    <div className="space-y-2">
+                                        {shiftTypes.map((st) => (
+                                            <div key={st.id} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`filter-${st.id}`}
+                                                    checked={selectedShiftTypes.includes(st.id)}
+                                                    onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                />
+                                                <Label
+                                                    htmlFor={`filter-${st.id}`}
+                                                    className="flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <div
+                                                        className="w-3 h-3 rounded"
+                                                        style={{ backgroundColor: st.color }}
+                                                    />
+                                                    {st.name}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {selectedShiftTypes.length > 0 && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setSelectedShiftTypes([])}
+                                            className="w-full"
+                                        >
+                                            Clear Filters
+                                        </Button>
+                                    )}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
+                        >
+                            {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
+                        </Button>
+                    </>
                 )}
 
-                <section className="flex-1 flex flex-col min-w-0 p-4 space-y-4">
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                        <MonthNavigator
-                            currentMonth={currentMonth}
-                            currentYear={currentYear}
-                            isConfirmed={isConfirmed}
-                            onChange={(month, year) => {
-                                setCurrentMonth(month);
-                                setCurrentYear(year);
-                            }}
-                        />
+                {warningMessage && (
+                    <MessageIndicator
+                        message={warningMessage.message}
+                        messageType="warning"
+                    />
+                )}
 
-                        {isEditable && (
-                            <>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant="outline" size="icon" className="ml-auto">
-                                            <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-80">
-                                        <div className="space-y-3">
-                                            <h4 className="font-medium text-sm">Filter by Shift Types</h4>
-                                            <div className="space-y-2">
-                                                {shiftTypes.map((st) => (
-                                                    <div key={st.id} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`filter-${st.id}`}
-                                                            checked={selectedShiftTypes.includes(st.id)}
-                                                            onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
-                                                        />
-                                                        <Label
-                                                            htmlFor={`filter-${st.id}`}
-                                                            className="flex items-center gap-2 cursor-pointer"
-                                                        >
-                                                            <div
-                                                                className="w-3 h-3 rounded"
-                                                                style={{ backgroundColor: st.color }}
-                                                            />
-                                                            {st.name}
-                                                        </Label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {selectedShiftTypes.length > 0 && (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => setSelectedShiftTypes([])}
-                                                    className="w-full"
-                                                >
-                                                    Clear Filters
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
-                                >
-                                    {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
-                                </Button>
-                            </>
-                        )}
+            </div>
 
-                        {warningMessage && (
-                            <MessageIndicator
-                                message={warningMessage.message}
-                                messageType="warning"
-                            />
-                        )}
-
-                    </div>
-
+            <ScheduleData
+                isEditable={isEditable}
+                layoutPosition={layoutPosition}
+                shiftTypes={shiftTypes}
+                filteredEmployees={filteredEmployees}
+            >
+                <section className="flex-1 flex flex-col min-w-0 space-y-4">
                     <div className="flex-1 border rounded-lg overflow-auto">
                         <div
                             className="grid min-w-max"
@@ -268,7 +204,7 @@ export default function ScheduleCalendar({
                         </div>
                     </div>
                 </section>
-            </div>
+            </ScheduleData>
         </div>
     )
 }

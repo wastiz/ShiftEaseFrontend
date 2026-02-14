@@ -17,33 +17,33 @@ export default function Features() {
   const features = [
     {
       icon: CalendarCheck,
-      title: t("smartScheduling"),
-      description: t("smartSchedulingDesc"),
+      title: t("smartScheduling.title"),
+      description: t("smartScheduling.description"),
     },
     {
       icon: Bell,
-      title: t("realTimeNotifications"),
-      description: t("realTimeNotificationsDesc"),
+      title: t("realTimeNotifications.title"),
+      description: t("realTimeNotifications.description"),
     },
     {
       icon: BarChart3,
-      title: t("analyticsDashboard"),
-      description: t("analyticsDashboardDesc"),
+      title: t("analyticsDashboard.title"),
+      description: t("analyticsDashboard.description"),
     },
     {
       icon: Shield,
-      title: t("complianceReady"),
-      description: t("complianceReadyDesc"),
+      title: t("complianceReady.title"),
+      description: t("complianceReady.description"),
     },
     {
       icon: Smartphone,
-      title: t("mobileSupport"),
-      description: t("mobileSupportDesc"),
+      title: t("mobileSupport.title"),
+      description: t("mobileSupport.description"),
     },
     {
       icon: Zap,
-      title: t("quickSetup"),
-      description: t("quickSetupDesc"),
+      title: t("quickSetup.title"),
+      description: t("quickSetup.description"),
     },
   ];
 
@@ -69,7 +69,7 @@ export default function Features() {
           {/* Section header */}
           <div className="mx-auto max-w-3xl pb-4 text-center md:pb-12">
             <div className="inline-flex items-center gap-3 pb-3 before:h-px before:w-8 before:bg-gradient-to-r before:from-transparent before:to-primary/50 after:h-px after:w-8 after:bg-gradient-to-l after:from-transparent after:to-primary/50">
-              <span className="inline-flex bg-gradient-to-r from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
+              <span className="inline-flex bg-primary from-primary to-coralPrimary bg-clip-text text-transparent text-sm font-medium">
                 {t("badge")}
               </span>
             </div>

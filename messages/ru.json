@@ -538,7 +538,8 @@
       "termsOfService": "Условия использования",
       "cookiePolicy": "Политика cookies",
       "copyright": "© {year} ShiftEase. Все права защищены.",
-      "madeWith": "Сделано с заботой для компаний по всему миру"
+      "madeWith": "Сделано с заботой для компаний по всему миру",
+      "description": "ShiftEase"
     }
   },
   "dashboard": {
