@@ -2,10 +2,11 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {Organization, OrganizationDashboardData, OrganizationFormValues} from "@/types/organizations";
 import {CheckEntitiesResult} from "@/types";
+import {organizationKeys} from "@/lib/api-keys";
 
 export function useCheckEntities() {
     return useQuery<CheckEntitiesResult>({
-        queryKey: ['entities'],
+        queryKey: organizationKeys.entities(),
         queryFn: async () => {
             const { data } = await api.get<CheckEntitiesResult>('/organizations/check-entities');
             return data
@@ -15,7 +16,7 @@ export function useCheckEntities() {
 
 export function useGetOrganizations() {
     return useQuery({
-        queryKey: ["organizations"],
+        queryKey: organizationKeys.all,
         queryFn: async () => {
             const res = await api.get<Organization[]>("/organizations");
             return res.data;
@@ -25,7 +26,7 @@ export function useGetOrganizations() {
 
 export function useGetOrganization(id: string, p0: { enabled: boolean; }) {
     return useQuery({
-        queryKey: ["organization", id],
+        queryKey: organizationKeys.detail(id),
         queryFn: async () => {
             const res = await api.get<Organization>(`/organizations/${id}`);
             return res.data;
@@ -36,7 +37,7 @@ export function useGetOrganization(id: string, p0: { enabled: boolean; }) {
 
 export function useGetOrganizationData( id?: string ) {
     return useQuery({
-        queryKey: ["organizationDashboardData", id],
+        queryKey: organizationKeys.dashboardData(id!),
         queryFn: async () => {
             const res = await api.get<OrganizationDashboardData>(`/organizations/data/${id}`);
             return res.data;
@@ -54,7 +55,7 @@ export function useAddOrganization() {
             return res.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["organizations"] });
+            queryClient.invalidateQueries({ queryKey: organizationKeys.all });
         },
     });
 }
@@ -68,8 +69,8 @@ export function useUpdateOrganization() {
             return res.data;
         },
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["organizations"] });
-            queryClient.invalidateQueries({ queryKey: ["organization", variables.id] });
+            queryClient.invalidateQueries({ queryKey: organizationKeys.all });
+            queryClient.invalidateQueries({ queryKey: organizationKeys.detail(variables.id) });
         },
     });
 }
@@ -83,7 +84,7 @@ export function useDeleteOrganization() {
             return res.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["organizations"] });
+            queryClient.invalidateQueries({ queryKey: organizationKeys.all });
         },
         onError: (error: unknown) => {
             console.error("Failed to delete organization:", error);

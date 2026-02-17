@@ -1,10 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import { NotificationDto } from "@/types/notification";
+import {notificationKeys} from "@/lib/api-keys";
 
 export function useNotifications() {
     return useQuery<NotificationDto[], Error>({
-        queryKey: ["notifications"],
+        queryKey: notificationKeys.all,
         queryFn: async () => {
             const res = await api.get<NotificationDto[]>(
                 "notifications"
@@ -16,7 +17,7 @@ export function useNotifications() {
 
 export function useUnreadNotificationsCount() {
     return useQuery<number, Error>({
-        queryKey: ["notifications", "unread-count"],
+        queryKey: notificationKeys.unreadCount(),
         queryFn: async () => {
             const res = await api.get<number>(
                 "notifications/unread-count"
@@ -36,10 +37,10 @@ export function useMarkNotificationAsRead() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["notifications"],
+                queryKey: notificationKeys.all,
             });
             queryClient.invalidateQueries({
-                queryKey: ["notifications", "unread-count"],
+                queryKey: notificationKeys.unreadCount(),
             });
         },
     });
@@ -54,12 +55,11 @@ export function useMarkAllNotificationsAsRead() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["notifications"],
+                queryKey: notificationKeys.all,
             });
             queryClient.invalidateQueries({
-                queryKey: ["notifications", "unread-count"],
+                queryKey: notificationKeys.unreadCount(),
             });
         },
     });
 }
-

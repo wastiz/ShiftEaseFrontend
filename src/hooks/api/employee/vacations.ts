@@ -1,10 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {VacationDto, VacationRequestCreateDto, VacationRequestDto} from "@/types";
+import {vacationKeys, notificationKeys} from "@/lib/api-keys";
 
 export const useEmployeeVacations = (employeeId: number) =>
     useQuery<VacationDto[]>({
-        queryKey: ['vacations', employeeId],
+        queryKey: vacationKeys.byEmployee(employeeId),
         queryFn: async () => {
             const { data } = await api.get(`vacations/${employeeId}`);
             return data;
@@ -18,13 +19,13 @@ export const useDeleteVacation = (employeeId: number) => {
         mutationFn: (id: number) =>
             api.delete(`vacations/${employeeId}/${id}`),
         onSuccess: () =>
-            qc.invalidateQueries({ queryKey: ['vacations', employeeId] }),
+            qc.invalidateQueries({ queryKey: vacationKeys.byEmployee(employeeId) }),
     });
 };
 
 export const useVacationRequests = (employeeId: number) =>
     useQuery<VacationRequestDto[]>({
-        queryKey: ['vacation-requests', employeeId],
+        queryKey: vacationKeys.requests(employeeId),
         queryFn: async () => {
             const { data } = await api.get(`vacations/requests/${employeeId}`);
             return data;
@@ -38,7 +39,7 @@ export const useAddVacationRequest = (employeeId: number) => {
         mutationFn: (dto: VacationRequestCreateDto) =>
             api.post(`vacations/requests/${employeeId}`, dto),
         onSuccess: () =>
-            qc.invalidateQueries({ queryKey: ['vacation-requests', employeeId] }),
+            qc.invalidateQueries({ queryKey: vacationKeys.requests(employeeId) }),
     });
 };
 
@@ -49,14 +50,14 @@ export const useDeleteVacationRequest = (employeeId: number) => {
         mutationFn: (id: number) =>
             api.delete(`vacations/requests/${employeeId}/${id}`),
         onSuccess: () =>
-            qc.invalidateQueries({ queryKey: ['vacation-requests', employeeId] }),
+            qc.invalidateQueries({ queryKey: vacationKeys.requests(employeeId) }),
     });
 };
 
 //Employer hooks
 export const usePendingVacationRequests = () =>
     useQuery<VacationRequestDto[]>({
-        queryKey: ['pending-vacation-requests'],
+        queryKey: vacationKeys.pendingRequests(),
         queryFn: async () => {
             const { data } = await api.get('vacations/employer/pending-requests');
             return data;
@@ -70,10 +71,10 @@ export const useApproveVacationRequest = () => {
         mutationFn: (id: number) =>
             api.post(`vacations/employer/approve-request/${id}`),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ['pending-vacation-requests'] });
-            qc.invalidateQueries({ queryKey: ['vacations'] });
-            qc.invalidateQueries({ queryKey: ['notifications'] });
-            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+            qc.invalidateQueries({ queryKey: vacationKeys.pendingRequests() });
+            qc.invalidateQueries({ queryKey: vacationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
         },
     });
 };
@@ -87,7 +88,7 @@ export const useAddApprovedVacation = (employeeId: number) => {
             return data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['vacations', employeeId] });
+            queryClient.invalidateQueries({ queryKey: vacationKeys.byEmployee(employeeId) });
         },
     });
 };
@@ -99,13 +100,12 @@ export const useRejectVacationRequest = () => {
         mutationFn: (id: number) =>
             api.post(`vacations/employer/reject-request/${id}`),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ['pending-vacation-requests'] });
-            qc.invalidateQueries({ queryKey: ['vacations'] });
-            qc.invalidateQueries({ queryKey: ['notifications'] });
-            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+            qc.invalidateQueries({ queryKey: vacationKeys.pendingRequests() });
+            qc.invalidateQueries({ queryKey: vacationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
         },
     });
 };
 
 export const useGetVacations = (employeeId: number) => useEmployeeVacations(employeeId);
-

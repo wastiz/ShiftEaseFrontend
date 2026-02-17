@@ -11,10 +11,11 @@ import {
     ScheduleSummary,
     Shift
 } from "@/types";
+import {scheduleKeys} from "@/lib/api-keys";
 
 export function useGetConfirmedSchedule(month: number, year: number, groupId: number) {
     return useQuery<Schedule>({
-        queryKey: ["schedule", month, year],
+        queryKey: scheduleKeys.confirmed(month, year),
         queryFn: async () => {
             const res = await api.get<Schedule>("/schedules/confirmed", {
                 params: {
@@ -30,7 +31,7 @@ export function useGetConfirmedSchedule(month: number, year: number, groupId: nu
 
 export function useScheduleSummaries(enabled: boolean) {
     return useQuery<ScheduleSummary[]>({
-        queryKey: ['schedules'],
+        queryKey: scheduleKeys.all,
         queryFn: async () => {
             const { data } = await api.get<ScheduleSummary[]>('/schedules/schedule-summaries');
             return data;
@@ -45,7 +46,7 @@ type ScheduleDataResponse = ScheduleEditorData & {
 
 export function useScheduleData({ groupId, month, year }: ScheduleRequest) {
     return useQuery<ScheduleDataResponse>({
-        queryKey: ['scheduleData', groupId, month, year],
+        queryKey: scheduleKeys.data(groupId, month, year),
         queryFn: async () => {
             const base = await api.get<ScheduleEditorData>(`/schedules/schedule-data-for-managing/${groupId}`);
 
@@ -97,7 +98,7 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
         },
         onSuccess: () => {
             toast.success('Schedule saved!');
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
         onError: () => toast.error('Failed to save schedule'),
     });
@@ -113,7 +114,7 @@ export function useUnconfirmSchedule() {
         },
         onSuccess: () => {
             toast.success('Schedule unconfirmed!');
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
         onError: () => {
             toast.error('Failed to unconfirm schedule');
@@ -146,7 +147,7 @@ export function useGenerateSchedule() {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
     });
 }
@@ -171,4 +172,3 @@ export function useExportSchedule() {
         }
     });
 }
-
