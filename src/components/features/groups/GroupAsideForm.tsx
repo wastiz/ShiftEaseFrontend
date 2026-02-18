@@ -91,7 +91,7 @@ export function GroupAsideForm({
             open={open}
             onOpenChange={onOpenChange}
             title={selectedGroup ? t('editGroup') : t('addGroup')}
-            description={t('configureGroupDetails')}
+            description={t('configureDetails')}
             trigger={<Button>+ {t('addGroup')}</Button>}
             footer={
                 <>

@@ -169,6 +169,7 @@
       "priorityHigh": "High",
       "priorityMedium": "Medium",
       "priorityLow": "Low",
+      "assignGroups": "Assign groups",
       "positionTooltip": "Indicate the position of this employee. For example, senior manager.",
       "noGroupsSelected": "No groups selected. Employee will be flexible.",
       "selectGroups": "Select groups",

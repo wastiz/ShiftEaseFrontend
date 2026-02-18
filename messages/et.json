@@ -169,6 +169,7 @@
       "priorityHigh": "Kõrge",
       "priorityMedium": "Keskmine",
       "priorityLow": "Madal",
+      "assignGroups": "Gruppide määramine",
       "positionTooltip": "Märkige selle töötaja ametikoht. Näiteks vanemjuht.",
       "noGroupsSelected": "Gruppe pole valitud. Töötaja on paindlik.",
       "selectGroups": "Vali grupid",

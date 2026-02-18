@@ -177,7 +177,7 @@ export function EmployeeForm({
             {/* Groups */}
             <FormField>
                 <Label>
-                    {t('groups')}
+                    {t('assignGroups')}
                     <span className="ml-2 text-xs text-muted-foreground">({tCommon('optional')})</span>
                 </Label>
 

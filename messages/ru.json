@@ -169,6 +169,7 @@
       "priorityHigh": "Высокий",
       "priorityMedium": "Средний",
       "priorityLow": "Низкий",
+      "assignGroups": "Назначьте группы",
       "positionTooltip": "Укажите должность сотрудника. Например, старший менеджер.",
       "noGroupsSelected": "Группы не выбраны. Сотрудник будет универсальным.",
       "selectGroups": "Выберите группы",

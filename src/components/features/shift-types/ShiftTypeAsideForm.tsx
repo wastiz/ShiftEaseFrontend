@@ -90,7 +90,7 @@ export function ShiftTypeAsideForm({
             open={open}
             onOpenChange={onOpenChange}
             title={selectedShift ? t('editShiftType') : t('addShiftType')}
-            description={t('configureShiftTypeDetails')}
+            description={t('configureDetails')}
             trigger={<Button>+ {t('addShiftType')}</Button>}
             footer={
                 <>

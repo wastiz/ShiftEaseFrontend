@@ -46,7 +46,7 @@ export function GroupForm({
                 </Label>
                 <Input
                     {...register("name", { required: t('nameRequired') })}
-                    placeholder={t('groupNamePlaceholder')}
+                    placeholder={t('enterGroupName')}
                 />
                 {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -58,7 +58,7 @@ export function GroupForm({
                 <Label>{tCommon('description')}</Label>
                 <Textarea
                     {...register("description")}
-                    placeholder={t('descriptionPlaceholder')}
+                    placeholder={t('descriptionOptional')}
                 />
             </FormField>
 

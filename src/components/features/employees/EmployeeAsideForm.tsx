@@ -98,7 +98,7 @@ export function EmployeeAsideForm({
             open={open}
             onOpenChange={onOpenChange}
             title={selectedEmployee ? t('editEmployee') : t('addEmployee')}
-            description={t('configureEmployeeDetails')}
+            description={t('configureDetails')}
             trigger={<Button>+ {t('addEmployee')}</Button>}
             footer={
                 <>
