@@ -26,8 +26,8 @@ export const shiftTypeKeys = {
 
 export const scheduleKeys = {
     all: ["schedules"] as const,
-    confirmed: (month: number, year: number) => ["schedule", month, year] as const,
-    data: (groupId: number, month: number, year: number) => ["scheduleData", groupId, month, year] as const,
+    confirmed: (month: number, year: number) => ["schedule", "confirmed", month, year] as const,
+    data: (month: number, year: number) => ["scheduleData", month, year] as const,
     dataAll: () => ["scheduleData"] as const,
 };
 

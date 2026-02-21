@@ -19,18 +19,18 @@ export type ScheduleEditorData = {
     employees: EmployeeMinData[];
     shiftTypes: ShiftType[];
     groups: Group[];
+    organizationHolidays: Holiday[];
+    organizationSchedule: WorkDay[];
+    employeeTimeOffs: EmployeeTimeOff[]
+    schedule: Schedule
 };
 
-export type Schedule ={
+export type Schedule = {
     id: number;
     startDate: Date;
     endDate: Date;
-    groupId: number;
     isConfirmed: boolean;
-    organizationHolidays: Holiday[];
-    organizationSchedule: WorkDay[];
     shifts: Shift[];
-    employeeTimeOffs: EmployeeTimeOff[]
 }
 
 export type EmployeeTimeOff = {
@@ -68,17 +68,13 @@ export type EmployeeShiftAssignment = {
 }
 
 export interface ScheduleRequest {
-    groupId: number
     month: number
     year: number
-    showOnlyConfirmed: boolean
 }
 
 export type SchedulePost = {
-    groupId: number
     startDate: string
     endDate: string
-    autorenewal: boolean
     isConfirmed: boolean
     shifts: ShiftPost[];
 }

@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
 import { ChevronLeft, ChevronRight, X, Filter } from "lucide-react";
-import { DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay } from "@/types";
+import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -43,6 +43,7 @@ import {MessageIndicator} from "@/components/features/schedules/MessageIndicator
 type SimpleViewProps = {
     employees: EmployeeMinData[];
     shiftTypes: ShiftType[];
+    groups?: Group[];
     shiftsData: Shift[];
     setShiftsData: (shifts: Shift[]) => void;
     daysOfMonth: DateData[];
@@ -60,6 +61,7 @@ type SimpleViewProps = {
 export default function SimpleView({
                                        employees,
                                        shiftTypes,
+                                       groups = [],
                                        shiftsData,
                                        setShiftsData,
                                        daysOfMonth,
@@ -76,9 +78,19 @@ export default function SimpleView({
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
     const filteredEmployees = useMemo(() => {
-        if (selectedShiftTypes.length === 0) return employees;
+        let result = employees;
+
+        if (selectedGroupId !== null) {
+            const group = groups.find(g => g.id === selectedGroupId);
+            if (group) {
+                result = result.filter(emp => emp.groupName === group.name);
+            }
+        }
+
+        if (selectedShiftTypes.length === 0) return result;
 
         const employeeIdsWithSelectedShifts = new Set<number>();
         shiftsData.forEach(shift => {
@@ -87,8 +99,8 @@ export default function SimpleView({
             }
         });
 
-        return employees.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, selectedShiftTypes, shiftsData]);
+        return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
@@ -101,6 +113,10 @@ export default function SimpleView({
                 ? prev.filter(id => id !== shiftTypeId)
                 : [...prev, shiftTypeId]
         );
+    };
+
+    const handleGroupFilterToggle = (groupId: number) => {
+        setSelectedGroupId(prev => prev === groupId ? null : groupId);
     };
 
     const assignShift = (employeeId: number, date: string, shiftTypeId: number) => {
@@ -222,38 +238,68 @@ export default function SimpleView({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-auto">
-                            <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                            <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
-                        <div className="space-y-3">
-                            <h4 className="font-medium text-sm">Filter by Shift Types</h4>
-                            <div className="space-y-2">
-                                {shiftTypes.map((st) => (
-                                    <div key={st.id} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`filter-simple-${st.id}`}
-                                            checked={selectedShiftTypes.includes(st.id)}
-                                            onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
-                                        />
-                                        <Label
-                                            htmlFor={`filter-simple-${st.id}`}
-                                            className="flex items-center gap-2 cursor-pointer"
-                                        >
-                                            <div
-                                                className="w-3 h-3 rounded"
-                                                style={{ backgroundColor: st.color }}
-                                            />
-                                            {st.name}
-                                        </Label>
+                        <div className="space-y-4">
+                            {groups.length > 0 && (
+                                <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">Filter by Group</h4>
+                                    <div className="space-y-2">
+                                        {groups.map((g) => (
+                                            <div key={g.id} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`filter-group-${g.id}`}
+                                                    checked={selectedGroupId === g.id}
+                                                    onCheckedChange={() => handleGroupFilterToggle(g.id)}
+                                                />
+                                                <Label
+                                                    htmlFor={`filter-group-${g.id}`}
+                                                    className="flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    {g.color && (
+                                                        <div
+                                                            className="w-3 h-3 rounded-full"
+                                                            style={{ backgroundColor: g.color }}
+                                                        />
+                                                    )}
+                                                    {g.name}
+                                                </Label>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <h4 className="font-medium text-sm">Filter by Shift Type</h4>
+                                <div className="space-y-2">
+                                    {shiftTypes.map((st) => (
+                                        <div key={st.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`filter-simple-${st.id}`}
+                                                checked={selectedShiftTypes.includes(st.id)}
+                                                onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                            />
+                                            <Label
+                                                htmlFor={`filter-simple-${st.id}`}
+                                                className="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <div
+                                                    className="w-3 h-3 rounded"
+                                                    style={{ backgroundColor: st.color }}
+                                                />
+                                                {st.name}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            {selectedShiftTypes.length > 0 && (
+                            {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setSelectedShiftTypes([])}
+                                    onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters

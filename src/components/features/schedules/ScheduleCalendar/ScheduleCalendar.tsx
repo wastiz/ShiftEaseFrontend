@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/shadcn/button'
 import { PanelLeft, PanelTop, Filter } from 'lucide-react'
 import DayContainer from './DayContainer'
-import {DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay} from '@/types'
+import {DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay} from '@/types'
 import { EmployeeTimeOff } from '@/types/schedule'
 import { Dispatch, SetStateAction, useState, useMemo } from 'react'
 import {
@@ -23,6 +23,7 @@ type ScheduleCalendarProps = {
     setShiftsData?: Dispatch<SetStateAction<Shift[]>>
     shiftTypes: ShiftType[]
     employees: EmployeeMinData[]
+    groups?: Group[]
     daysOfMonth: DateData[]
     currentMonth: number
     currentYear: number
@@ -42,6 +43,7 @@ export default function ScheduleCalendar({
                                              setShiftsData,
                                              shiftTypes,
                                              employees,
+                                             groups = [],
                                              daysOfMonth,
                                              currentMonth,
                                              currentYear,
@@ -58,9 +60,19 @@ export default function ScheduleCalendar({
 
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
 
     const filteredEmployees = useMemo(() => {
-        if (selectedShiftTypes.length === 0) return employees;
+        let result = employees;
+
+        if (selectedGroupId !== null) {
+            const group = groups.find(g => g.id === selectedGroupId);
+            if (group) {
+                result = result.filter(emp => emp.groupName === group.name);
+            }
+        }
+
+        if (selectedShiftTypes.length === 0) return result;
 
         const employeeIdsWithSelectedShifts = new Set<number>();
         shiftsData.forEach(shift => {
@@ -69,8 +81,8 @@ export default function ScheduleCalendar({
             }
         });
 
-        return employees.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, selectedShiftTypes, shiftsData]);
+        return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
 
     const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
         setSelectedShiftTypes(prev =>
@@ -78,6 +90,10 @@ export default function ScheduleCalendar({
                 ? prev.filter(id => id !== shiftTypeId)
                 : [...prev, shiftTypeId]
         );
+    };
+
+    const handleGroupFilterToggle = (groupId: number) => {
+        setSelectedGroupId(prev => prev === groupId ? null : groupId);
     };
 
     return (
@@ -99,38 +115,68 @@ export default function ScheduleCalendar({
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="icon" className="ml-auto">
-                                    <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                                    <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80">
-                                <div className="space-y-3">
-                                    <h4 className="font-medium text-sm">Filter by Shift Types</h4>
-                                    <div className="space-y-2">
-                                        {shiftTypes.map((st) => (
-                                            <div key={st.id} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`filter-${st.id}`}
-                                                    checked={selectedShiftTypes.includes(st.id)}
-                                                    onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
-                                                />
-                                                <Label
-                                                    htmlFor={`filter-${st.id}`}
-                                                    className="flex items-center gap-2 cursor-pointer"
-                                                >
-                                                    <div
-                                                        className="w-3 h-3 rounded"
-                                                        style={{ backgroundColor: st.color }}
-                                                    />
-                                                    {st.name}
-                                                </Label>
+                                <div className="space-y-4">
+                                    {groups.length > 0 && (
+                                        <div className="space-y-2">
+                                            <h4 className="font-medium text-sm">Filter by Group</h4>
+                                            <div className="space-y-2">
+                                                {groups.map((g) => (
+                                                    <div key={g.id} className="flex items-center space-x-2">
+                                                        <Checkbox
+                                                            id={`filter-cal-group-${g.id}`}
+                                                            checked={selectedGroupId === g.id}
+                                                            onCheckedChange={() => handleGroupFilterToggle(g.id)}
+                                                        />
+                                                        <Label
+                                                            htmlFor={`filter-cal-group-${g.id}`}
+                                                            className="flex items-center gap-2 cursor-pointer"
+                                                        >
+                                                            {g.color && (
+                                                                <div
+                                                                    className="w-3 h-3 rounded-full"
+                                                                    style={{ backgroundColor: g.color }}
+                                                                />
+                                                            )}
+                                                            {g.name}
+                                                        </Label>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium text-sm">Filter by Shift Type</h4>
+                                        <div className="space-y-2">
+                                            {shiftTypes.map((st) => (
+                                                <div key={st.id} className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id={`filter-${st.id}`}
+                                                        checked={selectedShiftTypes.includes(st.id)}
+                                                        onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                    />
+                                                    <Label
+                                                        htmlFor={`filter-${st.id}`}
+                                                        className="flex items-center gap-2 cursor-pointer"
+                                                    >
+                                                        <div
+                                                            className="w-3 h-3 rounded"
+                                                            style={{ backgroundColor: st.color }}
+                                                        />
+                                                        {st.name}
+                                                    </Label>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    {selectedShiftTypes.length > 0 && (
+                                    {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => setSelectedShiftTypes([])}
+                                            onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
                                             className="w-full"
                                         >
                                             Clear Filters
