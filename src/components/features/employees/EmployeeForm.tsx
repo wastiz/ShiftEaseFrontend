@@ -17,6 +17,7 @@ export type EmployeeFormValues = {
     position: string
     phone?: string
     hourlyRate?: number
+    employmentRate?: number
     priority?: "high" | "medium" | "low"
     groupIds: number[]
 }
@@ -139,19 +140,37 @@ export function EmployeeForm({
                 />
             </FormField>
 
-            {/* Hourly Rate */}
-            <FormField>
-                <Label htmlFor="hourlyRate">{t('hourlyRate')}</Label>
-                <Input
-                    id="hourlyRate"
-                    type="number"
-                    step="0.01"
-                    placeholder={t('enterHourlyRate')}
-                    {...register("hourlyRate", {
-                        valueAsNumber: true,
-                    })}
-                />
-            </FormField>
+            <div className="grid grid-cols-2 gap-4">
+                {/* Hourly Rate */}
+                <FormField>
+                    <Label htmlFor="hourlyRate">{t('hourlyRate')}</Label>
+                    <Input
+                        id="hourlyRate"
+                        type="number"
+                        step="0.01"
+                        placeholder={t('enterHourlyRate')}
+                        {...register("hourlyRate", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </FormField>
+
+                {/* Employment Rate */}
+                <FormField>
+                    <Label htmlFor="employmentRate">{t('employmentRate')}</Label>
+                    <Input
+                        id="employmentRate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="1"
+                        placeholder={t('enterEmploymentRate')}
+                        {...register("employmentRate", {
+                            valueAsNumber: true,
+                        })}
+                    />
+                </FormField>
+            </div>
 
             {/* Shift Priority */}
             <FormField>

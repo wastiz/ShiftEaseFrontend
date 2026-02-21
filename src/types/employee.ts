@@ -6,6 +6,7 @@ export interface Employee {
     phone: string;
     position: string;
     hourlyRate: number;
+    employmentRate: number;
     priority: string;
     groupIds: number[];
     groupNames?: string[] | null;

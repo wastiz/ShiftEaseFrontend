@@ -100,7 +100,13 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
             toast.success('Schedule saved!');
             queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
-        onError: () => toast.error('Failed to save schedule'),
+        onError: (error: any) => {
+            const message =
+                error.response?.data ||
+                "Failed to save schedule"
+
+            toast.error(message)
+        }
     });
 }
 

@@ -23,11 +23,13 @@ import {
     useUpdateShiftType,
 } from "@/hooks/api";
 import {roundToMinutes} from "@/helpers/dateHelper";
+import {useTranslations} from "next-intl";
 
 export default function ShiftTypes() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedShift, setSelectedShift] = useState<ShiftType | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const t = useTranslations("employer.shiftTypes")
 
     const { data: shifts = [], isLoading, isError } = useGetShiftTypes();
 
@@ -86,7 +88,7 @@ export default function ShiftTypes() {
 
     return (
         <>
-            <Header title="Shift Types">
+            <Header title={t("title")}>
                 <ShiftTypeAsideForm
                     open={drawerOpen}
                     onOpenChange={(open) => {

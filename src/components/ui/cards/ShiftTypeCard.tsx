@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/shadcn/card"
 import { Button } from "@/components/ui/shadcn/button"
+import {useTranslations} from "next-intl";
 
 type ShiftTypeCardAction = {
-    label: string
     onClick: () => void
     variant?: "default" | "secondary" | "destructive" | "outline" | "ghost"
 }
@@ -24,6 +24,8 @@ export default function ShiftTypeCard({
     className = "",
     actions = [],
 }: ShiftTypeCardProps) {
+    const t = useTranslations("employer.shiftTypes")
+    const tCommon = useTranslations("common")
     return (
         <Card
             className={`overflow-hidden ${className}`}
@@ -36,8 +38,8 @@ export default function ShiftTypeCard({
         >
             <div className="p-4 flex flex-col gap-2">
                 <h3 className="text-lg font-semibold">{name}</h3>
-                <p className="text-sm text-muted-foreground">Employees: <span className={"text-white"}>{employees}</span></p>
-                <p className="text-sm text-muted-foreground">Time range: <span className={"text-white"}>{timeRange}</span></p>
+                <p className="text-sm text-muted-foreground">{t("employeesCount")}: <span className={"text-white"}>{employees}</span></p>
+                <p className="text-sm text-muted-foreground">{t("timeRange")}: <span className={"text-white"}>{timeRange}</span></p>
 
                 {actions.length > 0 && (
                     <div className="flex gap-2 mt-2">
@@ -48,7 +50,7 @@ export default function ShiftTypeCard({
                                 variant={action.variant ?? "secondary"}
                                 size="sm"
                             >
-                                {action.label}
+                                {tCommon("edit")}
                             </Button>
                         ))}
                     </div>

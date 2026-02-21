@@ -50,6 +50,7 @@ export function EmployeeAsideForm({
             position: "",
             phone: "",
             hourlyRate: undefined,
+            employmentRate: undefined,
             priority: undefined,
             groupIds: [],
         },
@@ -67,6 +68,7 @@ export function EmployeeAsideForm({
                     position: selectedEmployee.position,
                     phone: selectedEmployee.phone ?? "",
                     hourlyRate: selectedEmployee.hourlyRate,
+                    employmentRate: selectedEmployee.employmentRate,
                     priority: selectedEmployee.priority as "high" | "medium" | "low" | undefined,
                     groupIds: selectedEmployee.groupIds ?? [],
                 })
@@ -78,6 +80,7 @@ export function EmployeeAsideForm({
                     position: "",
                     phone: "",
                     hourlyRate: undefined,
+                    employmentRate: undefined,
                     priority: undefined,
                     groupIds: [],
                 })

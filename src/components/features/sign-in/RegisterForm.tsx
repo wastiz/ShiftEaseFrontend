@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/shadcn/card";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Button } from "@/components/ui/shadcn/button";
 import { Mode, RegisterPayload, ApiError, getErrorMessage } from "@/types";
 import { Check } from "lucide-react";
@@ -192,9 +193,8 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                         {/* Password */}
                         <div className="grid gap-1">
                             <Label htmlFor="password">{tCommon('password')}</Label>
-                            <Input
+                            <PasswordInput
                                 id="password"
-                                type="password"
                                 value={form.password}
                                 onChange={handleChange}
                                 required
