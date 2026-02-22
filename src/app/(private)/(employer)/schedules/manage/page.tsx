@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/shadcn/button'
 import {
     useExportSchedule,
+    useGenerateRetailSchedule,
     useGenerateSchedule,
     useSaveSchedule,
     useScheduleManagementData,
@@ -78,6 +79,7 @@ export default function ManageSchedule() {
 
     useEffect(() => {
         if (data) {
+            console.log(data)
             setShiftsData(data.schedule?.shifts ?? [])
             setIsConfirmed(data.schedule?.isConfirmed ?? false)
             setScheduleId(data.schedule?.id ?? null)
@@ -96,62 +98,82 @@ export default function ManageSchedule() {
     const unconfirmMutation = useUnconfirmSchedule()
     const exportSchedule = useExportSchedule()
     const generateSchedule = useGenerateSchedule()
+    const generateRetailSchedule = useGenerateRetailSchedule()
+
+    const onGenerateResult = (result: { status: GenerateStatus; error?: GenerateErrorCode; warnings?: GenerateWarningCode[]; shifts?: Shift[] } | undefined) => {
+        if (!result) return;
+
+        setGenerateResult({
+            status: result.status,
+            error: result.error,
+            warnings: result.warnings,
+        });
+
+        if (result.status === GenerateStatus.Error) {
+            setResultDialogOpen(true);
+            setWarningMessage({ message: t(`errors.${result.error}`), messageType: "error" });
+        } else if (result.status === GenerateStatus.Warning) {
+            setShiftsData(result.shifts ?? []);
+            setIsConfirmed(false);
+            setResultDialogOpen(true);
+            const warningMessages = (result.warnings ?? []).map(w => t(`warnings.${w}`)).join("; ");
+            setWarningMessage({ message: warningMessages, messageType: "warning" });
+        } else {
+            setShiftsData(result.shifts ?? []);
+            setIsConfirmed(false);
+            setWarningMessage(null);
+            toast.success(t('generateSuccess'));
+        }
+    }
 
     const handleGenerate = () => {
-        const preset = currentPreset || {
+        if (currentPreset?.mode === 'retail') {
+            if (!scheduleId) {
+                toast.error(t('retailRequiresSchedule'));
+                return;
+            }
+            generateRetailSchedule.mutate(
+                {
+                    scheduleId,
+                    totalHours: currentPreset.totalHours,
+                    maxConsecutiveShifts: currentPreset.maxConsecutiveShifts,
+                    minDaysOffPerWeek: currentPreset.minDaysOffPerWeek,
+                },
+                {
+                    onSuccess: onGenerateResult,
+                    onError: (error: any) => {
+                        const message =
+                            error?.response?.data?.error ||
+                            error?.response?.data?.message ||
+                            error?.message ||
+                            "Something went wrong";
+
+                        toast.error(message);
+                    }
+                }
+            );
+            return;
+        }
+
+        const preset = (currentPreset?.mode === 'standard' ? currentPreset : null) || {
             AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
             MaxConsecutiveShifts: DEFAULT_MAX_CONSECUTIVE_SHIFTS,
             SchedulePattern: SchedulePattern.Custom,
-            MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK
+            MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK,
         }
 
         generateSchedule.mutate(
             {
-                groupId: selectedGroupId,
                 startDate: daysOfMonth[0].isoDate,
                 endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
                 AllowedShiftTypeIds: preset.AllowedShiftTypeIds,
                 MaxConsecutiveShifts: preset.MaxConsecutiveShifts,
                 SchedulePattern: preset.SchedulePattern,
-                MinDaysOffPerWeek: preset.MinDaysOffPerWeek
+                MinDaysOffPerWeek: preset.MinDaysOffPerWeek,
             },
             {
-                onSuccess: (result) => {
-                    if (!result) return;
-
-                    setGenerateResult({
-                        status: result.status,
-                        error: result.error,
-                        warnings: result.warnings,
-                    });
-
-                    if (result.status === GenerateStatus.Error) {
-                        setResultDialogOpen(true);
-                        setWarningMessage({
-                            message: t(`errors.${result.error}`),
-                            messageType: "error"
-                        });
-                    } else if (result.status === GenerateStatus.Warning) {
-                        setShiftsData(result.shifts);
-                        setIsConfirmed(false);
-                        setResultDialogOpen(true);
-                        const warningMessages = result.warnings
-                            .map(w => t(`warnings.${w}`))
-                            .join("; ");
-                        setWarningMessage({
-                            message: warningMessages,
-                            messageType: "warning"
-                        });
-                    } else {
-                        setShiftsData(result.shifts);
-                        setIsConfirmed(false);
-                        setWarningMessage(null);
-                        toast.success(t('generateSuccess'));
-                    }
-                },
-                onError: () => {
-                    toast.error(t('generateError'));
-                }
+                onSuccess: onGenerateResult,
+                onError: () => toast.error(t('generateError')),
             }
         )
     }
@@ -193,8 +215,8 @@ export default function ManageSchedule() {
                         >
                             <Settings className="h-4 w-4" />
                         </Button>
-                        <Button onClick={handleGenerate} disabled={generateSchedule.isPending}>
-                            {generateSchedule.isPending ? t('generating') : t('generateSchedule')}
+                        <Button onClick={handleGenerate} disabled={generateSchedule.isPending || generateRetailSchedule.isPending}>
+                            {(generateSchedule.isPending || generateRetailSchedule.isPending) ? t('generating') : t('generateSchedule')}
                         </Button>
                     </ButtonGroup>
                 </div>
@@ -275,7 +297,6 @@ export default function ManageSchedule() {
                 open={presetDialogOpen}
                 onOpenChange={setPresetDialogOpen}
                 shiftTypes={data?.shiftTypes || []}
-                groupId={selectedGroupId}
                 onSave={handleSavePreset}
             />
 

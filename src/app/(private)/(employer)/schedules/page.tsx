@@ -7,7 +7,6 @@ import Loader from "@/components/ui/Loader";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/shadcn/card";
 import {Button} from "@/components/ui/shadcn/button";
 import Header from "@/components/ui/Header";
-import api from "@/lib/api";
 import {ScheduleSummary} from "@/types";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { CheckCircle2, X } from "lucide-react";
@@ -20,6 +19,8 @@ export default function Schedules() {
     const [showSuccessCard, setShowSuccessCard] = useState(false)
 
     const { data: entities, isLoading: loadingEntities, error: entitiesError } = useCheckEntities()
+
+    console.log(entities)
 
     const hasAllEntities = !!(entities?.groups && entities?.employees && entities?.shiftTypes)
 
@@ -40,6 +41,10 @@ export default function Schedules() {
         router.push(`/schedules/${groupId}`)
     }
 
+    const handleGoToSchedule = () => {
+        router.push("schedules/manage")
+    }
+
     if (loadingEntities) return <Loader />
     if (entitiesError) return <div className="text-red-500">{`${entitiesError}`}</div>
 
@@ -53,6 +58,7 @@ export default function Schedules() {
     return (
         <>
             <Header title={t('title')}></Header>
+            <Button onClick={handleGoToSchedule}>Управление общим графиком</Button>
             <main className="p-4 space-y-6">
                 {showSuccessCard && (
                     <div className="transition-all duration-500 ease-in-out animate-in slide-in-from-top">
@@ -78,7 +84,7 @@ export default function Schedules() {
                 )}
 
                 <div className="grid gap-4">
-                    {scheduleSummaries.map((schedule: ScheduleSummary) => {
+                    {(Array.isArray(scheduleSummaries) ? scheduleSummaries : []).map((schedule: ScheduleSummary) => {
                             const hasSchedules = schedule.unconfirmedSchedules.length > 0 || schedule.confirmedSchedules.length > 0
 
                             return (

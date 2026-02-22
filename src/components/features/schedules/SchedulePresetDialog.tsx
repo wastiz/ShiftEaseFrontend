@@ -6,219 +6,279 @@ import { Button } from '@/components/ui/shadcn/button'
 import { Input } from '@/components/ui/shadcn/input'
 import { Label } from '@/components/ui/shadcn/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs'
 import { SchedulePattern } from '@/types/schedule'
 import { ShiftType } from '@/types/shiftType'
 import { Checkbox } from '@/components/ui/shadcn/checkbox'
 import { useTranslations } from 'next-intl'
 
-export type SchedulePreset = {
+export type StandardPreset = {
+    mode: 'standard'
     AllowedShiftTypeIds: number[]
     MaxConsecutiveShifts: number
     SchedulePattern: SchedulePattern
     MinDaysOffPerWeek: number
 }
 
+export type RetailPreset = {
+    mode: 'retail'
+    totalHours: number
+    maxConsecutiveShifts: number
+    minDaysOffPerWeek: number
+}
+
+export type SchedulePreset = StandardPreset | RetailPreset
+
 type SchedulePresetDialogProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
     shiftTypes: ShiftType[]
-    groupId: number
     onSave: (preset: SchedulePreset) => void
 }
 
-const STORAGE_KEY_PREFIX = 'schedule_preset_'
+const STORAGE_KEY_STANDARD = 'schedule_preset_standard'
+const STORAGE_KEY_RETAIL = 'schedule_preset_retail'
 
-const getStorageKey = (groupId: number) => `${STORAGE_KEY_PREFIX}${groupId}`
-
-const defaultPreset: SchedulePreset = {
+const defaultStandardPreset: Omit<StandardPreset, 'mode'> = {
     AllowedShiftTypeIds: [],
     MaxConsecutiveShifts: 5,
     SchedulePattern: SchedulePattern.Custom,
-    MinDaysOffPerWeek: 2
+    MinDaysOffPerWeek: 2,
+}
+
+const defaultRetailPreset: Omit<RetailPreset, 'mode'> = {
+    totalHours: 160,
+    maxConsecutiveShifts: 5,
+    minDaysOffPerWeek: 2,
 }
 
 export default function SchedulePresetDialog({
     open,
     onOpenChange,
     shiftTypes,
-    groupId,
-    onSave
+    onSave,
 }: SchedulePresetDialogProps) {
     const t = useTranslations('schedule')
-    const [preset, setPreset] = useState<SchedulePreset>(defaultPreset)
 
-    // Load preset from localStorage when dialog opens
+    const [activeTab, setActiveTab] = useState<'standard' | 'retail'>('standard')
+    const [standard, setStandard] = useState<Omit<StandardPreset, 'mode'>>(defaultStandardPreset)
+    const [retail, setRetail] = useState<Omit<RetailPreset, 'mode'>>(defaultRetailPreset)
+
     useEffect(() => {
-        if (open) {
-            const stored = localStorage.getItem(getStorageKey(groupId))
+        if (!open) return
+
+        // Load standard preset
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_STANDARD)
             if (stored) {
-                try {
-                    const parsedPreset = JSON.parse(stored)
-                    setPreset(parsedPreset)
-                } catch (e) {
-                    console.error('Failed to parse stored preset', e)
-                    setPreset(defaultPreset)
-                }
+                setStandard(JSON.parse(stored))
             } else {
-                // Initialize with all shift types selected by default
-                setPreset({
-                    ...defaultPreset,
-                    AllowedShiftTypeIds: shiftTypes.map(st => st.id)
-                })
+                setStandard({ ...defaultStandardPreset, AllowedShiftTypeIds: shiftTypes.map(st => st.id) })
             }
+        } catch {
+            setStandard({ ...defaultStandardPreset, AllowedShiftTypeIds: shiftTypes.map(st => st.id) })
         }
-    }, [open, groupId, shiftTypes])
+
+        // Load retail preset
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_RETAIL)
+            if (stored) {
+                setRetail(JSON.parse(stored))
+            } else {
+                setRetail(defaultRetailPreset)
+            }
+        } catch {
+            setRetail(defaultRetailPreset)
+        }
+    }, [open, shiftTypes])
 
     const handleSave = () => {
-        // Save to localStorage
-        localStorage.setItem(getStorageKey(groupId), JSON.stringify(preset))
-        onSave(preset)
+        if (activeTab === 'standard') {
+            localStorage.setItem(STORAGE_KEY_STANDARD, JSON.stringify(standard))
+            onSave({ mode: 'standard', ...standard })
+        } else {
+            localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
+            onSave({ mode: 'retail', ...retail })
+        }
         onOpenChange(false)
     }
 
-    const toggleShiftType = (shiftTypeId: number) => {
-        setPreset(prev => {
-            const isSelected = prev.AllowedShiftTypeIds.includes(shiftTypeId)
+    const toggleShiftType = (id: number) => {
+        setStandard(prev => {
+            const selected = prev.AllowedShiftTypeIds.includes(id)
             return {
                 ...prev,
-                AllowedShiftTypeIds: isSelected
-                    ? prev.AllowedShiftTypeIds.filter(id => id !== shiftTypeId)
-                    : [...prev.AllowedShiftTypeIds, shiftTypeId]
+                AllowedShiftTypeIds: selected
+                    ? prev.AllowedShiftTypeIds.filter(x => x !== id)
+                    : [...prev.AllowedShiftTypeIds, id],
             }
         })
     }
 
-    const getSchedulePatternLabel = (pattern: SchedulePattern): string => {
+    const getPatternLabel = (pattern: SchedulePattern): string => {
         switch (pattern) {
-            case SchedulePattern.Custom:
-                return t('patternCustom')
-            case SchedulePattern.TwoOnTwoOff:
-                return t('patternTwoOnTwoOff')
-            case SchedulePattern.FiveOnTwoOff:
-                return t('patternFiveOnTwoOff')
-            case SchedulePattern.ThreeOnThreeOff:
-                return t('patternThreeOnThreeOff')
-            case SchedulePattern.FourOnFourOff:
-                return t('patternFourOnFourOff')
-            default:
-                return 'Custom'
+            case SchedulePattern.Custom: return t('patternCustom')
+            case SchedulePattern.TwoOnTwoOff: return t('patternTwoOnTwoOff')
+            case SchedulePattern.FiveOnTwoOff: return t('patternFiveOnTwoOff')
+            case SchedulePattern.ThreeOnThreeOff: return t('patternThreeOnThreeOff')
+            case SchedulePattern.FourOnFourOff: return t('patternFourOnFourOff')
+            default: return 'Custom'
         }
     }
+
+    const isSaveDisabled =
+        activeTab === 'standard' && standard.AllowedShiftTypeIds.length === 0
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{t('schedulePresetTitle')}</DialogTitle>
-                    <DialogDescription>
-                        {t('schedulePresetDescription')}
-                    </DialogDescription>
+                    <DialogDescription>{t('schedulePresetDescription')}</DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-6 py-4">
-                    {/* Schedule Pattern */}
-                    <div className="space-y-2">
-                        <Label htmlFor="pattern">{t('schedulePattern')}</Label>
-                        <Select
-                            value={preset.SchedulePattern.toString()}
-                            onValueChange={(value) => setPreset(prev => ({
-                                ...prev,
-                                SchedulePattern: parseInt(value) as SchedulePattern
-                            }))}
-                        >
-                            <SelectTrigger id="pattern">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value={SchedulePattern.Custom.toString()}>
-                                    {getSchedulePatternLabel(SchedulePattern.Custom)}
-                                </SelectItem>
-                                <SelectItem value={SchedulePattern.TwoOnTwoOff.toString()}>
-                                    {getSchedulePatternLabel(SchedulePattern.TwoOnTwoOff)}
-                                </SelectItem>
-                                <SelectItem value={SchedulePattern.FiveOnTwoOff.toString()}>
-                                    {getSchedulePatternLabel(SchedulePattern.FiveOnTwoOff)}
-                                </SelectItem>
-                                <SelectItem value={SchedulePattern.ThreeOnThreeOff.toString()}>
-                                    {getSchedulePatternLabel(SchedulePattern.ThreeOnThreeOff)}
-                                </SelectItem>
-                                <SelectItem value={SchedulePattern.FourOnFourOff.toString()}>
-                                    {getSchedulePatternLabel(SchedulePattern.FourOnFourOff)}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'standard' | 'retail')}>
+                    <TabsList className="w-full">
+                        <TabsTrigger value="standard" className="flex-1">{t('tabStandard')}</TabsTrigger>
+                        <TabsTrigger value="retail" className="flex-1">{t('tabRetail')}</TabsTrigger>
+                    </TabsList>
 
-                    {/* Max Consecutive Shifts */}
-                    <div className="space-y-2">
-                        <Label htmlFor="maxConsecutive">{t('maxConsecutiveShifts')}</Label>
-                        <Input
-                            id="maxConsecutive"
-                            type="number"
-                            min="1"
-                            max="31"
-                            value={preset.MaxConsecutiveShifts}
-                            onChange={(e) => setPreset(prev => ({
-                                ...prev,
-                                MaxConsecutiveShifts: parseInt(e.target.value) || 1
-                            }))}
-                        />
-                    </div>
+                    {/* Standard tab */}
+                    <TabsContent value="standard">
+                        <div className="space-y-6 py-4">
+                            <div className="space-y-2">
+                                <Label>{t('schedulePattern')}</Label>
+                                <Select
+                                    value={standard.SchedulePattern.toString()}
+                                    onValueChange={(v) =>
+                                        setStandard(prev => ({ ...prev, SchedulePattern: parseInt(v) as SchedulePattern }))
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {[
+                                            SchedulePattern.Custom,
+                                            SchedulePattern.TwoOnTwoOff,
+                                            SchedulePattern.FiveOnTwoOff,
+                                            SchedulePattern.ThreeOnThreeOff,
+                                            SchedulePattern.FourOnFourOff,
+                                        ].map(p => (
+                                            <SelectItem key={p} value={p.toString()}>
+                                                {getPatternLabel(p)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                    {/* Min Days Off Per Week */}
-                    <div className="space-y-2">
-                        <Label htmlFor="minDaysOff">{t('minDaysOffPerWeek')}</Label>
-                        <Input
-                            id="minDaysOff"
-                            type="number"
-                            min="0"
-                            max="7"
-                            value={preset.MinDaysOffPerWeek}
-                            onChange={(e) => setPreset(prev => ({
-                                ...prev,
-                                MinDaysOffPerWeek: parseInt(e.target.value) || 0
-                            }))}
-                        />
-                    </div>
+                            <div className="space-y-2">
+                                <Label>{t('maxConsecutiveShifts')}</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    value={standard.MaxConsecutiveShifts}
+                                    onChange={(e) =>
+                                        setStandard(prev => ({ ...prev, MaxConsecutiveShifts: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
 
-                    {/* Allowed Shift Types */}
-                    <div className="space-y-2">
-                        <Label>{t('allowedShiftTypes')}</Label>
-                        <div className="space-y-2 border rounded-md p-4 max-h-60 overflow-y-auto">
-                            {shiftTypes.map((shiftType) => (
-                                <div key={shiftType.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={`shift-${shiftType.id}`}
-                                        checked={preset.AllowedShiftTypeIds.includes(shiftType.id)}
-                                        onCheckedChange={() => toggleShiftType(shiftType.id)}
-                                    />
-                                    <label
-                                        htmlFor={`shift-${shiftType.id}`}
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                    >
-                                        <span
-                                            className="inline-block w-4 h-4 rounded mr-2"
-                                            style={{ backgroundColor: shiftType.color }}
-                                        />
-                                        {shiftType.name} ({shiftType.startTime} - {shiftType.endTime})
-                                    </label>
+                            <div className="space-y-2">
+                                <Label>{t('minDaysOffPerWeek')}</Label>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max="7"
+                                    value={standard.MinDaysOffPerWeek}
+                                    onChange={(e) =>
+                                        setStandard(prev => ({ ...prev, MinDaysOffPerWeek: parseInt(e.target.value) || 0 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('allowedShiftTypes')}</Label>
+                                <div className="space-y-2 border rounded-md p-4 max-h-60 overflow-y-auto">
+                                    {shiftTypes.map((st) => (
+                                        <div key={st.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`shift-${st.id}`}
+                                                checked={standard.AllowedShiftTypeIds.includes(st.id)}
+                                                onCheckedChange={() => toggleShiftType(st.id)}
+                                            />
+                                            <label
+                                                htmlFor={`shift-${st.id}`}
+                                                className="text-sm font-medium leading-none cursor-pointer"
+                                            >
+                                                <span
+                                                    className="inline-block w-4 h-4 rounded mr-2"
+                                                    style={{ backgroundColor: st.color }}
+                                                />
+                                                {st.name} ({st.startTime} - {st.endTime})
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                                {standard.AllowedShiftTypeIds.length === 0 && (
+                                    <p className="text-sm text-red-500">{t('selectAtLeastOneShiftType')}</p>
+                                )}
+                            </div>
                         </div>
-                        {preset.AllowedShiftTypeIds.length === 0 && (
-                            <p className="text-sm text-red-500">{t('selectAtLeastOneShiftType')}</p>
-                        )}
-                    </div>
-                </div>
+                    </TabsContent>
+
+                    {/* Retail tab */}
+                    <TabsContent value="retail">
+                        <div className="space-y-6 py-4">
+                            <div className="space-y-2">
+                                <Label>{t('totalHours')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('totalHoursHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={retail.totalHours}
+                                    onChange={(e) =>
+                                        setRetail(prev => ({ ...prev, totalHours: parseFloat(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('maxConsecutiveShifts')}</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    value={retail.maxConsecutiveShifts}
+                                    onChange={(e) =>
+                                        setRetail(prev => ({ ...prev, maxConsecutiveShifts: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('minDaysOffPerWeek')}</Label>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max="7"
+                                    value={retail.minDaysOffPerWeek}
+                                    onChange={(e) =>
+                                        setRetail(prev => ({ ...prev, minDaysOffPerWeek: parseInt(e.target.value) || 0 }))
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </TabsContent>
+                </Tabs>
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
                         {t('cancel')}
                     </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={preset.AllowedShiftTypeIds.length === 0}
-                    >
+                    <Button onClick={handleSave} disabled={isSaveDisabled}>
                         {t('savePreset')}
                     </Button>
                 </DialogFooter>

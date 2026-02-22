@@ -2,6 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {toast} from "sonner";
 import {
+    RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
     ScheduleGenerateRequest,
@@ -117,7 +118,6 @@ export function useGenerateSchedule() {
 
     return useMutation<ScheduleGenerateResult, Error, Omit<ScheduleGenerateRequest, 'id'>>({
         mutationFn: async ({
-            groupId,
             startDate,
             endDate,
             AllowedShiftTypeIds,
@@ -126,7 +126,6 @@ export function useGenerateSchedule() {
             MinDaysOffPerWeek
         }) => {
             const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate', {
-                groupId,
                 startDate,
                 endDate,
                 AllowedShiftTypeIds,
@@ -134,6 +133,20 @@ export function useGenerateSchedule() {
                 SchedulePattern,
                 MinDaysOffPerWeek
             });
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateRetailSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, RetailScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-retail', payload);
             return response.data;
         },
         onSuccess: () => {

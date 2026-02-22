@@ -3,9 +3,9 @@
 import { Button } from '@/components/ui/shadcn/button'
 import { PanelLeft, PanelTop, Filter } from 'lucide-react'
 import DayContainer from './DayContainer'
-import {DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay} from '@/types'
+import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from '@/types'
 import { EmployeeTimeOff } from '@/types/schedule'
-import { Dispatch, SetStateAction, useState, useMemo } from 'react'
+import { Dispatch, SetStateAction, useState, useMemo, useEffect } from 'react'
 import {
     Popover,
     PopoverContent,
@@ -13,10 +13,17 @@ import {
 } from '@/components/ui/shadcn/popover'
 import { Checkbox } from '@/components/ui/shadcn/checkbox'
 import { Label } from '@/components/ui/shadcn/label'
-import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
-import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
-import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
-import ScheduleData from "@/components/features/schedules/ScheduleData";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/shadcn/select'
+import { WarningMessage } from "@/app/(private)/(employer)/schedules/[groupId]/page"
+import { MonthNavigator } from "@/components/features/schedules/MonthNavigator"
+import { MessageIndicator } from "@/components/features/schedules/MessageIndicator"
+import ScheduleData from "@/components/features/schedules/ScheduleData"
 
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
@@ -39,62 +46,89 @@ type ScheduleCalendarProps = {
 }
 
 export default function ScheduleCalendar({
-                                             shiftsData,
-                                             setShiftsData,
-                                             shiftTypes,
-                                             employees,
-                                             groups = [],
-                                             daysOfMonth,
-                                             currentMonth,
-                                             currentYear,
-                                             setCurrentMonth,
-                                             setCurrentYear,
-                                             isConfirmed,
-                                             isEditable = true,
-                                             cellHeight = 40,
-                                             orgHolidays,
-                                             orgSchedule,
-                                             employeeTimeOffs = [],
-                                             warningMessage,
-                                         }: ScheduleCalendarProps) {
+    shiftsData,
+    setShiftsData,
+    shiftTypes,
+    employees,
+    groups = [],
+    daysOfMonth,
+    currentMonth,
+    currentYear,
+    setCurrentMonth,
+    setCurrentYear,
+    isConfirmed,
+    isEditable = true,
+    cellHeight = 40,
+    orgHolidays,
+    orgSchedule,
+    employeeTimeOffs = [],
+    warningMessage,
+}: ScheduleCalendarProps) {
 
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
-    const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([])
+    const [selectedShiftTypeIds, setSelectedShiftTypeIds] = useState<number[]>([])
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
 
-    const filteredEmployees = useMemo(() => {
-        let result = employees;
-
-        if (selectedGroupId !== null) {
-            const group = groups.find(g => g.id === selectedGroupId);
-            if (group) {
-                result = result.filter(emp => emp.groupName === group.name);
-            }
+    // Set default group to first group when groups become available
+    useEffect(() => {
+        if (groups.length > 0 && selectedGroupId === null) {
+            setSelectedGroupId(groups[0].id)
         }
+    }, [groups.length])
 
-        if (selectedShiftTypes.length === 0) return result;
+    const selectedGroup = useMemo(
+        () => groups.find(g => g.id === selectedGroupId) ?? null,
+        [groups, selectedGroupId]
+    )
 
-        const employeeIdsWithSelectedShifts = new Set<number>();
-        shiftsData.forEach(shift => {
-            if (selectedShiftTypes.includes(shift.shiftTypeId)) {
-                shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
+    // Shift types that belong to the selected group
+    const groupShiftTypes = useMemo(
+        () => selectedGroupId !== null
+            ? shiftTypes.filter(st => st.groupId === selectedGroupId)
+            : shiftTypes,
+        [shiftTypes, selectedGroupId]
+    )
+
+    // Employees in the selected group
+    const groupEmployees = useMemo(
+        () => selectedGroup
+            ? employees.filter(emp => emp.groupNames.includes(selectedGroup.name))
+            : employees,
+        [employees, selectedGroup]
+    )
+
+    // Shifts that belong to the selected group (by shift type)
+    const groupShifts = useMemo(() => {
+        const groupShiftTypeIds = new Set(groupShiftTypes.map(st => st.id))
+        return shiftsData.filter(s => groupShiftTypeIds.has(s.shiftTypeId))
+    }, [shiftsData, groupShiftTypes])
+
+    // Further filter employees by selected shift types (inside the group)
+    const visibleEmployees = useMemo(() => {
+        if (selectedShiftTypeIds.length === 0) return groupEmployees
+
+        const empIds = new Set<number>()
+        groupShifts.forEach(shift => {
+            if (selectedShiftTypeIds.includes(shift.shiftTypeId)) {
+                shift.employees.forEach(e => empIds.add(e.id))
             }
-        });
+        })
+        return groupEmployees.filter(emp => empIds.has(emp.id))
+    }, [groupEmployees, selectedShiftTypeIds, groupShifts])
 
-        return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
+    // Shift types visible in the panel (filtered within group)
+    const visibleShiftTypes = useMemo(
+        () => selectedShiftTypeIds.length > 0
+            ? groupShiftTypes.filter(st => selectedShiftTypeIds.includes(st.id))
+            : groupShiftTypes,
+        [groupShiftTypes, selectedShiftTypeIds]
+    )
 
-    const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
-        setSelectedShiftTypes(prev =>
-            prev.includes(shiftTypeId)
-                ? prev.filter(id => id !== shiftTypeId)
-                : [...prev, shiftTypeId]
-        );
-    };
-
-    const handleGroupFilterToggle = (groupId: number) => {
-        setSelectedGroupId(prev => prev === groupId ? null : groupId);
-    };
+    const handleShiftTypeFilterToggle = (id: number) => {
+        setSelectedShiftTypeIds(prev =>
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+        )
+    }
 
     return (
         <div className="flex flex-col h-[calc(100vh-62px)]">
@@ -105,65 +139,68 @@ export default function ScheduleCalendar({
                     currentYear={currentYear}
                     isConfirmed={isConfirmed}
                     onChange={(month, year) => {
-                        setCurrentMonth(month);
-                        setCurrentYear(year);
+                        setCurrentMonth(month)
+                        setCurrentYear(year)
                     }}
                 />
 
+                {/* Group selector */}
+                {groups.length > 0 && (
+                    <Select
+                        value={selectedGroupId?.toString() ?? ''}
+                        onValueChange={(v) => {
+                            setSelectedGroupId(Number(v))
+                            setSelectedShiftTypeIds([])
+                        }}
+                    >
+                        <SelectTrigger className="w-44">
+                            <SelectValue placeholder="Select group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {groups.map(g => (
+                                <SelectItem key={g.id} value={g.id.toString()}>
+                                    <div className="flex items-center gap-2">
+                                        {g.color && (
+                                            <span
+                                                className="w-2.5 h-2.5 rounded-full shrink-0"
+                                                style={{ backgroundColor: g.color }}
+                                            />
+                                        )}
+                                        {g.name}
+                                    </div>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
+
                 {isEditable && (
                     <>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" size="icon" className="ml-auto">
-                                    <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80">
-                                <div className="space-y-4">
-                                    {groups.length > 0 && (
-                                        <div className="space-y-2">
-                                            <h4 className="font-medium text-sm">Filter by Group</h4>
-                                            <div className="space-y-2">
-                                                {groups.map((g) => (
-                                                    <div key={g.id} className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id={`filter-cal-group-${g.id}`}
-                                                            checked={selectedGroupId === g.id}
-                                                            onCheckedChange={() => handleGroupFilterToggle(g.id)}
-                                                        />
-                                                        <Label
-                                                            htmlFor={`filter-cal-group-${g.id}`}
-                                                            className="flex items-center gap-2 cursor-pointer"
-                                                        >
-                                                            {g.color && (
-                                                                <div
-                                                                    className="w-3 h-3 rounded-full"
-                                                                    style={{ backgroundColor: g.color }}
-                                                                />
-                                                            )}
-                                                            {g.name}
-                                                        </Label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="space-y-2">
+                        {/* Shift type filter within the selected group */}
+                        {groupShiftTypes.length > 0 && (
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" size="icon">
+                                        <Filter className={selectedShiftTypeIds.length > 0 ? 'text-primary' : ''} />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-72">
+                                    <div className="space-y-3">
                                         <h4 className="font-medium text-sm">Filter by Shift Type</h4>
                                         <div className="space-y-2">
-                                            {shiftTypes.map((st) => (
+                                            {groupShiftTypes.map(st => (
                                                 <div key={st.id} className="flex items-center space-x-2">
                                                     <Checkbox
-                                                        id={`filter-${st.id}`}
-                                                        checked={selectedShiftTypes.includes(st.id)}
+                                                        id={`cal-filter-${st.id}`}
+                                                        checked={selectedShiftTypeIds.includes(st.id)}
                                                         onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
                                                     />
                                                     <Label
-                                                        htmlFor={`filter-${st.id}`}
+                                                        htmlFor={`cal-filter-${st.id}`}
                                                         className="flex items-center gap-2 cursor-pointer"
                                                     >
                                                         <div
-                                                            className="w-3 h-3 rounded"
+                                                            className="w-3 h-3 rounded shrink-0"
                                                             style={{ backgroundColor: st.color }}
                                                         />
                                                         {st.name}
@@ -171,24 +208,25 @@ export default function ScheduleCalendar({
                                                 </div>
                                             ))}
                                         </div>
+                                        {selectedShiftTypeIds.length > 0 && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full"
+                                                onClick={() => setSelectedShiftTypeIds([])}
+                                            >
+                                                Clear
+                                            </Button>
+                                        )}
                                     </div>
-                                    {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
-                                            className="w-full"
-                                        >
-                                            Clear Filters
-                                        </Button>
-                                    )}
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+                                </PopoverContent>
+                            </Popover>
+                        )}
+
                         <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => setLayoutPosition(layoutPosition === 'left' ? 'top' : 'left')}
+                            onClick={() => setLayoutPosition(p => p === 'left' ? 'top' : 'left')}
                         >
                             {layoutPosition === 'left' ? <PanelTop /> : <PanelLeft />}
                         </Button>
@@ -201,14 +239,13 @@ export default function ScheduleCalendar({
                         messageType="warning"
                     />
                 )}
-
             </div>
 
             <ScheduleData
                 isEditable={isEditable}
                 layoutPosition={layoutPosition}
-                shiftTypes={shiftTypes}
-                filteredEmployees={filteredEmployees}
+                shiftTypes={visibleShiftTypes}
+                filteredEmployees={visibleEmployees}
             >
                 <section className="flex-1 flex flex-col min-w-0 space-y-4">
                     <div className="flex-1 border rounded-lg overflow-auto">
@@ -218,10 +255,10 @@ export default function ScheduleCalendar({
                                 gridTemplateColumns: `100px repeat(${daysOfMonth.length}, 180px)`,
                             }}
                         >
+                            {/* Time column */}
                             <div className="sticky left-0 z-10 shadow-md bg-background">
-                                <div
-                                    className="h-10 flex items-center justify-center font-medium border-b border-r bg-black"></div>
-                                {Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`).map((h) => (
+                                <div className="h-10 flex items-center justify-center font-medium border-b border-r bg-black" />
+                                {Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`).map(h => (
                                     <div
                                         key={h}
                                         className="h-10 bg-black border-b border-r flex items-center justify-center text-sm"
@@ -231,14 +268,14 @@ export default function ScheduleCalendar({
                                 ))}
                             </div>
 
-                            {daysOfMonth.map((day) => (
+                            {daysOfMonth.map(day => (
                                 <DayContainer
                                     key={day.isoDate}
                                     date={day.isoDate}
                                     dateLabel={day.label}
-                                    shiftTypes={shiftTypes}
-                                    employees={employees}
-                                    shiftsData={shiftsData}
+                                    shiftTypes={groupShiftTypes}
+                                    employees={groupEmployees}
+                                    shiftsData={groupShifts}
                                     setShiftsData={setShiftsData}
                                     isEditable={isEditable}
                                     cellHeight={cellHeight}

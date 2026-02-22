@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck } from "lucide-react";
 import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
@@ -39,6 +39,7 @@ import {
 import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
 import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
 import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
+import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -79,6 +80,7 @@ export default function SimpleView({
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+    const [coverageModalOpen, setCoverageModalOpen] = useState(false);
 
     const filteredEmployees = useMemo(() => {
         let result = employees;
@@ -86,7 +88,7 @@ export default function SimpleView({
         if (selectedGroupId !== null) {
             const group = groups.find(g => g.id === selectedGroupId);
             if (group) {
-                result = result.filter(emp => emp.groupName === group.name);
+                result = result.filter(emp => emp.groupNames.includes(group.name));
             }
         }
 
@@ -226,6 +228,14 @@ export default function SimpleView({
                     }}
                 />
 
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCoverageModalOpen(true)}
+                    title="Coverage Check"
+                >
+                    <ClipboardCheck className="h-4 w-4" />
+                </Button>
 
                 {warningMessage && (
                     <MessageIndicator
@@ -312,7 +322,7 @@ export default function SimpleView({
 
             <div className="border rounded-lg p-4 bg-muted/50 flex-shrink-0">
                 <h3 className="font-semibold mb-3">Available Shift Types</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto">
                     {shiftTypes.map((st) => (
                         <ShiftTypeSmallCard
                             key={st.id}
@@ -331,7 +341,12 @@ export default function SimpleView({
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
-                                Employee
+                                <div className="flex items-center gap-2">
+                                    <span>Employee</span>
+                                    <Badge variant="secondary">
+                                        {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(1)}h
+                                    </Badge>
+                                </div>
                             </TableHead>
                             {daysOfMonth.map((day) => {
                                 const holiday = isHoliday(day.isoDate, orgHolidays)
@@ -362,11 +377,32 @@ export default function SimpleView({
                         {rows.map((row) => (
                             <TableRow key={row.employeeId}>
                                 <TableCell className="font-medium sticky left-0 bg-background z-10 border-r">
-                                    <div className={"flex flex-row gap-2 justify-between items-center"}>
-                                        <div>
+                                    <div className="flex flex-row gap-2 justify-between items-center">
+                                        <div className="min-w-0">
                                             <div>{row.employeeName}</div>
-                                            <div className="text-xs text-muted-foreground">
-                                                {row.position}
+                                            <div className="flex items-center gap-1 flex-wrap mt-0.5">
+                                                {row.groupNames.slice(0, 2).map(name => (
+                                                    <span key={name} className="text-xs text-muted-foreground">
+                                                        {name}
+                                                    </span>
+                                                ))}
+                                                {row.groupNames.length > 2 && (
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
+                                                                +{row.groupNames.length - 2} more
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-48 p-2" side="right">
+                                                            <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                            <ul className="space-y-1">
+                                                                {row.groupNames.map(name => (
+                                                                    <li key={name} className="text-sm">{name}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
                                             </div>
                                         </div>
                                         <Badge
@@ -423,6 +459,17 @@ export default function SimpleView({
                     </TableBody>
                 </Table>
             </div>
+
+            <CoverageCheckModal
+                open={coverageModalOpen}
+                onOpenChange={setCoverageModalOpen}
+                shiftTypes={shiftTypes}
+                shiftsData={shiftsData}
+                daysOfMonth={daysOfMonth}
+                orgHolidays={orgHolidays}
+                orgSchedule={orgSchedule}
+                groups={groups}
+            />
         </div>
     );
 }

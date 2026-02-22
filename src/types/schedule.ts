@@ -102,11 +102,17 @@ export type ScheduleGenerateRequest = {
     id: number
     startDate: string
     endDate: string
-    groupId: number
     AllowedShiftTypeIds: number[];
     MaxConsecutiveShifts: number;
     SchedulePattern: SchedulePattern;
     MinDaysOffPerWeek: number;
+}
+
+export type RetailScheduleGenerateRequest = {
+    scheduleId: number;
+    totalHours: number;
+    maxConsecutiveShifts: number;
+    minDaysOffPerWeek: number;
 }
 
 export type ScheduleGenerateResult =
