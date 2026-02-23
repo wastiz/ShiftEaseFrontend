@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/shadcn/label"
 import { Input } from "@/components/ui/shadcn/input"
 import { TimePicker } from "@/components/ui/inputs/TimePicker"
 import ColorPicker from "@/components/ui/inputs/ColorPicker"
-import { ShiftTypeFormValues } from "@/types"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
+import { Group, ShiftTypeFormValues } from "@/types"
 
 interface ShiftTypeFormProps {
     formId: string
@@ -13,6 +14,7 @@ interface ShiftTypeFormProps {
     control: Control<ShiftTypeFormValues>
     errors: FieldErrors<ShiftTypeFormValues>
     minEmployees?: number
+    groups: Group[]
     onSubmit: (e: React.FormEvent) => void
 }
 
@@ -22,6 +24,7 @@ export function ShiftTypeForm({
     control,
     errors,
     minEmployees,
+    groups,
     onSubmit,
 }: ShiftTypeFormProps) {
     const t = useTranslations('employer.shiftTypes');
@@ -45,6 +48,38 @@ export function ShiftTypeForm({
                 />
                 {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
+                )}
+            </FormField>
+
+            {/* Group */}
+            <FormField>
+                <Label>
+                    {t('group')} <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Controller
+                    name="groupId"
+                    control={control}
+                    rules={{ required: t('validation.groupRequired') }}
+                    render={({ field }) => (
+                        <Select
+                            value={field.value != null ? String(field.value) : ""}
+                            onValueChange={(val) => field.onChange(Number(val))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder={t('selectGroup')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {groups.map((group) => (
+                                    <SelectItem key={group.id} value={String(group.id)}>
+                                        {group.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
+                />
+                {errors.groupId && (
+                    <p className="text-sm text-red-500">{errors.groupId.message}</p>
                 )}
             </FormField>
 

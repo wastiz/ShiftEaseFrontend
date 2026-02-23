@@ -4,6 +4,7 @@ export type EmployeeScheduleRow = {
     employeeId: number;
     employeeName: string;
     position: string;
+    groupNames: string[];
     totalHours: number;
     days: Map<string, DayAssignment>;
 };
@@ -51,7 +52,8 @@ export function transformToSimpleView(
         return {
             employeeId: emp.id,
             employeeName: emp.name,
-            position: emp.groupName,
+            position: emp.groupNames.join(', '),
+            groupNames: emp.groupNames,
             totalHours,
             days: daysMap,
         };

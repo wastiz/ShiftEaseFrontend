@@ -5,6 +5,7 @@ export type ShiftTypeFormValues = {
     minEmployees: number;
     maxEmployees: number;
     color: string;
+    groupId: number;
 }
 
 export type ShiftType = {
@@ -15,5 +16,6 @@ export type ShiftType = {
     minEmployees: number;
     maxEmployees: number;
     color: string;
+    groupId: number;
 };
 

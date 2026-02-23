@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter } from "lucide-react";
-import { DateData, EmployeeMinData, Holiday, Shift, ShiftType, WorkDay } from "@/types";
+import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck } from "lucide-react";
+import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -39,10 +39,12 @@ import {
 import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
 import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
 import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
+import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
     shiftTypes: ShiftType[];
+    groups?: Group[];
     shiftsData: Shift[];
     setShiftsData: (shifts: Shift[]) => void;
     daysOfMonth: DateData[];
@@ -60,6 +62,7 @@ type SimpleViewProps = {
 export default function SimpleView({
                                        employees,
                                        shiftTypes,
+                                       groups = [],
                                        shiftsData,
                                        setShiftsData,
                                        daysOfMonth,
@@ -76,9 +79,20 @@ export default function SimpleView({
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+    const [coverageModalOpen, setCoverageModalOpen] = useState(false);
 
     const filteredEmployees = useMemo(() => {
-        if (selectedShiftTypes.length === 0) return employees;
+        let result = employees;
+
+        if (selectedGroupId !== null) {
+            const group = groups.find(g => g.id === selectedGroupId);
+            if (group) {
+                result = result.filter(emp => emp.groupNames.includes(group.name));
+            }
+        }
+
+        if (selectedShiftTypes.length === 0) return result;
 
         const employeeIdsWithSelectedShifts = new Set<number>();
         shiftsData.forEach(shift => {
@@ -87,8 +101,8 @@ export default function SimpleView({
             }
         });
 
-        return employees.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, selectedShiftTypes, shiftsData]);
+        return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
@@ -101,6 +115,10 @@ export default function SimpleView({
                 ? prev.filter(id => id !== shiftTypeId)
                 : [...prev, shiftTypeId]
         );
+    };
+
+    const handleGroupFilterToggle = (groupId: number) => {
+        setSelectedGroupId(prev => prev === groupId ? null : groupId);
     };
 
     const assignShift = (employeeId: number, date: string, shiftTypeId: number) => {
@@ -210,6 +228,14 @@ export default function SimpleView({
                     }}
                 />
 
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCoverageModalOpen(true)}
+                    title="Coverage Check"
+                >
+                    <ClipboardCheck className="h-4 w-4" />
+                </Button>
 
                 {warningMessage && (
                     <MessageIndicator
@@ -222,38 +248,68 @@ export default function SimpleView({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-auto">
-                            <Filter className={selectedShiftTypes.length > 0 ? "text-primary" : ""} />
+                            <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
-                        <div className="space-y-3">
-                            <h4 className="font-medium text-sm">Filter by Shift Types</h4>
-                            <div className="space-y-2">
-                                {shiftTypes.map((st) => (
-                                    <div key={st.id} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`filter-simple-${st.id}`}
-                                            checked={selectedShiftTypes.includes(st.id)}
-                                            onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
-                                        />
-                                        <Label
-                                            htmlFor={`filter-simple-${st.id}`}
-                                            className="flex items-center gap-2 cursor-pointer"
-                                        >
-                                            <div
-                                                className="w-3 h-3 rounded"
-                                                style={{ backgroundColor: st.color }}
-                                            />
-                                            {st.name}
-                                        </Label>
+                        <div className="space-y-4">
+                            {groups.length > 0 && (
+                                <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">Filter by Group</h4>
+                                    <div className="space-y-2">
+                                        {groups.map((g) => (
+                                            <div key={g.id} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`filter-group-${g.id}`}
+                                                    checked={selectedGroupId === g.id}
+                                                    onCheckedChange={() => handleGroupFilterToggle(g.id)}
+                                                />
+                                                <Label
+                                                    htmlFor={`filter-group-${g.id}`}
+                                                    className="flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    {g.color && (
+                                                        <div
+                                                            className="w-3 h-3 rounded-full"
+                                                            style={{ backgroundColor: g.color }}
+                                                        />
+                                                    )}
+                                                    {g.name}
+                                                </Label>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <h4 className="font-medium text-sm">Filter by Shift Type</h4>
+                                <div className="space-y-2">
+                                    {shiftTypes.map((st) => (
+                                        <div key={st.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`filter-simple-${st.id}`}
+                                                checked={selectedShiftTypes.includes(st.id)}
+                                                onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                            />
+                                            <Label
+                                                htmlFor={`filter-simple-${st.id}`}
+                                                className="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <div
+                                                    className="w-3 h-3 rounded"
+                                                    style={{ backgroundColor: st.color }}
+                                                />
+                                                {st.name}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            {selectedShiftTypes.length > 0 && (
+                            {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setSelectedShiftTypes([])}
+                                    onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters
@@ -266,7 +322,7 @@ export default function SimpleView({
 
             <div className="border rounded-lg p-4 bg-muted/50 flex-shrink-0">
                 <h3 className="font-semibold mb-3">Available Shift Types</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto">
                     {shiftTypes.map((st) => (
                         <ShiftTypeSmallCard
                             key={st.id}
@@ -285,7 +341,12 @@ export default function SimpleView({
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
-                                Employee
+                                <div className="flex items-center gap-2">
+                                    <span>Employee</span>
+                                    <Badge variant="secondary">
+                                        {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(1)}h
+                                    </Badge>
+                                </div>
                             </TableHead>
                             {daysOfMonth.map((day) => {
                                 const holiday = isHoliday(day.isoDate, orgHolidays)
@@ -316,11 +377,32 @@ export default function SimpleView({
                         {rows.map((row) => (
                             <TableRow key={row.employeeId}>
                                 <TableCell className="font-medium sticky left-0 bg-background z-10 border-r">
-                                    <div className={"flex flex-row gap-2 justify-between items-center"}>
-                                        <div>
+                                    <div className="flex flex-row gap-2 justify-between items-center">
+                                        <div className="min-w-0">
                                             <div>{row.employeeName}</div>
-                                            <div className="text-xs text-muted-foreground">
-                                                {row.position}
+                                            <div className="flex items-center gap-1 flex-wrap mt-0.5">
+                                                {row.groupNames.slice(0, 2).map(name => (
+                                                    <span key={name} className="text-xs text-muted-foreground">
+                                                        {name}
+                                                    </span>
+                                                ))}
+                                                {row.groupNames.length > 2 && (
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
+                                                                +{row.groupNames.length - 2} more
+                                                            </button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-48 p-2" side="right">
+                                                            <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                            <ul className="space-y-1">
+                                                                {row.groupNames.map(name => (
+                                                                    <li key={name} className="text-sm">{name}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
                                             </div>
                                         </div>
                                         <Badge
@@ -377,6 +459,17 @@ export default function SimpleView({
                     </TableBody>
                 </Table>
             </div>
+
+            <CoverageCheckModal
+                open={coverageModalOpen}
+                onOpenChange={setCoverageModalOpen}
+                shiftTypes={shiftTypes}
+                shiftsData={shiftsData}
+                daysOfMonth={daysOfMonth}
+                orgHolidays={orgHolidays}
+                orgSchedule={orgSchedule}
+                groups={groups}
+            />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslations } from "next-intl"
-import { ShiftType, ShiftTypeFormValues } from "@/types"
+import { Group, ShiftType, ShiftTypeFormValues } from "@/types"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
 import { Button } from "@/components/ui/shadcn/button"
 import { ShiftTypeForm } from "./ShiftTypeForm"
@@ -10,6 +10,7 @@ interface ShiftTypeAsideFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     selectedShift: ShiftType | null
+    groups: Group[]
     onCreate: (data: ShiftTypeFormValues) => void
     onUpdate: (id: number, data: ShiftTypeFormValues) => void
     onDelete: (id: number) => void
@@ -22,6 +23,7 @@ export function ShiftTypeAsideForm({
     open,
     onOpenChange,
     selectedShift,
+    groups,
     onCreate,
     onUpdate,
     onDelete,
@@ -63,6 +65,7 @@ export function ShiftTypeAsideForm({
                     minEmployees: selectedShift.minEmployees,
                     maxEmployees: selectedShift.maxEmployees,
                     color: selectedShift.color,
+                    groupId: selectedShift.groupId,
                 })
             } else {
                 reset({
@@ -124,6 +127,7 @@ export function ShiftTypeAsideForm({
                 control={control}
                 errors={errors}
                 minEmployees={minEmployees}
+                groups={groups}
                 onSubmit={handleSubmit(onSubmit)}
             />
         </AsideDrawer>

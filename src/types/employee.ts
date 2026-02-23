@@ -44,6 +44,6 @@ export interface EmployeeCreateError {
 export type EmployeeMinData = {
     id: number;
     name: string;
-    groupName: string;
+    groupNames: string[];
     position?: string;
 }
