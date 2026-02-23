@@ -19,17 +19,21 @@ import { Button } from "@/components/ui/shadcn/button";
 import {
     useCreateShiftType,
     useDeleteShiftType,
+    useGetGroups,
     useGetShiftTypes,
     useUpdateShiftType,
 } from "@/hooks/api";
 import {roundToMinutes} from "@/helpers/dateHelper";
+import {useTranslations} from "next-intl";
 
 export default function ShiftTypes() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedShift, setSelectedShift] = useState<ShiftType | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const t = useTranslations("employer.shiftTypes")
 
     const { data: shifts = [], isLoading, isError } = useGetShiftTypes();
+    const { data: groups = [] } = useGetGroups();
 
     const createMutation = useCreateShiftType();
     const updateMutation = useUpdateShiftType(selectedShift?.id ?? 0);
@@ -86,7 +90,7 @@ export default function ShiftTypes() {
 
     return (
         <>
-            <Header title="Shift Types">
+            <Header title={t("title")}>
                 <ShiftTypeAsideForm
                     open={drawerOpen}
                     onOpenChange={(open) => {
@@ -94,6 +98,7 @@ export default function ShiftTypes() {
                         else setDrawerOpen(true);
                     }}
                     selectedShift={selectedShift}
+                    groups={groups}
                     onCreate={handleCreate}
                     onUpdate={handleUpdate}
                     onDelete={handleDeleteClick}

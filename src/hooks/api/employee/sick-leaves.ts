@@ -1,10 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {SickLeaveDto, SickLeaveRequestCreateDto, SickLeaveRequestDto} from "@/types";
 import api from "@/lib/api";
+import {sickLeaveKeys, notificationKeys} from "@/lib/api-keys";
 
 export const useSickLeaves = (employeeId: number) =>
     useQuery<SickLeaveDto[]>({
-        queryKey: ['sick-leaves', employeeId],
+        queryKey: sickLeaveKeys.byEmployee(employeeId),
         queryFn: async () => {
             const { data } = await api.get(`sick-leaves/${employeeId}`);
             return data;
@@ -13,7 +14,7 @@ export const useSickLeaves = (employeeId: number) =>
 
 export const useSickLeaveRequests = (employeeId: number) =>
     useQuery<SickLeaveRequestDto[]>({
-        queryKey: ['sick-leave-requests', employeeId],
+        queryKey: sickLeaveKeys.requests(employeeId),
         queryFn: async () => {
             const { data } = await api.get(`sick-leaves/requests/${employeeId}`);
             return data;
@@ -23,7 +24,7 @@ export const useSickLeaveRequests = (employeeId: number) =>
 
 export const usePendingSickLeaveRequests = () =>
     useQuery<SickLeaveRequestDto[]>({
-        queryKey: ['pending-sick-leave-requests'],
+        queryKey: sickLeaveKeys.pendingRequests(),
         queryFn: async () => {
             const { data } = await api.get('sick-leaves/employer/pending-requests');
             return data;
@@ -39,7 +40,7 @@ export const useAddApprovedSickLeave = (employeeId: number) => {
             return data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['sick-leaves', employeeId] });
+            queryClient.invalidateQueries({ queryKey: sickLeaveKeys.byEmployee(employeeId) });
         },
     });
 };
@@ -52,7 +53,7 @@ export const useDeleteSickLeave = (employeeId: number) => {
             await api.delete(`sick-leaves/${employeeId}/${id}`);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['sick-leaves', employeeId] });
+            queryClient.invalidateQueries({ queryKey: sickLeaveKeys.byEmployee(employeeId) });
         },
     });
 };
@@ -66,7 +67,7 @@ export const useAddSickLeaveRequest = (employeeId: number) => {
             return data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['sick-leave-requests', employeeId] });
+            queryClient.invalidateQueries({ queryKey: sickLeaveKeys.requests(employeeId) });
         },
     });
 };
@@ -79,7 +80,7 @@ export const useDeleteSickLeaveRequest = (employeeId: number) => {
             await api.delete(`sick-leaves/requests/${employeeId}/${id}`);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['sick-leave-requests', employeeId] });
+            queryClient.invalidateQueries({ queryKey: sickLeaveKeys.requests(employeeId) });
         },
     });
 };
@@ -91,10 +92,10 @@ export const useApproveSickLeaveRequest = () => {
         mutationFn: (id: number) =>
             api.post(`sick-leaves/employer/approve-request/${id}`),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ['pending-sick-leave-requests'] });
-            qc.invalidateQueries({ queryKey: ['sick-leaves'] });
-            qc.invalidateQueries({ queryKey: ['notifications'] });
-            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+            qc.invalidateQueries({ queryKey: sickLeaveKeys.pendingRequests() });
+            qc.invalidateQueries({ queryKey: sickLeaveKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
         },
     });
 };
@@ -106,10 +107,10 @@ export const useRejectSickLeaveRequest = () => {
         mutationFn: (id: number) =>
             api.post(`sick-leaves/employer/reject-request/${id}`),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: ['pending-sick-leave-requests'] });
-            qc.invalidateQueries({ queryKey: ['sick-leaves'] });
-            qc.invalidateQueries({ queryKey: ['notifications'] });
-            qc.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+            qc.invalidateQueries({ queryKey: sickLeaveKeys.pendingRequests() });
+            qc.invalidateQueries({ queryKey: sickLeaveKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.all });
+            qc.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
         },
     });
 };

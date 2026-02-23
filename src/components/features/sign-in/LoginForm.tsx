@@ -1,6 +1,7 @@
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Button } from "@/components/ui/shadcn/button";
 import {Mode, Role, ApiError, getErrorMessage} from "@/types";
 import { useLogin } from "@/hooks/api/auth";
@@ -83,9 +84,8 @@ export default function LoginForm({ setMode, role }: LoginFormProps) {
                                     {t('forgotPassword')}
                                 </button>
                             </div>
-                            <Input
+                            <PasswordInput
                                 id="password"
-                                type="password"
                                 value={form.password}
                                 onChange={handleChange}
                                 required

@@ -31,9 +31,12 @@ import {
     useGetGroups,
     useUpdateEmployee,
 } from "@/hooks/api";
+import {useTranslations} from "next-intl";
 
 export default function Employees() {
     const router = useRouter();
+    const t = useTranslations("employer.employees")
+    const tCommon = useTranslations("common")
 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -109,9 +112,9 @@ export default function Employees() {
 
     return (
         <>
-            <Header title="Employees">
+            <Header title={t("title")}>
                 <Button variant="outline" onClick={() => router.push("employees/bulk-create")}>
-                    + Add Bulk
+                    {tCommon("bulkAdd")}
                 </Button>
                 <EmployeeAsideForm
                     open={drawerOpen}
@@ -159,9 +162,9 @@ export default function Employees() {
                                             avatar={"/images/avatar_placeholder.png"}
                                             groups={empGroups}
                                             actions={[
-                                                { label: "Edit", onClick: () => openDrawer(emp) },
+                                                { label: tCommon("edit"), onClick: () => openDrawer(emp) },
                                                 {
-                                                    label: "Time Off",
+                                                    label: t("timeOff"),
                                                     onClick: () => openTimeOffDialog(emp),
                                                     variant: "secondary",
                                                     icon: <Calendar className="h-4 w-4" />,

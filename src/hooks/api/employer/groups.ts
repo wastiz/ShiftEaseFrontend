@@ -2,10 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import {Group, GroupFormValues} from "@/types";
+import {groupKeys} from "@/lib/api-keys";
 
 export function useGetGroups() {
     return useQuery({
-        queryKey: ["groups"],
+        queryKey: groupKeys.all,
         queryFn: async () => {
             const res = await api.get<Group[]>("/groups");
             return res.data;
@@ -20,7 +21,7 @@ export function useCreateGroup() {
         mutationFn: (payload: GroupFormValues) => api.post("/groups", payload),
         onSuccess: () => {
             toast.success("Group created!");
-            queryClient.invalidateQueries({ queryKey: ["groups"] });
+            queryClient.invalidateQueries({ queryKey: groupKeys.all });
         },
         onError: () => toast.error("Error creating group"),
     });
@@ -33,7 +34,7 @@ export function useUpdateGroup(groupId: number) {
         mutationFn: (payload: GroupFormValues) => api.put(`/groups/${groupId}`, payload),
         onSuccess: () => {
             toast.success("Group updated!");
-            queryClient.invalidateQueries({ queryKey: ["groups"] });
+            queryClient.invalidateQueries({ queryKey: groupKeys.all });
         },
         onError: () => toast.error("Error updating group"),
     });
@@ -46,7 +47,7 @@ export function useDeleteGroup() {
         mutationFn: (groupId: number) => api.delete(`/groups/${groupId}`),
         onSuccess: () => {
             toast.success("Group deleted!");
-            queryClient.invalidateQueries({ queryKey: ["groups"] });
+            queryClient.invalidateQueries({ queryKey: groupKeys.all });
         },
         onError: () => toast.error("Error deleting group"),
     });

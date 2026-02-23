@@ -6,6 +6,7 @@ export interface Employee {
     phone: string;
     position: string;
     hourlyRate: number;
+    employmentRate: number;
     priority: string;
     groupIds: number[];
     groupNames?: string[] | null;
@@ -43,6 +44,6 @@ export interface EmployeeCreateError {
 export type EmployeeMinData = {
     id: number;
     name: string;
-    groupName: string;
+    groupNames: string[];
     position?: string;
 }

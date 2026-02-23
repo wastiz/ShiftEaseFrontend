@@ -22,8 +22,11 @@ import {
     useUpdateGroup,
     useDeleteGroup,
 } from "@/hooks/api";
+import {useTranslations} from "next-intl";
 
 export default function Groups() {
+    const t = useTranslations("employer.groups");
+    const tCommon = useTranslations("common")
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
@@ -84,12 +87,12 @@ export default function Groups() {
         if (group.startTime && group.endTime) {
             return `${group.startTime} - ${group.endTime}`;
         }
-        return "Uses organization hours";
+        return t("usesOrganizationHours");
     };
 
     return (
         <>
-            <Header title="Groups">
+            <Header title={t("title")}>
                 <GroupAsideForm
                     open={drawerOpen}
                     onOpenChange={(open) => {
@@ -120,7 +123,7 @@ export default function Groups() {
                                 workingHours={getWorkingHours(group)}
                                 actions={[
                                     {
-                                        label: "Edit",
+                                        label: tCommon("edit"),
                                         onClick: () => openDrawer(group),
                                     },
                                 ]}

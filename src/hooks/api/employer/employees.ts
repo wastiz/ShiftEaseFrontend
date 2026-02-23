@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import {BulkCreateResult, Employee} from "@/types";
+import {employeeKeys} from "@/lib/api-keys";
 
 export function useGetEmployees() {
     return useQuery({
-        queryKey: ["employees"],
+        queryKey: employeeKeys.all,
         queryFn: async () => {
             const res = await api.get<Employee[]>("/employees", {
                 headers: {
@@ -18,7 +19,7 @@ export function useGetEmployees() {
 
 export function useGetEmployee(id: number) {
     return useQuery({
-        queryKey: ["employees", id],
+        queryKey: employeeKeys.detail(id),
         queryFn: async () => {
             const res = await api.get<Employee>(`/employees/${id}`);
             return res.data;
@@ -39,7 +40,7 @@ export function useCreateEmployee() {
             return res.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["employees"] });
+            queryClient.invalidateQueries({ queryKey: employeeKeys.all });
         },
     });
 }
@@ -61,7 +62,7 @@ export function useUpdateEmployee(id: number) {
             return res.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["employees"] });
+            queryClient.invalidateQueries({ queryKey: employeeKeys.all });
         },
     });
 }
@@ -74,7 +75,7 @@ export function useDeleteEmployee(id: number) {
             return res.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["employees"] });
+            queryClient.invalidateQueries({ queryKey: employeeKeys.all });
         },
     });
 }

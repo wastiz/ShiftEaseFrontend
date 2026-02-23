@@ -2,6 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/api";
 import {toast} from "sonner";
 import {
+    RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
     ScheduleGenerateRequest,
@@ -11,26 +12,11 @@ import {
     ScheduleSummary,
     Shift
 } from "@/types";
-
-export function useGetConfirmedSchedule(month: number, year: number, groupId: number) {
-    return useQuery<Schedule>({
-        queryKey: ["schedule", month, year],
-        queryFn: async () => {
-            const res = await api.get<Schedule>("/schedules/confirmed", {
-                params: {
-                    groupId,
-                    month,
-                    year
-                },
-            });
-            return res.data;
-        }
-    });
-}
+import {scheduleKeys} from "@/lib/api-keys";
 
 export function useScheduleSummaries(enabled: boolean) {
     return useQuery<ScheduleSummary[]>({
-        queryKey: ['schedules'],
+        queryKey: scheduleKeys.all,
         queryFn: async () => {
             const { data } = await api.get<ScheduleSummary[]>('/schedules/schedule-summaries');
             return data;
@@ -39,49 +25,49 @@ export function useScheduleSummaries(enabled: boolean) {
     });
 }
 
-type ScheduleDataResponse = ScheduleEditorData & {
-    schedule: Schedule;
-};
-
-export function useScheduleData({ groupId, month, year }: ScheduleRequest) {
-    return useQuery<ScheduleDataResponse>({
-        queryKey: ['scheduleData', groupId, month, year],
+export function useGetConfirmedSchedule(month: number, year: number, groupId?: number) {
+    return useQuery<Schedule>({
+        queryKey: [...scheduleKeys.confirmed(month, year), groupId],
         queryFn: async () => {
-            const base = await api.get<ScheduleEditorData>(`/schedules/schedule-data-for-managing/${groupId}`);
-
-            const schedule = await api.get<Schedule>('/schedules/schedule-info-with-shifts', {
+            const res = await api.get<Schedule>("/schedules/confirmed", {
                 params: {
-                    groupId,
-                    month: month + 1,
+                    month,
                     year,
-                    showOnlyConfirmed: false,
-                }
+                    ...(groupId !== undefined && { groupId }),
+                },
             });
+            return res.data;
+        }
+    });
+}
 
-            return { ...base.data, schedule: schedule.data };
+export function useScheduleManagementData({ month, year }: ScheduleRequest) {
+    return useQuery<ScheduleEditorData>({
+        queryKey: scheduleKeys.data(month, year),
+        queryFn: async () => {
+            const response = await api.get<ScheduleEditorData>(`/schedules/schedule-management`, {
+                params: { month, year },
+            });
+            return response.data;
         },
     });
 }
 
 type SaveScheduleParams = {
-    groupId: number;
-    autorenewal: boolean;
     startDate: string;
     endDate: string;
     shiftsData: Shift[];
 };
 
-export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shiftsData }: SaveScheduleParams) {
+export function useSaveSchedule({ startDate, endDate, shiftsData }: SaveScheduleParams) {
     const queryClient = useQueryClient();
 
 
     return useMutation<void, Error, boolean>({
         mutationFn: async (isConfirmed: boolean) => {
             const payload: SchedulePost = {
-                groupId,
                 startDate,
                 endDate,
-                autorenewal,
                 isConfirmed,
                 shifts: shiftsData.map((s) => ({
                     shiftTypeId: s.shiftTypeId,
@@ -97,9 +83,15 @@ export function useSaveSchedule({ groupId, autorenewal, startDate, endDate, shif
         },
         onSuccess: () => {
             toast.success('Schedule saved!');
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
-        onError: () => toast.error('Failed to save schedule'),
+        onError: (error: any) => {
+            const message =
+                error.response?.data ||
+                "Failed to save schedule"
+
+            toast.error(message)
+        }
     });
 }
 
@@ -113,7 +105,7 @@ export function useUnconfirmSchedule() {
         },
         onSuccess: () => {
             toast.success('Schedule unconfirmed!');
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
         onError: () => {
             toast.error('Failed to unconfirm schedule');
@@ -126,7 +118,6 @@ export function useGenerateSchedule() {
 
     return useMutation<ScheduleGenerateResult, Error, Omit<ScheduleGenerateRequest, 'id'>>({
         mutationFn: async ({
-            groupId,
             startDate,
             endDate,
             AllowedShiftTypeIds,
@@ -135,7 +126,6 @@ export function useGenerateSchedule() {
             MinDaysOffPerWeek
         }) => {
             const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate', {
-                groupId,
                 startDate,
                 endDate,
                 AllowedShiftTypeIds,
@@ -146,7 +136,21 @@ export function useGenerateSchedule() {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['scheduleData'] });
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateRetailSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, RetailScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-retail', payload);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
         },
     });
 }
@@ -171,4 +175,3 @@ export function useExportSchedule() {
         }
     });
 }
-

@@ -33,6 +33,7 @@ export function EmployeeFilters({
     filteredCount,
 }: EmployeeFiltersProps) {
     const t = useTranslations('employer.employees')
+    const tCommon = useTranslations('common')
     const hasActiveFilters = filters.search || filters.groupIds.length > 0
 
     const selectedGroups = useMemo(
@@ -89,7 +90,7 @@ export function EmployeeFilters({
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="gap-2">
                             <Filter className="h-4 w-4" />
-                            {t('groups')}
+                            {tCommon('filter')}
                             {filters.groupIds.length > 0 && (
                                 <Badge variant="secondary" className="ml-1 px-1.5">
                                     {filters.groupIds.length}
