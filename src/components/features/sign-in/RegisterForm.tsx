@@ -147,7 +147,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                     <div className="flex flex-col gap-6">
                         {/* Full Name */}
                         <div className="grid gap-1">
-                            <Label htmlFor="fullName">{tCommon('fullName')}</Label>
+                            <Label htmlFor="fullName">{t('fullName')}</Label>
                             <Input
                                 id="fullName"
                                 type="text"
@@ -219,7 +219,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? t('signingUp') : t('signUp')}
+                            {isPending ? t('signingUp') : tCommon('signUp')}
                         </Button>
 
                         <GoogleButton
@@ -235,7 +235,7 @@ export default function RegisterForm({ setMode }: RegisterFormProps) {
                             <p className="text-red-500">{errors.server}</p>
                         )}
                         {isSuccess && (
-                            <p className="text-green-500">{t('registrationSuccess')}</p>
+                            <p className="text-green-500">{t('registrationSuccessful')}</p>
                         )}
                     </div>
 

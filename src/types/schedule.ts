@@ -1,11 +1,9 @@
-import {Holiday, WorkDay} from "@/types/organizations";
-import {EmployeeMinData} from "@/types/employee";
-import {Group} from "@/types/group";
-import {ShiftType} from "@/types/shiftType";
+import { Holiday, WorkDay } from "@/types/organizations";
+import { EmployeeMinData } from "@/types/employee";
+import { Group } from "@/types/group";
+import { ShiftType } from "@/types/shiftType";
 
 export interface ScheduleSummary {
-    groupId: number;
-    groupName: string;
     confirmedSchedules: ScheduleItem[];
     unconfirmedSchedules: ScheduleItem[];
 }
@@ -13,6 +11,19 @@ export interface ScheduleSummary {
 export interface ScheduleItem {
     id: number;
     month: string;
+    year: string;
+    coverage: string;
+    warnings: DayIssue[];
+    totalHours: number;
+    totalShifts: number;
+}
+
+export interface DayIssue {
+    isoDate: string;
+    label: string;
+    assigned: number;
+    required: number;
+    severity: string;
 }
 
 export type ScheduleEditorData = {
@@ -117,23 +128,23 @@ export type RetailScheduleGenerateRequest = {
 
 export type ScheduleGenerateResult =
     | {
-    status: GenerateStatus.Success;
-    shifts: Shift[];
-    warnings: [];
-    error?: never;
-}
+        status: GenerateStatus.Success;
+        shifts: Shift[];
+        warnings: [];
+        error?: never;
+    }
     | {
-    status: GenerateStatus.Warning;
-    shifts: Shift[];
-    warnings: GenerateWarningCode[];
-    error?: never;
-}
+        status: GenerateStatus.Warning;
+        shifts: Shift[];
+        warnings: GenerateWarningCode[];
+        error?: never;
+    }
     | {
-    status: GenerateStatus.Error;
-    error: GenerateErrorCode;
-    warnings: [];
-    shifts?: never;
-};
+        status: GenerateStatus.Error;
+        error: GenerateErrorCode;
+        warnings: [];
+        shifts?: never;
+    };
 
 
 export enum GenerateStatus {

@@ -341,8 +341,8 @@ export default function SimpleView({
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
-                                <div className="flex items-center gap-2">
-                                    <span>Employee</span>
+                                <div className="flex items-center justify-between gap-2">
+                                    <span>Employees</span>
                                     <Badge variant="secondary">
                                         {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(1)}h
                                     </Badge>

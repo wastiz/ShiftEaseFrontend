@@ -55,5 +55,5 @@ export interface OrganizationDashboardData {
     shiftTypeCount: number;
     employeeCount: number;
     scheduleCount: number;
-    scheduleSummaries: ScheduleSummary[];
+    scheduleSummary: ScheduleSummary;
 }
