@@ -164,16 +164,11 @@ export default function Schedules() {
     }, [hasAllEntities])
 
     const handleEditClick = (scheduleId: number) => {
-        router.push(`/schedules/manage/${scheduleId}`)
+        router.push(`/schedules/${scheduleId}`)
     }
 
     const handleGoToSchedule = () => {
-        const allSchedules = [...(scheduleSummary?.unconfirmedSchedules ?? []), ...(scheduleSummary?.confirmedSchedules ?? [])];
-        if (allSchedules.length > 0) {
-            router.push(`/schedules/manage/${allSchedules[0].id}`)
-        } else {
-            router.push(`/schedules/create`)
-        }
+        router.push("schedules/manage")
     }
 
     if (loadingEntities) return <Loader />
