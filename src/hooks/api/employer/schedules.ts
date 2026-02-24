@@ -7,7 +7,6 @@ import {
     ScheduleEditorData,
     ScheduleGenerateRequest,
     ScheduleGenerateResult,
-    ScheduleItem,
     SchedulePost,
     ScheduleRequest,
     ScheduleSummary,
@@ -23,17 +22,6 @@ export function useScheduleSummaries(enabled: boolean) {
             return data;
         },
         enabled,
-    });
-}
-
-export function useGetScheduleById(id: number) {
-    return useQuery<ScheduleItem>({
-        queryKey: scheduleKeys.detail(id),
-        queryFn: async () => {
-            const { data } = await api.get<ScheduleItem>(`/schedules/schedule/${id}`);
-            return data;
-        },
-        enabled: !!id,
     });
 }
 

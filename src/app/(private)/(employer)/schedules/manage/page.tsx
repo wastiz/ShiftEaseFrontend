@@ -8,11 +8,8 @@ import {
     useGenerateSchedule,
     useSaveSchedule,
     useScheduleManagementData,
-    useUnconfirmSchedule,
-    useGetScheduleById,
-    useScheduleSummaries
+    useUnconfirmSchedule
 } from "@/hooks/api"
-import { useParams, useRouter } from 'next/navigation'
 import Header from "@/components/ui/Header"
 import {
     Shift,
@@ -48,9 +45,6 @@ export type WarningMessage = {
 
 export default function ManageSchedule() {
     const t = useTranslations('schedule');
-    const params = useParams()
-    const router = useRouter()
-    const urlScheduleId = Number(params.scheduleId)
 
     const [viewMode, setViewMode] = useState<'calendar' | 'simple'>('simple');
     const [currentMonth, setCurrentMonth] = useState(today.getMonth())
@@ -58,30 +52,11 @@ export default function ManageSchedule() {
     const [daysOfMonth, setDaysOfMonth] = useState(getDaysInMonth(today.getFullYear(), today.getMonth()))
 
     const [isConfirmed, setIsConfirmed] = useState(false)
-    const [scheduleId, setScheduleId] = useState<number | null>(urlScheduleId || null)
+    const [scheduleId, setScheduleId] = useState<number | null>(null)
     const [shiftsData, setShiftsData] = useState<Shift[]>([])
     const [orgHolidays, setOrgHolidays] = useState<Holiday[]>([])
     const [orgSchedule, setOrgSchedule] = useState<WorkDay[]>([])
     const [employeeTimeOffs, setEmployeeTimeOffs] = useState<EmployeeTimeOff[]>([])
-
-    // Fetch summaries to help with navigation
-    const { data: summaries } = useScheduleSummaries(true)
-    const { data: scheduleInfo } = useGetScheduleById(urlScheduleId)
-
-    // Helper to map month strings to indices
-    const monthNameToIndex = (name: string): number => {
-        const d = new Date(`${name} 1, 2000`);
-        return isNaN(d.getTime()) ? 0 : d.getMonth();
-    }
-
-    // Initialize month/year from schedule ID in URL
-    useEffect(() => {
-        if (scheduleInfo) {
-            const monthIdx = monthNameToIndex(scheduleInfo.month);
-            setCurrentMonth(monthIdx);
-            setCurrentYear(Number(scheduleInfo.year));
-        }
-    }, [scheduleInfo])
 
     const [presetDialogOpen, setPresetDialogOpen] = useState(false)
     const [currentPreset, setCurrentPreset] = useState<SchedulePreset | null>(null)
@@ -104,6 +79,7 @@ export default function ManageSchedule() {
 
     useEffect(() => {
         if (data) {
+            console.log(data)
             setShiftsData(data.schedule?.shifts ?? [])
             setIsConfirmed(data.schedule?.isConfirmed ?? false)
             setScheduleId(data.schedule?.id ?? null)
@@ -226,28 +202,6 @@ export default function ManageSchedule() {
     if (isLoading) return <Loader />
     if (error) return <p className="p-4 text-red-500">{t('failedToLoad')}</p>
 
-    const handleMonthChange = (month: number) => {
-        const monthName = new Date(currentYear, month).toLocaleString('en-US', { month: 'long' });
-        const allSchedules = [...(summaries?.confirmedSchedules ?? []), ...(summaries?.unconfirmedSchedules ?? [])];
-        const found = allSchedules.find(s => s.month === monthName && Number(s.year) === currentYear);
-        if (found) {
-            router.push(`/schedules/manage/${found.id}`);
-        } else {
-            setCurrentMonth(month);
-        }
-    };
-
-    const handleYearChange = (year: number) => {
-        const monthName = new Date(year, currentMonth).toLocaleString('en-US', { month: 'long' });
-        const allSchedules = [...(summaries?.confirmedSchedules ?? []), ...(summaries?.unconfirmedSchedules ?? [])];
-        const found = allSchedules.find(s => s.month === monthName && Number(s.year) === year);
-        if (found) {
-            router.push(`/schedules/manage/${found.id}`);
-        } else {
-            setCurrentYear(year);
-        }
-    };
-
     return (
         <>
             <Header title={t('manageSchedule')}>
@@ -310,8 +264,8 @@ export default function ManageSchedule() {
                     daysOfMonth={daysOfMonth}
                     currentMonth={currentMonth}
                     currentYear={currentYear}
-                    setCurrentMonth={handleMonthChange as any}
-                    setCurrentYear={handleYearChange as any}
+                    setCurrentMonth={setCurrentMonth}
+                    setCurrentYear={setCurrentYear}
                     isConfirmed={isConfirmed}
                     isEditable={true}
                     orgHolidays={orgHolidays}
@@ -329,8 +283,8 @@ export default function ManageSchedule() {
                     daysOfMonth={daysOfMonth}
                     currentMonth={currentMonth}
                     currentYear={currentYear}
-                    setCurrentMonth={handleMonthChange as any}
-                    setCurrentYear={handleYearChange as any}
+                    setCurrentMonth={setCurrentMonth}
+                    setCurrentYear={setCurrentYear}
                     isConfirmed={isConfirmed}
                     orgHolidays={orgHolidays}
                     orgSchedule={orgSchedule}
