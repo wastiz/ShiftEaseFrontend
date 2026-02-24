@@ -1,27 +1,39 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import {toast} from "sonner";
+import { toast } from "sonner";
 import {
     RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
     ScheduleGenerateRequest,
     ScheduleGenerateResult,
+    ScheduleItem,
     SchedulePost,
     ScheduleRequest,
     ScheduleSummary,
     Shift
 } from "@/types";
-import {scheduleKeys} from "@/lib/api-keys";
+import { scheduleKeys } from "@/lib/api-keys";
 
 export function useScheduleSummaries(enabled: boolean) {
-    return useQuery<ScheduleSummary[]>({
+    return useQuery<ScheduleSummary>({
         queryKey: scheduleKeys.all,
         queryFn: async () => {
-            const { data } = await api.get<ScheduleSummary[]>('/schedules/schedule-summaries');
+            const { data } = await api.get<ScheduleSummary>('/schedules/schedule-summaries');
             return data;
         },
         enabled,
+    });
+}
+
+export function useGetScheduleById(id: number) {
+    return useQuery<ScheduleItem>({
+        queryKey: scheduleKeys.detail(id),
+        queryFn: async () => {
+            const { data } = await api.get<ScheduleItem>(`/schedules/schedule/${id}`);
+            return data;
+        },
+        enabled: !!id,
     });
 }
 

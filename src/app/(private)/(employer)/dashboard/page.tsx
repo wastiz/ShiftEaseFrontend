@@ -54,14 +54,9 @@ export default function EmployerDashboard() {
     if (data.groupCount === 0) missingSetup.push(t('groups'));
     if (data.employeeCount === 0) missingSetup.push(tCommon('employees'));
 
-    const allUnconfirmedSchedules = data.scheduleSummaries.flatMap(summary =>
-        summary.unconfirmedSchedules.map(schedule => ({
-            id: schedule.id,
-            groupName: summary.groupName,
-            groupId: summary.groupId,
-            month: schedule.month
-        }))
-    );
+    console.log(data)
+
+    const allUnconfirmedSchedules = data.scheduleSummary?.unconfirmedSchedules ?? [];
 
     return (
         <>
@@ -197,11 +192,11 @@ export default function EmployerDashboard() {
                                         <div key={schedule.id} className="flex items-center justify-between p-3 border rounded-lg">
                                             <div className="space-y-1">
                                                 <p className="text-sm font-medium">
-                                                    {schedule.groupName} - {schedule.month}
+                                                    {schedule.month} {schedule.year}
                                                 </p>
                                             </div>
                                             <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/schedules/${schedule.groupId}`}>
+                                                <Link href={`/schedules/${schedule.id}`}>
                                                     {tCommon('edit')}
                                                 </Link>
                                             </Button>
