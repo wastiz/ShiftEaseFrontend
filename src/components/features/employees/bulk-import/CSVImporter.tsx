@@ -10,13 +10,14 @@ import { Upload, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-type EmployeeData = {
+export type EmployeeData = {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
     position: string;
     groupIds: number[];
+    primaryGroupId: number | null;
     hourlyRate: number;
     priority: 'low' | 'medium' | 'high';
 };
@@ -168,6 +169,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                 phone,
                 position,
                 groupIds,
+                primaryGroupId: null,
                 hourlyRate,
                 priority,
             });
@@ -295,7 +297,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                                             <TableCell>
                                                 <Badge variant={
                                                     emp.priority === 'high' ? 'destructive' :
-                                                    emp.priority === 'low' ? 'secondary' : 'default'
+                                                        emp.priority === 'low' ? 'secondary' : 'default'
                                                 }>
                                                     {emp.priority}
                                                 </Badge>

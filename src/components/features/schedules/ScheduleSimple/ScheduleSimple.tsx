@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 import {
     Table,
     TableBody,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2 } from "lucide-react";
 import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
@@ -36,9 +36,9 @@ import {
     isHoliday,
     isWorkingDay
 } from "@/helpers/dateHelper";
-import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
-import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
-import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
+import { WarningMessage } from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
+import { MessageIndicator } from "@/components/features/schedules/MessageIndicator";
 import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
 
 type SimpleViewProps = {
@@ -60,27 +60,28 @@ type SimpleViewProps = {
 };
 
 export default function SimpleView({
-                                       employees,
-                                       shiftTypes,
-                                       groups = [],
-                                       shiftsData,
-                                       setShiftsData,
-                                       daysOfMonth,
-                                       currentMonth,
-                                       currentYear,
-                                       setCurrentMonth,
-                                       setCurrentYear,
-                                       isConfirmed,
-                                       orgHolidays = [],
-                                       orgSchedule = [],
-                                       employeeTimeOffs = [],
-                                       warningMessage,
-                                   }: SimpleViewProps) {
+    employees,
+    shiftTypes,
+    groups = [],
+    shiftsData,
+    setShiftsData,
+    daysOfMonth,
+    currentMonth,
+    currentYear,
+    setCurrentMonth,
+    setCurrentYear,
+    isConfirmed,
+    orgHolidays = [],
+    orgSchedule = [],
+    employeeTimeOffs = [],
+    warningMessage,
+}: SimpleViewProps) {
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
+    const [isCompact, setIsCompact] = useState(false);
 
     const filteredEmployees = useMemo(() => {
         let result = employees;
@@ -318,6 +319,15 @@ export default function SimpleView({
                         </div>
                     </PopoverContent>
                 </Popover>
+
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsCompact(!isCompact)}
+                    title={isCompact ? t('fullView') : t('compactView')}
+                >
+                    {isCompact ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                </Button>
             </div>
 
             <div className="border rounded-lg p-4 bg-muted/50 flex-shrink-0">
@@ -336,15 +346,15 @@ export default function SimpleView({
                 </div>
             </div>
 
-            <div className="flex-1 border rounded-lg overflow-auto">
-                <Table>
+            <div className={`flex-1 border rounded-lg overflow-auto ${isCompact ? "overflow-x-hidden" : ""}`}>
+                <Table className={isCompact ? "table-fixed w-full" : ""}>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
-                                <div className="flex items-center justify-between gap-2">
-                                    <span>Employees</span>
-                                    <Badge variant="secondary">
-                                        {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(1)}h
+                            <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky left-0 bg-background z-20 border-r`}>
+                                <div className="flex items-center justify-between gap-1">
+                                    <span className="truncate">Employees</span>
+                                    <Badge variant="secondary" className={isCompact ? "px-1 text-[9px]" : ""}>
+                                        {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(isCompact ? 0 : 1)}h
                                     </Badge>
                                 </div>
                             </TableHead>
@@ -356,13 +366,12 @@ export default function SimpleView({
                                 return (
                                     <TableHead
                                         key={day.isoDate}
-                                        className={`text-center min-w-[150px] ${
-                                            isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
-                                        }`}
+                                        className={`text-center ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
+                                            }`}
                                     >
-                                        <div className="flex flex-col">
-                                            <span>{day.label}</span>
-                                            {isNonWorkingDay && (
+                                        <div className="flex flex-col items-center">
+                                            <span>{isCompact ? day.label.split(' ')[0] : day.label}</span>
+                                            {isNonWorkingDay && !isCompact && (
                                                 <span className="text-[10px] text-red-600 dark:text-red-400 font-normal">
                                                     {holiday ? getHolidayName(day.isoDate, orgHolidays) : 'Day Off'}
                                                 </span>
@@ -376,36 +385,39 @@ export default function SimpleView({
                     <TableBody>
                         {rows.map((row) => (
                             <TableRow key={row.employeeId}>
-                                <TableCell className="font-medium sticky left-0 bg-background z-10 border-r">
+                                <TableCell className={`font-medium sticky left-0 bg-background z-10 border-r ${isCompact ? "px-2 py-1 text-[11px]" : ""}`}>
                                     <div className="flex flex-row gap-2 justify-between items-center">
                                         <div className="min-w-0">
-                                            <div>{row.employeeName}</div>
-                                            <div className="flex items-center gap-1 flex-wrap mt-0.5">
-                                                {row.groupNames.slice(0, 2).map(name => (
-                                                    <span key={name} className="text-xs text-muted-foreground">
-                                                        {name}
-                                                    </span>
-                                                ))}
-                                                {row.groupNames.length > 2 && (
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
-                                                                +{row.groupNames.length - 2} more
-                                                            </button>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-48 p-2" side="right">
-                                                            <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
-                                                            <ul className="space-y-1">
-                                                                {row.groupNames.map(name => (
-                                                                    <li key={name} className="text-sm">{name}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                )}
-                                            </div>
+                                            <div className="truncate">{row.employeeName}</div>
+                                            {!isCompact && (
+                                                <div className="flex items-center gap-1 flex-wrap mt-0.5">
+                                                    {row.groupNames.slice(0, 2).map(name => (
+                                                        <span key={name} className="text-xs text-muted-foreground">
+                                                            {name}
+                                                        </span>
+                                                    ))}
+                                                    {row.groupNames.length > 2 && (
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
+                                                                    +{row.groupNames.length - 2} more
+                                                                </button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-48 p-2" side="right">
+                                                                <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                                <ul className="space-y-1">
+                                                                    {row.groupNames.map(name => (
+                                                                        <li key={name} className="text-sm">{name}</li>
+                                                                    ))}
+                                                                </ul>
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                         <Badge
+                                            className={isCompact ? "px-1 text-[9px]" : ""}
                                             variant={
                                                 row.totalHours > 200
                                                     ? "destructive"
@@ -414,7 +426,7 @@ export default function SimpleView({
                                                         : "secondary"
                                             }
                                         >
-                                            {row.totalHours.toFixed(1)}h
+                                            {row.totalHours.toFixed(isCompact ? 0 : 1)}h
                                         </Badge>
                                     </div>
                                 </TableCell>
@@ -428,13 +440,12 @@ export default function SimpleView({
                                     return (
                                         <TableCell
                                             key={day.isoDate}
-                                            className={`p-2 ${
-                                                timeOff
+                                            className={`${isCompact ? "p-0 px-0.5" : "p-2"} ${timeOff
                                                     ? getTimeOffColor(timeOff.type)
                                                     : isNonWorkingDay
                                                         ? 'bg-red-50 dark:bg-red-950/10'
                                                         : ''
-                                            }`}
+                                                }`}
                                         >
                                             {timeOff ? (
                                                 <div className="text-xs text-center py-1 px-2 rounded border">
@@ -449,6 +460,7 @@ export default function SimpleView({
                                                     onRemove={removeShift}
                                                     onUpdateNote={updateNote}
                                                     isNonWorkingDay={isNonWorkingDay}
+                                                    isCompact={isCompact}
                                                 />
                                             )}
                                         </TableCell>

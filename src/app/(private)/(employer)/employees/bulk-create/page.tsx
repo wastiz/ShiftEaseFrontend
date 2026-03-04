@@ -34,6 +34,7 @@ import { useBulkCreateEmployees, useGetGroups } from '@/hooks/api';
 import { BulkCreateResult } from '@/types';
 import CSVImporter from '@/components/features/employees/bulk-import/CSVImporter';
 import { useTranslations } from 'next-intl';
+import { EmployeeData } from '@/components/features/employees/bulk-import/CSVImporter';
 
 const employeeSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -41,9 +42,10 @@ const employeeSchema = z.object({
     email: z.string().email('Invalid email'),
     phone: z.string().min(1, 'Phone is required'),
     position: z.string().min(1, 'Position is required'),
-    groupIds: z.array(z.number()).optional(),
+    groupIds: z.array(z.number()),
+    primaryGroupId: z.number().nullable(),
     hourlyRate: z.coerce.number().min(0, 'Hourly rate must be positive'),
-    priority: z.enum(['low', 'medium', 'high'], { required_error: 'Priority is required' }),
+    priority: z.enum(['low', 'medium', 'high']),
 });
 
 const formSchema = z.object({
@@ -51,16 +53,18 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type BulkEmployee = z.infer<typeof employeeSchema>;
 
-const emptyEmployee = {
+const emptyEmployee: BulkEmployee = {
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     position: '',
-    groupIds: [] as number[],
+    groupIds: [],
+    primaryGroupId: null,
     hourlyRate: 0,
-    priority: 'medium' as const,
+    priority: 'medium',
 };
 
 export default function BulkAddEmployees() {
@@ -139,7 +143,7 @@ export default function BulkAddEmployees() {
         window.URL.revokeObjectURL(url);
     };
 
-    const handleCSVImport = (employees: typeof emptyEmployee[]) => {
+    const handleCSVImport = (employees: EmployeeData[]) => {
         form.setValue('employees', employees);
     };
 
@@ -455,12 +459,18 @@ export default function BulkAddEmployees() {
                                                                                                     key={group.id}
                                                                                                     onSelect={() => {
                                                                                                         const currentValue = field.value || [];
+                                                                                                        let newValue: number[];
                                                                                                         if (isSelected) {
-                                                                                                            field.onChange(
-                                                                                                                currentValue.filter((id: number) => id !== group.id)
-                                                                                                            );
+                                                                                                            newValue = currentValue.filter((id: number) => id !== group.id);
                                                                                                         } else {
-                                                                                                            field.onChange([...currentValue, group.id]);
+                                                                                                            newValue = [...currentValue, group.id];
+                                                                                                        }
+                                                                                                        field.onChange(newValue);
+
+                                                                                                        // Clear primaryGroupId if it's no longer in selected groups
+                                                                                                        const currentPrimaryId = form.getValues(`employees.${index}.primaryGroupId`);
+                                                                                                        if (currentPrimaryId && !newValue.includes(currentPrimaryId)) {
+                                                                                                            form.setValue(`employees.${index}.primaryGroupId`, null);
                                                                                                         }
                                                                                                     }}
                                                                                                 >
@@ -481,6 +491,42 @@ export default function BulkAddEmployees() {
                                                                         <FormMessage className="text-xs" />
                                                                     </FormItem>
                                                                 )}
+                                                            />
+                                                        </td>
+                                                        <td className="p-3">
+                                                            <FormField
+                                                                control={form.control}
+                                                                name={`employees.${index}.primaryGroupId`}
+                                                                render={({ field }) => {
+                                                                    const rowGroupIds = form.watch(`employees.${index}.groupIds`) || [];
+                                                                    return (
+                                                                        <FormItem>
+                                                                            <Select
+                                                                                onValueChange={(val) => field.onChange(val === 'none' ? null : parseInt(val))}
+                                                                                value={field.value?.toString() || 'none'}
+                                                                                disabled={rowGroupIds.length === 0}
+                                                                            >
+                                                                                <FormControl>
+                                                                                    <SelectTrigger className="h-9 text-xs">
+                                                                                        <SelectValue placeholder={rowGroupIds.length === 0 ? "—" : t('selectPrimaryGroup')} />
+                                                                                    </SelectTrigger>
+                                                                                </FormControl>
+                                                                                <SelectContent>
+                                                                                    <SelectItem value="none">None</SelectItem>
+                                                                                    {rowGroupIds.map((id) => {
+                                                                                        const group = groups?.find(g => g.id === id);
+                                                                                        return group ? (
+                                                                                            <SelectItem key={id} value={id.toString()}>
+                                                                                                {group.name}
+                                                                                            </SelectItem>
+                                                                                        ) : null;
+                                                                                    })}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                            <FormMessage className="text-xs" />
+                                                                        </FormItem>
+                                                                    );
+                                                                }}
                                                             />
                                                         </td>
                                                         <td className="p-3">

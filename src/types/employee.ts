@@ -9,6 +9,7 @@ export interface Employee {
     employmentRate: number;
     priority: string;
     groupIds: number[];
+    primaryGroupId?: number | null;
     groupNames?: string[] | null;
     onVacation?: boolean;
     onSickLeave?: boolean;

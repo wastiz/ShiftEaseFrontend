@@ -20,6 +20,7 @@ export type EmployeeFormValues = {
     employmentRate?: number
     priority?: "high" | "medium" | "low"
     groupIds: number[]
+    primaryGroupId?: number | null
 }
 
 interface EmployeeFormProps {
@@ -278,7 +279,7 @@ export function EmployeeForm({
                                             >
                                                 <Checkbox
                                                     checked={selected}
-                                                    onCheckedChange={() => {}}
+                                                    onCheckedChange={() => { }}
                                                 />
                                                 <span>{group.name}</span>
                                             </div>
@@ -295,6 +296,47 @@ export function EmployeeForm({
                         {t('noGroupsSelected')}
                     </p>
                 )}
+            </FormField>
+
+            {/* Primary Group */}
+            <FormField>
+                <Label>
+                    {t('primaryGroup')}
+                    <span className="ml-2 text-xs text-muted-foreground">({tCommon('optional')})</span>
+                </Label>
+                <Controller
+                    name="primaryGroupId"
+                    control={control}
+                    render={({ field }) => (
+                        <Select
+                            value={field.value?.toString() || "none"}
+                            onValueChange={(val) => field.onChange(val === "none" ? null : parseInt(val))}
+                            disabled={selectedGroupIds.length === 0}
+                        >
+                            <SelectTrigger>
+                                <SelectValue
+                                    placeholder={
+                                        selectedGroupIds.length === 0
+                                            ? t('assignGroupsFirst')
+                                            : t('selectPrimaryGroup')
+                                    }
+                                />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">{t('noPrimaryGroup')}</SelectItem>
+                                {selectedGroupIds.map((groupId) => {
+                                    const group = groups.find((g) => g.id === groupId)
+                                    if (!group) return null
+                                    return (
+                                        <SelectItem key={group.id} value={group.id.toString()}>
+                                            {group.name}
+                                        </SelectItem>
+                                    )
+                                })}
+                            </SelectContent>
+                        </Select>
+                    )}
+                />
             </FormField>
         </form>
     )
