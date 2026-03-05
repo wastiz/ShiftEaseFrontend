@@ -1,4 +1,4 @@
-import {ScheduleSummary} from "@/types/schedule";
+import { ScheduleSummary } from "@/types/schedule";
 
 export type Organization = {
     id: number

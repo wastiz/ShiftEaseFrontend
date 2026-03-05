@@ -441,10 +441,10 @@ export default function SimpleView({
                                         <TableCell
                                             key={day.isoDate}
                                             className={`${isCompact ? "p-0 px-0.5" : "p-2"} ${timeOff
-                                                    ? getTimeOffColor(timeOff.type)
-                                                    : isNonWorkingDay
-                                                        ? 'bg-red-50 dark:bg-red-950/10'
-                                                        : ''
+                                                ? getTimeOffColor(timeOff.type)
+                                                : isNonWorkingDay
+                                                    ? 'bg-red-50 dark:bg-red-950/10'
+                                                    : ''
                                                 }`}
                                         >
                                             {timeOff ? (

@@ -6,7 +6,7 @@ import {
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/shadcn/drawer";
-import {useIsMobile} from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AsideDrawerProps {
     open: boolean
@@ -18,7 +18,7 @@ interface AsideDrawerProps {
     children: React.ReactNode
 }
 
-export function AsideDrawer({open, onOpenChange, title, description, trigger, footer, children}: AsideDrawerProps) {
+export function AsideDrawer({ open, onOpenChange, title, description, trigger, footer, children }: AsideDrawerProps) {
 
     const isMobile = useIsMobile();
 
