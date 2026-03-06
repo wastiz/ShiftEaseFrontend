@@ -1,8 +1,8 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import {Organization, OrganizationDashboardData, OrganizationFormValues} from "@/types/organizations";
-import {CheckEntitiesResult} from "@/types";
-import {organizationKeys} from "@/lib/api-keys";
+import { Organization, OrganizationDashboardData, OrganizationFormValues } from "@/types/organizations";
+import { CheckEntitiesResult } from "@/types";
+import { organizationKeys } from "@/lib/api-keys";
 
 export function useCheckEntities() {
     return useQuery<CheckEntitiesResult>({
@@ -35,7 +35,7 @@ export function useGetOrganization(id: string, p0: { enabled: boolean; }) {
     });
 }
 
-export function useGetOrganizationData( id?: string ) {
+export function useGetOrganizationData(id?: string) {
     return useQuery({
         queryKey: organizationKeys.dashboardData(id!),
         queryFn: async () => {
@@ -63,14 +63,14 @@ export function useUpdateOrganization() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (dto: OrganizationFormValues & { id: string }) => {
+        mutationFn: async (dto: OrganizationFormValues & { id: string | number }) => {
             const { id, ...data } = dto;
             const res = await api.put(`/organizations/${id}`, data);
             return res.data;
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: organizationKeys.all });
-            queryClient.invalidateQueries({ queryKey: organizationKeys.detail(variables.id) });
+            queryClient.invalidateQueries({ queryKey: organizationKeys.detail(String(variables.id)) });
         },
     });
 }

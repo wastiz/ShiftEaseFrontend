@@ -42,7 +42,7 @@ import {
 import { useAddOrganization, useGetOrganization, useUpdateOrganization } from "@/hooks/api";
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
-import { dayNameToEnum, Holiday, OrganizationFormValues, WorkDay } from "@/types";
+import { dayNameToEnum, enumToDayName, Holiday, OrganizationFormValues, WorkDay } from "@/types";
 import { TimePicker } from "@/components/ui/inputs/TimePicker";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 import { Info } from "lucide-react";
@@ -99,7 +99,7 @@ export default function AddOrganization() {
     });
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: "",
             description: "",
@@ -133,7 +133,9 @@ export default function AddOrganization() {
                 const reconstructed = { ...INITIAL_WORK_DAYS };
 
                 org.workDays.forEach((d: WorkDay) => {
-                    const dayName = d.dayOfWeek.toLowerCase();
+                    const dayName = typeof d.dayOfWeek === 'number'
+                        ? enumToDayName[d.dayOfWeek]
+                        : d.dayOfWeek.toLowerCase();
                     if (reconstructed[dayName]) {
                         const startTime = d.startTime?.includes(':') ? d.startTime.slice(0, 5) : '08:00';
                         const endTime = d.endTime?.includes(':') ? d.endTime.slice(0, 5) : '17:00';
@@ -174,10 +176,13 @@ export default function AddOrganization() {
             }
 
             if (org.holidays && org.holidays.length > 0) {
-                const normalizedHolidays: Holiday[] = org.holidays.map((h) => ({
+                const normalizedHolidays: Holiday[] = org.holidays.map((h: any) => ({
                     holidayName: h.holidayName || h.name,
                     month: h.month,
                     day: h.day,
+                    isShortenedDay: h.isShortenedDay,
+                    startTime: h.startTime?.includes(':') ? h.startTime.slice(0, 5) : undefined,
+                    endTime: h.endTime?.includes(':') ? h.endTime.slice(0, 5) : undefined,
                 }));
                 setSelectedHolidays(normalizedHolidays);
             }
@@ -265,7 +270,7 @@ export default function AddOrganization() {
         const organizationData: OrganizationFormValues = {
             ...(isEditMode && { id: Number(orgId) }),
             name: values.name,
-            description: values.description,
+            description: values.description || "",
             organizationType: values.organizationType,
             website: values.website,
             phone: values.phone,
@@ -281,7 +286,7 @@ export default function AddOrganization() {
 
         const mutation = isEditMode ? updateOrganization : addOrganization;
 
-        mutation.mutate(organizationData, {
+        mutation.mutate(organizationData as OrganizationFormValues & { id: number }, {
             onSuccess: () => {
                 toast.success(isEditMode ? t('organizationUpdated') : t('organizationCreated'));
                 router.push("/organizations");
@@ -326,7 +331,7 @@ export default function AddOrganization() {
                     </CardHeader>
 
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <form onSubmit={form.handleSubmit(onSubmit as any)}>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-4">

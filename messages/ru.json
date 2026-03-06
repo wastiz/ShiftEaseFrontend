@@ -168,7 +168,7 @@
       "enterPhone": "Введите телефон",
       "hourlyRate": "Почасовая ставка ($ / час)",
       "enterHourlyRate": "Введите почасовую ставку",
-      "employmentRate": "Ставка занятости",
+      "employmentRate": "Нагрузка",
       "enterEmploymentRate": "Введите ставку (0-1)",
       "shiftPriority": "Приоритет смены",
       "selectPriority": "Выберите приоритет",

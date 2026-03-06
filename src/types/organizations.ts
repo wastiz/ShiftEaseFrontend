@@ -23,10 +23,13 @@ export type Holiday = {
     holidayName: string
     month: number
     day: number
+    isShortenedDay?: boolean
+    startTime?: string
+    endTime?: string
 }
 
 export interface WorkDay {
-    dayOfWeek: string;
+    dayOfWeek: number | string;
     startTime: string;
     endTime: string;
 }

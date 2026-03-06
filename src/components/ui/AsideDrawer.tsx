@@ -31,6 +31,7 @@ export function AsideDrawer({ open, onOpenChange, title, description, trigger, f
             {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
 
             <DrawerContent
+                onCloseAutoFocus={(e) => e.preventDefault()}
                 className={
                     isMobile
                         ? "inset-x-0"
