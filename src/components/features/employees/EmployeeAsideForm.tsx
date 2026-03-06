@@ -53,10 +53,18 @@ export function EmployeeAsideForm({
             employmentRate: undefined,
             priority: undefined,
             groupIds: [],
+            primaryGroupId: null,
         },
     })
 
     const selectedGroupIds = watch("groupIds")
+    const primaryGroupId = watch("primaryGroupId")
+
+    useEffect(() => {
+        if (primaryGroupId && !selectedGroupIds.includes(primaryGroupId)) {
+            reset({ ...watch(), primaryGroupId: null }, { keepDefaultValues: true })
+        }
+    }, [selectedGroupIds, primaryGroupId, reset, watch])
 
     useEffect(() => {
         if (open) {
@@ -71,6 +79,7 @@ export function EmployeeAsideForm({
                     employmentRate: selectedEmployee.employmentRate,
                     priority: selectedEmployee.priority as "high" | "medium" | "low" | undefined,
                     groupIds: selectedEmployee.groupIds ?? [],
+                    primaryGroupId: selectedEmployee.primaryGroupId ?? null,
                 })
             } else {
                 reset({
@@ -83,6 +92,7 @@ export function EmployeeAsideForm({
                     employmentRate: undefined,
                     priority: undefined,
                     groupIds: [],
+                    primaryGroupId: null,
                 })
             }
         }
@@ -123,8 +133,8 @@ export function EmployeeAsideForm({
                         {isCreating || isUpdating
                             ? tCommon('saving')
                             : selectedEmployee
-                              ? tCommon('update')
-                              : tCommon('create')}
+                                ? tCommon('update')
+                                : tCommon('create')}
                     </Button>
                 </>
             }

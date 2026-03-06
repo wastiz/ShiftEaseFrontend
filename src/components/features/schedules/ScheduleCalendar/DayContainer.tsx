@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { toast } from 'sonner'
 import ShiftBox from './ShiftBox'
-import {Holiday, WorkDay, Shift, ShiftType, EmployeeMinData} from "@/types";
+import { Holiday, WorkDay, Shift, ShiftType, EmployeeMinData } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import {
     getEmployeeTimeOff,
@@ -32,18 +32,18 @@ type DayContainerProps = {
 }
 
 export default function DayContainer({
-                                         date,
-                                         dateLabel,
-                                         shiftTypes,
-                                         employees,
-                                         shiftsData,
-                                         setShiftsData,
-                                         isEditable = true,
-                                         cellHeight = 40,
-                                         holidays = [],
-                                         workDays = [],
-                                         employeeTimeOffs = []
-                                     }: DayContainerProps) {
+    date,
+    dateLabel,
+    shiftTypes,
+    employees,
+    shiftsData,
+    setShiftsData,
+    isEditable = true,
+    cellHeight = 40,
+    holidays = [],
+    workDays = [],
+    employeeTimeOffs = []
+}: DayContainerProps) {
     const ref = useRef<HTMLDivElement>(null)
     const [isDraggingOver, setIsDraggingOver] = useState(false)
 
@@ -57,9 +57,15 @@ export default function DayContainer({
         return endMinutes <= startMinutes;
     });
 
-    const holiday = isHoliday(date, holidays)
+    const holidayInfo = holidays.find((h) => {
+        const d = new Date(date)
+        return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
+    })
+
+    const holiday = !!holidayInfo
     const working = isWorkingDay(date, workDays)
-    const isNonWorkingDay = holiday || !working
+    const isShortenedDay = holidayInfo?.isShortenedDay
+    const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
 
     useEffect(() => {
         if (!isEditable) return
@@ -76,6 +82,22 @@ export default function DayContainer({
                         return
                     }
 
+                    let sTime = st.startTime
+                    let eTime = st.endTime
+
+                    if (isShortenedDay && holidayInfo?.startTime && holidayInfo?.endTime) {
+                        const shiftStartM = timeToMinutes(sTime)
+                        const shiftEndM = timeToMinutes(eTime)
+                        const hStartM = timeToMinutes(holidayInfo.startTime)
+                        const hEndM = timeToMinutes(holidayInfo.endTime)
+
+                        if (shiftStartM < shiftEndM && hStartM < hEndM) {
+                            if (shiftStartM < hStartM) sTime = holidayInfo.startTime
+                            if (shiftEndM > hEndM) eTime = holidayInfo.endTime
+                            toast.info('Shift adjusted to shortened holiday hours')
+                        }
+                    }
+
                     if (setShiftsData) {
                         setShiftsData((prev) => [
                             ...prev,
@@ -83,8 +105,8 @@ export default function DayContainer({
                                 id: Date.now(),
                                 shiftTypeName: st.name,
                                 shiftTypeId: st.id,
-                                startTime: st.startTime,
-                                endTime: st.endTime,
+                                startTime: sTime,
+                                endTime: eTime,
                                 date,
                                 color: st.color,
                                 employeeNeeded: 1,
@@ -127,11 +149,6 @@ export default function DayContainer({
 
     const totalHeight = HOURS.length * CELL_HEIGHT
 
-    const holidayInfo = holidays.find((h) => {
-        const d = new Date(date)
-        return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
-    })
-
     const timeOffsForDate = employees
         .map(emp => {
             const timeOff = getEmployeeTimeOff(emp.id, date, employeeTimeOffs)
@@ -162,13 +179,23 @@ export default function DayContainer({
                 )}
             </div>
 
-            <div className="relative" style={{height: totalHeight}}>
+            <div className="relative" style={{ height: totalHeight }}>
                 {isNonWorkingDay && (
                     <>
-                        <div className="absolute inset-0 bg-stripes opacity-10 pointer-events-none z-[1]"/>
+                        <div className="absolute inset-0 bg-stripes opacity-10 pointer-events-none z-[1]" />
                         <div
                             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-45deg] text-red-500 font-bold text-xl opacity-20 pointer-events-none z-[2] whitespace-nowrap">
                             {holiday ? holidayInfo?.holidayName || 'Holiday' : 'Day Off'}
+                        </div>
+                    </>
+                )}
+
+                {isShortenedDay && !isNonWorkingDay && (
+                    <>
+                        <div className="absolute inset-0 bg-stripes opacity-5 pointer-events-none z-[1]" />
+                        <div
+                            className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-orange-500 font-bold text-md opacity-40 pointer-events-none z-[2] whitespace-nowrap">
+                            {holidayInfo?.holidayName} (Shortened: {holidayInfo?.startTime} - {holidayInfo?.endTime})
                         </div>
                     </>
                 )}

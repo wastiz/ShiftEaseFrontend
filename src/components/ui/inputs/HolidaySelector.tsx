@@ -17,7 +17,9 @@ import {
 } from "@/components/ui/shadcn/tooltip"
 import { X, Info } from "lucide-react"
 import { Checkbox } from "@/components/ui/shadcn/checkbox"
+import { Switch } from "@/components/ui/shadcn/switch"
 import { Holiday } from '@/types'
+import { TimePicker } from "@/components/ui/inputs/TimePicker"
 
 const MONTHS = [
     { value: 1, label: "January" },
@@ -58,9 +60,9 @@ interface HolidaySelectorProps {
 }
 
 export default function HolidaySelector({
-                                            selectedHolidays,
-                                            setSelectedHolidays,
-                                        }: HolidaySelectorProps) {
+    selectedHolidays,
+    setSelectedHolidays,
+}: HolidaySelectorProps) {
     const [holidayName, setHolidayName] = useState("")
     const [selectedMonth, setSelectedMonth] = useState<number>(1)
     const [selectedDay, setSelectedDay] = useState<number>(1)
@@ -106,6 +108,14 @@ export default function HolidaySelector({
         )
     }
 
+    const updateHoliday = (month: number, day: number, updates: Partial<Holiday>) => {
+        setSelectedHolidays(
+            selectedHolidays.map(h =>
+                h.month === month && h.day === day ? { ...h, ...updates } : h
+            )
+        )
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -114,7 +124,7 @@ export default function HolidaySelector({
                     <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <TooltipProvider>
-                <Tooltip>
+                    <Tooltip>
                         <TooltipTrigger asChild>
                             <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
@@ -217,25 +227,56 @@ export default function HolidaySelector({
                                 return (
                                     <div
                                         key={`${holiday.month}-${holiday.day}`}
-                                        className="flex items-center justify-between p-3 border rounded-lg"
+                                        className="flex flex-col gap-2 p-3 border rounded-lg"
                                     >
-                                        <div>
-                                            <span className="font-medium">{holiday.holidayName}</span>
-                                            <span className="text-sm text-muted-foreground ml-2">
-                                                {MONTHS.find((m) => m.value === holiday.month)?.label} {holiday.day}
-                                            </span>
-                                            {!isDefault && (
-                                                <span className="text-xs text-blue-500 ml-2">(Custom)</span>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <span className="font-medium">{holiday.holidayName}</span>
+                                                <span className="text-sm text-muted-foreground ml-2">
+                                                    {MONTHS.find((m) => m.value === holiday.month)?.label} {holiday.day}
+                                                </span>
+                                                {!isDefault && (
+                                                    <span className="text-xs text-blue-500 ml-2">(Custom)</span>
+                                                )}
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => removeHoliday(holiday.month, holiday.day)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <div className="flex items-center gap-4 mt-1">
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    id={`shortened-${holiday.month}-${holiday.day}`}
+                                                    checked={holiday.isShortenedDay || false}
+                                                    onCheckedChange={(checked) => updateHoliday(holiday.month, holiday.day, {
+                                                        isShortenedDay: checked,
+                                                        startTime: checked ? (holiday.startTime || "09:00") : undefined,
+                                                        endTime: checked ? (holiday.endTime || "15:00") : undefined
+                                                    })}
+                                                />
+                                                <Label htmlFor={`shortened-${holiday.month}-${holiday.day}`} className="text-sm cursor-pointer">
+                                                    Shortened Day
+                                                </Label>
+                                            </div>
+                                            {holiday.isShortenedDay && (
+                                                <div className="flex items-center gap-2">
+                                                    <TimePicker
+                                                        value={holiday.startTime || "09:00"}
+                                                        onChange={(time) => updateHoliday(holiday.month, holiday.day, { startTime: time })}
+                                                    />
+                                                    <span className="text-sm text-muted-foreground">to</span>
+                                                    <TimePicker
+                                                        value={holiday.endTime || "15:00"}
+                                                        onChange={(time) => updateHoliday(holiday.month, holiday.day, { endTime: time })}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeHoliday(holiday.month, holiday.day)}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
                                     </div>
                                 )
                             })}

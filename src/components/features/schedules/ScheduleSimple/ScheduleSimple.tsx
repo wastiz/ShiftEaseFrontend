@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 import {
     Table,
     TableBody,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop } from "lucide-react";
 import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
@@ -34,11 +34,12 @@ import {
     getTimeOffColor,
     getTimeOffLabelKey,
     isHoliday,
-    isWorkingDay
+    isWorkingDay,
+    timeToMinutes
 } from "@/helpers/dateHelper";
-import {WarningMessage} from "@/app/(private)/(employer)/schedules/[groupId]/page";
-import {MonthNavigator} from "@/components/features/schedules/MonthNavigator";
-import {MessageIndicator} from "@/components/features/schedules/MessageIndicator";
+import { WarningMessage } from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
+import { MessageIndicator } from "@/components/features/schedules/MessageIndicator";
 import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
 
 type SimpleViewProps = {
@@ -60,27 +61,29 @@ type SimpleViewProps = {
 };
 
 export default function SimpleView({
-                                       employees,
-                                       shiftTypes,
-                                       groups = [],
-                                       shiftsData,
-                                       setShiftsData,
-                                       daysOfMonth,
-                                       currentMonth,
-                                       currentYear,
-                                       setCurrentMonth,
-                                       setCurrentYear,
-                                       isConfirmed,
-                                       orgHolidays = [],
-                                       orgSchedule = [],
-                                       employeeTimeOffs = [],
-                                       warningMessage,
-                                   }: SimpleViewProps) {
+    employees,
+    shiftTypes,
+    groups = [],
+    shiftsData,
+    setShiftsData,
+    daysOfMonth,
+    currentMonth,
+    currentYear,
+    setCurrentMonth,
+    setCurrentYear,
+    isConfirmed,
+    orgHolidays = [],
+    orgSchedule = [],
+    employeeTimeOffs = [],
+    warningMessage,
+}: SimpleViewProps) {
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
+    const [isCompact, setIsCompact] = useState(false);
+    const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
 
     const filteredEmployees = useMemo(() => {
         let result = employees;
@@ -137,6 +140,28 @@ export default function SimpleView({
             return;
         }
 
+        let sTime = shiftType.startTime
+        let eTime = shiftType.endTime
+
+        const holidayInfo = orgHolidays.find((h) => {
+            const d = new Date(date)
+            return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
+        })
+        const isShortenedDay = holidayInfo?.isShortenedDay
+
+        if (isShortenedDay && holidayInfo?.startTime && holidayInfo?.endTime) {
+            const shiftStartM = timeToMinutes(sTime)
+            const shiftEndM = timeToMinutes(eTime)
+            const hStartM = timeToMinutes(holidayInfo.startTime)
+            const hEndM = timeToMinutes(holidayInfo.endTime)
+
+            if (shiftStartM < shiftEndM && hStartM < hEndM) {
+                if (shiftStartM < hStartM) sTime = holidayInfo.startTime
+                if (shiftEndM > hEndM) eTime = holidayInfo.endTime
+                toast.info('Shift adjusted to shortened holiday hours')
+            }
+        }
+
         const existingShiftForType = shiftsData.find(
             (s) => s.date === date && s.shiftTypeId === shiftTypeId
         );
@@ -164,8 +189,8 @@ export default function SimpleView({
                 date,
                 shiftTypeId: shiftType.id,
                 shiftTypeName: shiftType.name,
-                startTime: shiftType.startTime,
-                endTime: shiftType.endTime,
+                startTime: sTime,
+                endTime: eTime,
                 color: shiftType.color,
                 employeeNeeded: 1,
                 employees: [
@@ -318,146 +343,198 @@ export default function SimpleView({
                         </div>
                     </PopoverContent>
                 </Popover>
+
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setLayoutPosition(p => p === 'left' ? 'top' : 'left')}
+                    title={layoutPosition === 'left' ? "Top Layout" : "Left Layout"}
+                >
+                    {layoutPosition === 'left' ? <PanelTop className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+                </Button>
+
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsCompact(!isCompact)}
+                    title={isCompact ? t('fullView') : t('compactView')}
+                >
+                    {isCompact ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                </Button>
             </div>
 
-            <div className="border rounded-lg p-4 bg-muted/50 flex-shrink-0">
-                <h3 className="font-semibold mb-3">Available Shift Types</h3>
-                <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto">
-                    {shiftTypes.map((st) => (
-                        <ShiftTypeSmallCard
-                            key={st.id}
-                            name={st.name}
-                            id={st.id}
-                            startTime={st.startTime}
-                            endTime={st.endTime}
-                            color={st.color}
-                        />
-                    ))}
+            <div className={`flex flex-1 min-h-0 ${layoutPosition === 'left' ? 'flex-row gap-4' : 'flex-col gap-4'}`}>
+                <div className={`border rounded-lg p-4 bg-muted/50 flex-shrink-0 flex flex-col ${layoutPosition === 'left' ? 'w-64 border-r overflow-y-auto max-h-[calc(100vh-200px)]' : ''}`}>
+                    <h3 className="font-semibold mb-3">Available Shift Types</h3>
+                    {layoutPosition === 'top' ? (
+                        <div className="flex gap-2 overflow-x-auto pb-2">
+                            {shiftTypes.map((st) => (
+                                <ShiftTypeSmallCard
+                                    key={st.id}
+                                    name={st.name}
+                                    id={st.id}
+                                    startTime={st.startTime}
+                                    endTime={st.endTime}
+                                    color={st.color}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            {shiftTypes.map((st) => (
+                                <ShiftTypeSmallCard
+                                    key={st.id}
+                                    name={st.name}
+                                    id={st.id}
+                                    startTime={st.startTime}
+                                    endTime={st.endTime}
+                                    color={st.color}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
-            </div>
 
-            <div className="flex-1 border rounded-lg overflow-auto">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[180px] sticky left-0 bg-background z-20 border-r">
-                                <div className="flex items-center justify-between gap-2">
-                                    <span>Employees</span>
-                                    <Badge variant="secondary">
-                                        {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(1)}h
-                                    </Badge>
-                                </div>
-                            </TableHead>
-                            {daysOfMonth.map((day) => {
-                                const holiday = isHoliday(day.isoDate, orgHolidays)
-                                const working = isWorkingDay(day.isoDate, orgSchedule)
-                                const isNonWorkingDay = holiday || !working
-
-                                return (
-                                    <TableHead
-                                        key={day.isoDate}
-                                        className={`text-center min-w-[150px] ${
-                                            isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
-                                        }`}
-                                    >
-                                        <div className="flex flex-col">
-                                            <span>{day.label}</span>
-                                            {isNonWorkingDay && (
-                                                <span className="text-[10px] text-red-600 dark:text-red-400 font-normal">
-                                                    {holiday ? getHolidayName(day.isoDate, orgHolidays) : 'Day Off'}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </TableHead>
-                                )
-                            })}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {rows.map((row) => (
-                            <TableRow key={row.employeeId}>
-                                <TableCell className="font-medium sticky left-0 bg-background z-10 border-r">
-                                    <div className="flex flex-row gap-2 justify-between items-center">
-                                        <div className="min-w-0">
-                                            <div>{row.employeeName}</div>
-                                            <div className="flex items-center gap-1 flex-wrap mt-0.5">
-                                                {row.groupNames.slice(0, 2).map(name => (
-                                                    <span key={name} className="text-xs text-muted-foreground">
-                                                        {name}
-                                                    </span>
-                                                ))}
-                                                {row.groupNames.length > 2 && (
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
-                                                                +{row.groupNames.length - 2} more
-                                                            </button>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-48 p-2" side="right">
-                                                            <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
-                                                            <ul className="space-y-1">
-                                                                {row.groupNames.map(name => (
-                                                                    <li key={name} className="text-sm">{name}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <Badge
-                                            variant={
-                                                row.totalHours > 200
-                                                    ? "destructive"
-                                                    : row.totalHours > 180
-                                                        ? "warning"
-                                                        : "secondary"
-                                            }
-                                        >
-                                            {row.totalHours.toFixed(1)}h
+                <div className={`flex-1 border rounded-lg overflow-auto ${isCompact ? "overflow-x-hidden" : ""}`}>
+                    <Table className={isCompact ? "table-fixed w-full" : ""}>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky left-0 bg-background z-20 border-r`}>
+                                    <div className="flex items-center justify-between gap-1">
+                                        <span className="truncate">Employees</span>
+                                        <Badge variant="secondary" className={isCompact ? "px-1 text-[9px]" : ""}>
+                                            {rows.reduce((sum, r) => sum + r.totalHours, 0).toFixed(isCompact ? 0 : 1)}h
                                         </Badge>
                                     </div>
-                                </TableCell>
+                                </TableHead>
                                 {daysOfMonth.map((day) => {
-                                    const assignment = row.days.get(day.isoDate);
-                                    const holiday = isHoliday(day.isoDate, orgHolidays)
+                                    const holidayInfo = orgHolidays.find((h) => {
+                                        const d = new Date(day.isoDate)
+                                        return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
+                                    })
+                                    const holiday = !!holidayInfo
                                     const working = isWorkingDay(day.isoDate, orgSchedule)
-                                    const isNonWorkingDay = holiday || !working
-                                    const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
+                                    const isShortenedDay = holidayInfo?.isShortenedDay
+                                    const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
 
                                     return (
-                                        <TableCell
+                                        <TableHead
                                             key={day.isoDate}
-                                            className={`p-2 ${
-                                                timeOff
+                                            className={`text-center ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
+                                                }`}
+                                        >
+                                            <div className="flex flex-col items-center">
+                                                <span>{isCompact ? day.label.split(' ')[0] : day.label}</span>
+                                                {isNonWorkingDay && !isCompact && (
+                                                    <span className="text-[10px] text-red-600 dark:text-red-400 font-normal">
+                                                        {holiday ? holidayInfo?.holidayName || getHolidayName(day.isoDate, orgHolidays) : 'Day Off'}
+                                                    </span>
+                                                )}
+                                                {isShortenedDay && !isNonWorkingDay && !isCompact && (
+                                                    <span className="text-[10px] text-orange-500 font-normal truncate max-w-full px-1">
+                                                        {holidayInfo?.startTime}-{holidayInfo?.endTime}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </TableHead>
+                                    )
+                                })}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rows.map((row) => (
+                                <TableRow key={row.employeeId}>
+                                    <TableCell className={`font-medium sticky left-0 bg-background z-10 border-r ${isCompact ? "px-2 py-1 text-[11px]" : ""}`}>
+                                        <div className="flex flex-row gap-2 justify-between items-center">
+                                            <div className="min-w-0">
+                                                <div className="truncate">{row.employeeName}</div>
+                                                {!isCompact && (
+                                                    <div className="flex items-center gap-1 flex-wrap mt-0.5">
+                                                        {row.groupNames.slice(0, 2).map(name => (
+                                                            <span key={name} className="text-xs text-muted-foreground">
+                                                                {name}
+                                                            </span>
+                                                        ))}
+                                                        {row.groupNames.length > 2 && (
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
+                                                                        +{row.groupNames.length - 2} more
+                                                                    </button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-48 p-2" side="right">
+                                                                    <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                                    <ul className="space-y-1">
+                                                                        {row.groupNames.map(name => (
+                                                                            <li key={name} className="text-sm">{name}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <Badge
+                                                className={isCompact ? "px-1 text-[9px]" : ""}
+                                                variant={
+                                                    row.totalHours > 200
+                                                        ? "destructive"
+                                                        : row.totalHours > 180
+                                                            ? "warning"
+                                                            : "secondary"
+                                                }
+                                            >
+                                                {row.totalHours.toFixed(isCompact ? 0 : 1)}h
+                                            </Badge>
+                                        </div>
+                                    </TableCell>
+                                    {daysOfMonth.map((day) => {
+                                        const assignment = row.days.get(day.isoDate);
+                                        const holidayInfo = orgHolidays.find((h) => {
+                                            const d = new Date(day.isoDate)
+                                            return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
+                                        })
+                                        const holiday = !!holidayInfo
+                                        const working = isWorkingDay(day.isoDate, orgSchedule)
+                                        const isShortenedDay = holidayInfo?.isShortenedDay
+                                        const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
+                                        const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
+
+                                        return (
+                                            <TableCell
+                                                key={day.isoDate}
+                                                className={`${isCompact ? "p-0 px-0.5" : "p-2"} ${timeOff
                                                     ? getTimeOffColor(timeOff.type)
                                                     : isNonWorkingDay
                                                         ? 'bg-red-50 dark:bg-red-950/10'
                                                         : ''
-                                            }`}
-                                        >
-                                            {timeOff ? (
-                                                <div className="text-xs text-center py-1 px-2 rounded border">
-                                                    <div className="font-medium">{t(getTimeOffLabelKey(timeOff.type))}</div>
-                                                </div>
-                                            ) : (
-                                                <DroppableCell
-                                                    employeeId={row.employeeId}
-                                                    date={day.isoDate}
-                                                    assignment={assignment}
-                                                    onAssign={assignShift}
-                                                    onRemove={removeShift}
-                                                    onUpdateNote={updateNote}
-                                                    isNonWorkingDay={isNonWorkingDay}
-                                                />
-                                            )}
-                                        </TableCell>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                                    }`}
+                                            >
+                                                {timeOff ? (
+                                                    <div className="text-xs text-center py-1 px-2 rounded border">
+                                                        <div className="font-medium">{t(getTimeOffLabelKey(timeOff.type))}</div>
+                                                    </div>
+                                                ) : (
+                                                    <DroppableCell
+                                                        employeeId={row.employeeId}
+                                                        date={day.isoDate}
+                                                        assignment={assignment}
+                                                        onAssign={assignShift}
+                                                        onRemove={removeShift}
+                                                        onUpdateNote={updateNote}
+                                                        isNonWorkingDay={isNonWorkingDay}
+                                                        isCompact={isCompact}
+                                                    />
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
 
             <CoverageCheckModal
