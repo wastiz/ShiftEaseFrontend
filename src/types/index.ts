@@ -5,13 +5,15 @@ export * from "./organizations";
 export * from "./schedule";
 export * from "./employee";
 export * from "./employee-options";
-export * from "./group";
+export * from "./department";
 export * from "./shiftType";
 export * from "./notification";
 
 
 export type Role = "Employer" | "Employee";
 export type Mode = "login" | "register" | "forgot"
+export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type SchedulePattern = "Custom" | "TwoOnTwoOff" | "FiveOnTwoOff" | "ThreeOnThreeOff" | "FourOnFourOff";
 
 export const dayNameToEnum: Record<string, number> = {
     sunday: 0,
@@ -44,8 +46,8 @@ export interface User {
 export type EmployerMeData = User;
 
 export interface EmployeeMeData extends User {
-    groupIds: number[];
-    groupNames: string[];
+    departmentIds: number[];
+    departmentNames: string[];
     organizationId: number;
     organizationName: string;
     position: string;
@@ -57,7 +59,7 @@ export type DateData = {
 };
 
 export type CheckEntitiesResult = {
-    groups: boolean;
+    departments: boolean;
     employees: boolean;
     shiftTypes: boolean;
     schedules: boolean;

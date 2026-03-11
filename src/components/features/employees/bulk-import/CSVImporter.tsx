@@ -16,8 +16,8 @@ export type EmployeeData = {
     email: string;
     phone: string;
     position: string;
-    groupIds: number[];
-    primaryGroupId: number | null;
+    departmentIds: number[];
+    primaryDepartmentId: number | null;
     hourlyRate: number;
     priority: 'low' | 'medium' | 'high';
 };
@@ -34,7 +34,7 @@ const FIELD_MAPPINGS = {
     email: ['email', 'e-mail', 'mail', 'email address', 'emailaddress', 'e_mail'],
     phone: ['phone', 'telephone', 'mobile', 'phonenumber', 'phone number', 'phone_number', 'tel', 'contact'],
     position: ['position', 'role', 'title', 'job', 'jobtitle', 'job title', 'job_title'],
-    groupIds: ['group', 'groups', 'groupid', 'group id', 'group_id', 'groupids', 'group ids', 'group_ids', 'team', 'teams'],
+    departmentIds: ['department', 'departments', 'departmentid', 'department id', 'department_id', 'departmentids', 'department ids', 'department_ids', 'team', 'teams'],
     hourlyRate: ['hourly rate', 'hourlyrate', 'hourly_rate', 'rate', 'wage', 'salary', 'pay', 'payrate', 'pay rate'],
     priority: ['priority', 'importance', 'level', 'rank'],
 };
@@ -46,7 +46,7 @@ const normalizePriority = (value: string): 'low' | 'medium' | 'high' => {
     return 'medium';
 };
 
-const parseGroupIds = (value: string): number[] => {
+const parseDepartmentIds = (value: string): number[] => {
     if (!value || value.trim() === '') return [];
     return value
         .split(/[,;|]/)
@@ -97,7 +97,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
             email: findColumnIndex(headers, FIELD_MAPPINGS.email),
             phone: findColumnIndex(headers, FIELD_MAPPINGS.phone),
             position: findColumnIndex(headers, FIELD_MAPPINGS.position),
-            groupIds: findColumnIndex(headers, FIELD_MAPPINGS.groupIds),
+            departmentIds: findColumnIndex(headers, FIELD_MAPPINGS.departmentIds),
             hourlyRate: findColumnIndex(headers, FIELD_MAPPINGS.hourlyRate),
             priority: findColumnIndex(headers, FIELD_MAPPINGS.priority),
         };
@@ -151,7 +151,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
             const email = indices.email !== -1 ? cells[indices.email] || '' : '';
             const phone = indices.phone !== -1 ? cells[indices.phone] || '' : '';
             const position = indices.position !== -1 ? cells[indices.position] || '' : '';
-            const groupIds = indices.groupIds !== -1 ? parseGroupIds(cells[indices.groupIds] || '') : [];
+            const departmentIds = indices.departmentIds !== -1 ? parseDepartmentIds(cells[indices.departmentIds] || '') : [];
             const hourlyRate = indices.hourlyRate !== -1 ? parseFloat(cells[indices.hourlyRate] || '0') : 0;
             const priority = indices.priority !== -1
                 ? normalizePriority(cells[indices.priority] || 'medium')
@@ -168,8 +168,8 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                 email,
                 phone,
                 position,
-                groupIds,
-                primaryGroupId: null,
+                departmentIds,
+                primaryDepartmentId: null,
                 hourlyRate,
                 priority,
             });
@@ -272,7 +272,7 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                                         <TableHead>{t('email')}</TableHead>
                                         <TableHead>{t('phone')}</TableHead>
                                         <TableHead>{t('position')}</TableHead>
-                                        <TableHead>{t('groups')}</TableHead>
+                                        <TableHead>{t('departments')}</TableHead>
                                         <TableHead>{t('rate')}</TableHead>
                                         <TableHead>{t('priority')}</TableHead>
                                     </TableRow>
@@ -287,8 +287,8 @@ export default function CSVImporter({ onImport }: CSVImporterProps) {
                                             <TableCell>{emp.phone || '-'}</TableCell>
                                             <TableCell>{emp.position || '-'}</TableCell>
                                             <TableCell>
-                                                {emp.groupIds.length > 0 ? (
-                                                    <Badge variant="secondary">{t('groupCount', { count: emp.groupIds.length })}</Badge>
+                                                {emp.departmentIds.length > 0 ? (
+                                                    <Badge variant="secondary">{t('departmentCount', { count: emp.departmentIds.length })}</Badge>
                                                 ) : (
                                                     '-'
                                                 )}

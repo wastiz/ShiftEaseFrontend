@@ -28,7 +28,7 @@ import {
     useCreateEmployee,
     useDeleteEmployee,
     useGetEmployees,
-    useGetGroups,
+    useGetDepartments,
     useUpdateEmployee,
 } from "@/hooks/api";
 import {useTranslations} from "next-intl";
@@ -44,7 +44,7 @@ export default function Employees() {
     const [timeOffDialogOpen, setTimeOffDialogOpen] = useState(false);
     const [timeOffEmployee, setTimeOffEmployee] = useState<Employee | null>(null);
 
-    const { data: groups = [] } = useGetGroups();
+    const { data: departments = [] } = useGetDepartments();
     const { data: employees = [], isLoading: isEmployeeLoading } = useGetEmployees();
 
     const {
@@ -123,7 +123,7 @@ export default function Employees() {
                         else setDrawerOpen(true);
                     }}
                     selectedEmployee={selectedEmployee}
-                    groups={groups}
+                    departments={departments}
                     onCreate={handleCreate}
                     onUpdate={handleUpdate}
                     onDelete={handleDeleteClick}
@@ -141,7 +141,7 @@ export default function Employees() {
                         <EmployeeFilters
                             filters={filters}
                             onFiltersChange={setFilters}
-                            groups={groups}
+                            departments={departments}
                             totalCount={totalCount}
                             filteredCount={filteredCount}
                         />
@@ -149,8 +149,8 @@ export default function Employees() {
                         {filteredEmployees.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {filteredEmployees.map((emp) => {
-                                    const empGroups = groups.filter((g) =>
-                                        emp.groupIds?.includes(g.id)
+                                    const empDepartments = departments.filter((g) =>
+                                        emp.departmentIds?.includes(g.id)
                                     );
                                     return (
                                         <EmployeeCard
@@ -160,7 +160,7 @@ export default function Employees() {
                                             email={emp.email}
                                             position={emp.position}
                                             avatar={"/images/avatar_placeholder.png"}
-                                            groups={empGroups}
+                                            departments={empDepartments}
                                             actions={[
                                                 { label: tCommon("edit"), onClick: () => openDrawer(emp) },
                                                 {
@@ -177,7 +177,7 @@ export default function Employees() {
                         ) : (
                             <div className="mt-20 flex flex-col justify-center items-center space-y-2">
                                 <p className="text-muted-foreground">No employees match your filters</p>
-                                <Button variant="ghost" onClick={() => setFilters({ search: "", groupIds: [] })}>
+                                <Button variant="ghost" onClick={() => setFilters({ search: "", departmentIds: [] })}>
                                     Clear filters
                                 </Button>
                             </div>

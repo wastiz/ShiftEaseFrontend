@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
 import { Badge } from "@/components/ui/shadcn/badge"
 import { Checkbox } from "@/components/ui/shadcn/checkbox"
-import { Group } from "@/types"
+import { Department } from "@/types"
 
 export type EmployeeFormValues = {
     firstName: string
@@ -19,8 +19,8 @@ export type EmployeeFormValues = {
     hourlyRate?: number
     employmentRate?: number
     priority?: "high" | "medium" | "low"
-    groupIds: number[]
-    primaryGroupId?: number | null
+    departmentIds: number[]
+    primaryDepartmentId?: number | null
 }
 
 interface EmployeeFormProps {
@@ -28,8 +28,8 @@ interface EmployeeFormProps {
     register: UseFormRegister<EmployeeFormValues>
     control: Control<EmployeeFormValues>
     errors: FieldErrors<EmployeeFormValues>
-    groups: Group[]
-    selectedGroupIds: number[]
+    departments: Department[]
+    selectedDepartmentIds: number[]
     onSubmit: (e: React.FormEvent) => void
 }
 
@@ -38,8 +38,8 @@ export function EmployeeForm({
     register,
     control,
     errors,
-    groups,
-    selectedGroupIds,
+    departments,
+    selectedDepartmentIds,
     onSubmit,
 }: EmployeeFormProps) {
     const t = useTranslations('employer.employees');
@@ -194,40 +194,40 @@ export function EmployeeForm({
                 />
             </FormField>
 
-            {/* Groups */}
+            {/* Departments */}
             <FormField>
                 <Label>
-                    {t('assignGroups')}
+                    {t('assignDepartments')}
                     <span className="ml-2 text-xs text-muted-foreground">({tCommon('optional')})</span>
                 </Label>
 
-                {/* Selected groups */}
-                {selectedGroupIds.length > 0 && (
+                {/* Selected departments */}
+                {selectedDepartmentIds.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
                         <Controller
-                            name="groupIds"
+                            name="departmentIds"
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    {selectedGroupIds.map((groupId) => {
-                                        const group = groups.find((g) => g.id === groupId)
-                                        if (!group) return null
+                                    {selectedDepartmentIds.map((departmentId) => {
+                                        const department = departments.find((g) => g.id === departmentId)
+                                        if (!department) return null
 
                                         return (
                                             <Badge
-                                                key={group.id}
+                                                key={department.id}
                                                 className="border flex items-center gap-1"
                                                 style={{
-                                                    backgroundColor: `${group.color}40`,
-                                                    borderColor: group.color,
+                                                    backgroundColor: `${department.color}40`,
+                                                    borderColor: department.color,
                                                 }}
                                             >
-                                                {group.name}
+                                                {department.name}
                                                 <X
                                                     className="h-3 w-3 cursor-pointer"
                                                     onClick={() =>
                                                         field.onChange(
-                                                            field.value.filter((id) => id !== group.id)
+                                                            field.value.filter((id) => id !== department.id)
                                                         )
                                                     }
                                                 />
@@ -240,40 +240,40 @@ export function EmployeeForm({
                     </div>
                 )}
 
-                {/* Groups select */}
+                {/* Departments select */}
                 <Controller
-                    name="groupIds"
+                    name="departmentIds"
                     control={control}
                     render={({ field }) => (
                         <Select>
                             <SelectTrigger>
                                 <SelectValue
                                     placeholder={
-                                        groups.length === 0
-                                            ? t('noGroupsAvailable')
-                                            : t('selectGroups')
+                                        departments.length === 0
+                                            ? t('noDepartmentsAvailable')
+                                            : t('selectDepartments')
                                     }
                                 />
                             </SelectTrigger>
 
                             <SelectContent>
-                                {groups.length === 0 ? (
+                                {departments.length === 0 ? (
                                     <div className="p-2 text-sm text-muted-foreground">
-                                        {t('noGroupsCreated')}
+                                        {t('noDepartmentsCreated')}
                                     </div>
                                 ) : (
-                                    groups.map((group) => {
-                                        const selected = field.value?.includes(group.id)
+                                    departments.map((department) => {
+                                        const selected = field.value?.includes(department.id)
 
                                         return (
                                             <div
-                                                key={group.id}
+                                                key={department.id}
                                                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-accent"
                                                 onClick={() => {
                                                     const current = new Set(field.value ?? [])
                                                     selected
-                                                        ? current.delete(group.id)
-                                                        : current.add(group.id)
+                                                        ? current.delete(department.id)
+                                                        : current.add(department.id)
                                                     field.onChange(Array.from(current))
                                                 }}
                                             >
@@ -281,7 +281,7 @@ export function EmployeeForm({
                                                     checked={selected}
                                                     onCheckedChange={() => { }}
                                                 />
-                                                <span>{group.name}</span>
+                                                <span>{department.name}</span>
                                             </div>
                                         )
                                     })
@@ -291,45 +291,45 @@ export function EmployeeForm({
                     )}
                 />
 
-                {selectedGroupIds.length === 0 && (
+                {selectedDepartmentIds.length === 0 && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                        {t('noGroupsSelected')}
+                        {t('noDepartmentsSelected')}
                     </p>
                 )}
             </FormField>
 
-            {/* Primary Group */}
+            {/* Primary Department */}
             <FormField>
                 <Label>
-                    {t('primaryGroup')}
+                    {t('primaryDepartment')}
                     <span className="ml-2 text-xs text-muted-foreground">({tCommon('optional')})</span>
                 </Label>
                 <Controller
-                    name="primaryGroupId"
+                    name="primaryDepartmentId"
                     control={control}
                     render={({ field }) => (
                         <Select
                             value={field.value?.toString() || "none"}
                             onValueChange={(val) => field.onChange(val === "none" ? null : parseInt(val))}
-                            disabled={selectedGroupIds.length === 0}
+                            disabled={selectedDepartmentIds.length === 0}
                         >
                             <SelectTrigger>
                                 <SelectValue
                                     placeholder={
-                                        selectedGroupIds.length === 0
-                                            ? t('assignGroupsFirst')
-                                            : t('selectPrimaryGroup')
+                                        selectedDepartmentIds.length === 0
+                                            ? t('assignDepartmentsFirst')
+                                            : t('selectPrimaryDepartment')
                                     }
                                 />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="none">{t('noPrimaryGroup')}</SelectItem>
-                                {selectedGroupIds.map((groupId) => {
-                                    const group = groups.find((g) => g.id === groupId)
-                                    if (!group) return null
+                                <SelectItem value="none">{t('noPrimaryDepartment')}</SelectItem>
+                                {selectedDepartmentIds.map((departmentId) => {
+                                    const department = departments.find((g) => g.id === departmentId)
+                                    if (!department) return null
                                     return (
-                                        <SelectItem key={group.id} value={group.id.toString()}>
-                                            {group.name}
+                                        <SelectItem key={department.id} value={department.id.toString()}>
+                                            {department.name}
                                         </SelectItem>
                                     )
                                 })}

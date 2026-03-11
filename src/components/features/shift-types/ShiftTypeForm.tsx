@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/shadcn/input"
 import { TimePicker } from "@/components/ui/inputs/TimePicker"
 import ColorPicker from "@/components/ui/inputs/ColorPicker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
-import { Group, ShiftTypeFormValues } from "@/types"
+import { Department, ShiftTypeFormValues } from "@/types"
 
 interface ShiftTypeFormProps {
     formId: string
@@ -14,7 +14,7 @@ interface ShiftTypeFormProps {
     control: Control<ShiftTypeFormValues>
     errors: FieldErrors<ShiftTypeFormValues>
     minEmployees?: number
-    groups: Group[]
+    departments: Department[]
     onSubmit: (e: React.FormEvent) => void
 }
 
@@ -24,7 +24,7 @@ export function ShiftTypeForm({
     control,
     errors,
     minEmployees,
-    groups,
+    departments,
     onSubmit,
 }: ShiftTypeFormProps) {
     const t = useTranslations('employer.shiftTypes');
@@ -51,35 +51,35 @@ export function ShiftTypeForm({
                 )}
             </FormField>
 
-            {/* Group */}
+            {/* Department */}
             <FormField>
                 <Label>
-                    {t('group')} <span className="text-red-500 ml-1">*</span>
+                    {t('department')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Controller
-                    name="groupId"
+                    name="departmentId"
                     control={control}
-                    rules={{ required: t('validation.groupRequired') }}
+                    rules={{ required: t('validation.departmentRequired') }}
                     render={({ field }) => (
                         <Select
                             value={field.value != null ? String(field.value) : ""}
                             onValueChange={(val) => field.onChange(Number(val))}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={t('selectGroup')} />
+                                <SelectValue placeholder={t('selectDepartment')} />
                             </SelectTrigger>
                             <SelectContent>
-                                {groups.map((group) => (
-                                    <SelectItem key={group.id} value={String(group.id)}>
-                                        {group.name}
+                                {departments.map((department) => (
+                                    <SelectItem key={department.id} value={String(department.id)}>
+                                        {department.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     )}
                 />
-                {errors.groupId && (
-                    <p className="text-sm text-red-500">{errors.groupId.message}</p>
+                {errors.departmentId && (
+                    <p className="text-sm text-red-500">{errors.departmentId.message}</p>
                 )}
             </FormField>
 

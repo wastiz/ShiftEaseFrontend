@@ -18,13 +18,13 @@ export function useEmployeeFilters(employees: Employee[]) {
                 if (!matchesSearch) return false
             }
 
-            // Groups filter
-            if (filters.groupIds.length > 0) {
-                const employeeGroupIds = employee.groupIds ?? []
-                const hasMatchingGroup = filters.groupIds.some((groupId) =>
-                    employeeGroupIds.includes(groupId)
+            // Departments filter
+            if (filters.departmentIds.length > 0) {
+                const employeeDepartmentIds = employee.departmentIds ?? []
+                const hasMatchingDepartment = filters.departmentIds.some((departmentId) =>
+                    employeeDepartmentIds.includes(departmentId)
                 )
-                if (!hasMatchingGroup) return false
+                if (!hasMatchingDepartment) return false
             }
 
             return true

@@ -11,7 +11,7 @@ type EmployeeCardAction = {
     icon?: ReactNode;
 };
 
-type EmployeeGroup = {
+type EmployeeDepartment = {
     id: number;
     name: string;
     color: string;
@@ -23,7 +23,7 @@ type EmployeeCardProps = {
     email: string;
     position: string;
     avatar?: string;
-    groups?: EmployeeGroup[];
+    departments?: EmployeeDepartment[];
     actions?: EmployeeCardAction[];
     className?: string;
 };
@@ -34,7 +34,7 @@ export default function EmployeeCard({
                                          email,
                                          position,
                                          avatar,
-                                         groups = [],
+                                         departments = [],
                                          actions = [],
                                          className = "",
                                      }: EmployeeCardProps) {
@@ -57,9 +57,9 @@ export default function EmployeeCard({
 
                 <p className={"text-sm"}>{position}</p>
 
-                {groups.length > 0 ? (
+                {departments.length > 0 ? (
                     <div className="flex gap-1 flex-wrap">
-                        {groups.map((g) => (
+                        {departments.map((g) => (
                             <Badge
                                 key={g.id}
                                 style={{
@@ -73,7 +73,7 @@ export default function EmployeeCard({
                         ))}
                     </div>
                 ) : (
-                    <p className="text-xs text-muted-foreground">No groups assigned (may be flexible)</p>
+                    <p className="text-xs text-muted-foreground">No departments assigned (may be flexible)</p>
                 )}
 
                 {actions.length > 0 && (

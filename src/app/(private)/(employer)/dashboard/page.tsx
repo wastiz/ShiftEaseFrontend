@@ -31,9 +31,9 @@ export default function EmployerDashboard() {
     const tOrg = useTranslations('organization');
     const organizationId = localStorage.getItem('orgId');
     const { data, isLoading } = useGetOrganizationData(organizationId ?? undefined);
-    const [selectedGroup, setSelectedGroup] = useState<number>(1);
+    const [selectedDepartment, setSelectedDepartment] = useState<number>(1);
 
-    const groups = [
+    const departments = [
         { id: 1, name: 'Morning Shift', employeeCount: 8, scheduleStatus: 'confirmed' },
         { id: 2, name: 'Evening Shift', employeeCount: 10, scheduleStatus: 'pending' },
         { id: 3, name: 'Night Shift', employeeCount: 6, scheduleStatus: 'draft' }
@@ -51,7 +51,7 @@ export default function EmployerDashboard() {
 
     const missingSetup = [];
     if (data.shiftTypeCount === 0) missingSetup.push(t('shiftTypes'));
-    if (data.groupCount === 0) missingSetup.push(t('groups'));
+    if (data.departmentCount === 0) missingSetup.push(t('departments'));
     if (data.employeeCount === 0) missingSetup.push(tCommon('employees'));
 
     console.log(data)
@@ -61,7 +61,7 @@ export default function EmployerDashboard() {
     return (
         <>
             <Header title={t('title')}>
-                <Button asChild disabled={data.groupCount === 0}>
+                <Button asChild disabled={data.departmentCount === 0}>
                     <Link href="/schedules">
                         <Plus className="mr-2 h-4 w-4" />
                         {t('createSchedule')}
@@ -100,7 +100,7 @@ export default function EmployerDashboard() {
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        {t('acrossGroups', { count: data.groupCount })}
+                                        {t('acrossDepartments', { count: data.departmentCount })}
                                     </p>
                                 )}
                             </CardContent>
@@ -132,21 +132,21 @@ export default function EmployerDashboard() {
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    {t('groups')}
+                                    {t('departments')}
                                 </CardTitle>
                                 <Building2 className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{data.groupCount}</div>
-                                {data.groupCount === 0 ? (
+                                <div className="text-2xl font-bold">{data.departmentCount}</div>
+                                {data.departmentCount === 0 ? (
                                     <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                                        <Link href="/groups">
-                                            {t('createGroup')}
+                                        <Link href="/departments">
+                                            {t('createDepartment')}
                                         </Link>
                                     </Button>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        {t('workGroupsConfigured')}
+                                        {t('workDepartmentsConfigured')}
                                     </p>
                                 )}
                             </CardContent>
@@ -250,38 +250,38 @@ export default function EmployerDashboard() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('groupSchedules')}</CardTitle>
+                            <CardTitle>{t('departmentSchedules')}</CardTitle>
                             <CardDescription>
                                 {t('viewAndManageSchedules')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Tabs value={selectedGroup.toString()} onValueChange={(v) => setSelectedGroup(Number(v))}>
+                            <Tabs value={selectedDepartment.toString()} onValueChange={(v) => setSelectedDepartment(Number(v))}>
                                 <TabsList className="w-full justify-start">
-                                    {groups.map((group) => (
-                                        <TabsTrigger key={group.id} value={group.id.toString()}>
-                                            {group.name}
+                                    {departments.map((department) => (
+                                        <TabsTrigger key={department.id} value={department.id.toString()}>
+                                            {department.name}
                                             <Badge variant="secondary" className="ml-2">
-                                                {group.employeeCount}
+                                                {department.employeeCount}
                                             </Badge>
                                         </TabsTrigger>
                                     ))}
                                 </TabsList>
 
-                                {groups.map((group) => (
-                                    <TabsContent key={group.id} value={group.id.toString()} className="space-y-4">
+                                {departments.map((department) => (
+                                    <TabsContent key={department.id} value={department.id.toString()} className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h3 className="text-lg font-semibold">{group.name}</h3>
+                                                <h3 className="text-lg font-semibold">{department.name}</h3>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {group.employeeCount} {t('employees')}
+                                                    {department.employeeCount} {t('employees')}
                                                 </p>
                                             </div>
                                             <Badge variant={
-                                                group.scheduleStatus === 'confirmed' ? 'default' :
-                                                    group.scheduleStatus === 'pending' ? 'secondary' : 'outline'
+                                                department.scheduleStatus === 'confirmed' ? 'default' :
+                                                    department.scheduleStatus === 'pending' ? 'secondary' : 'outline'
                                             }>
-                                                {t(group.scheduleStatus as 'confirmed' | 'pending' | 'draft')}
+                                                {t(department.scheduleStatus as 'confirmed' | 'pending' | 'draft')}
                                             </Badge>
                                         </div>
 
@@ -311,12 +311,12 @@ export default function EmployerDashboard() {
 
                                         <div className="flex justify-end gap-2">
                                             <Button variant="outline" asChild>
-                                                <Link href={`/schedules/${group.id}`}>
+                                                <Link href={`/schedules/${department.id}`}>
                                                     {t('viewFullSchedule')}
                                                 </Link>
                                             </Button>
                                             <Button asChild>
-                                                <Link href={`/schedules/${group.id}/edit`}>
+                                                <Link href={`/schedules/${department.id}/edit`}>
                                                     {t('editSchedule')}
                                                 </Link>
                                             </Button>

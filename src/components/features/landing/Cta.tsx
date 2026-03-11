@@ -57,11 +57,11 @@ export default function Cta() {
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
                   href="/sign-in"
-                  className="btn-primary group flex items-center justify-center"
+                  className="btn-primary department flex items-center justify-center"
                 >
                   <span className="relative inline-flex items-center">
                     {t("button")}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform department-hover:translate-x-0.5" />
                   </span>
                 </Link>
               </div>
