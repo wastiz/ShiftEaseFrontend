@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop } from "lucide-react";
-import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftType, WorkDay } from "@/types";
+import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
+import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -85,6 +85,10 @@ export default function SimpleView({
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
+
+    const [showWeekendHighlight, setShowWeekendHighlight] = useState(true);
+    const [showHolidayHighlight, setShowHolidayHighlight] = useState(true);
+    const [showShortenedHighlight, setShowShortenedHighlight] = useState(true);
 
     const filteredEmployees = useMemo(() => {
         let result = employees;
@@ -345,6 +349,54 @@ export default function SimpleView({
                     </PopoverContent>
                 </Popover>
 
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Settings className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                        <div className="space-y-4">
+                            <h4 className="font-medium text-sm">Highlights</h4>
+                            <div className="space-y-3">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-weekend"
+                                        checked={showWeekendHighlight}
+                                        onCheckedChange={(c) => setShowWeekendHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-weekend" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded ring-1 ring-inset ring-yellow-300/60 bg-yellow-50/30" />
+                                        Weekends
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-holiday"
+                                        checked={showHolidayHighlight}
+                                        onCheckedChange={(c) => setShowHolidayHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-holiday" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded bg-red-100" />
+                                        Holidays / Day Off
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-shortened"
+                                        checked={showShortenedHighlight}
+                                        onCheckedChange={(c) => setShowShortenedHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-shortened" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded bg-orange-100" />
+                                        Shortened Days
+                                    </Label>
+                                </div>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
                 <Button
                     variant="outline"
                     size="icon"
@@ -413,14 +465,8 @@ export default function SimpleView({
                                         const d = new Date(day.isoDate)
                                         return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
                                     })
-                                    const currentDepartment = selectedDepartmentId ? departments.find(d => d.id === selectedDepartmentId) : null;
-                                    let working = isWorkingDay(day.isoDate, orgSchedule);
-                                    
-                                    if (currentDepartment && currentDepartment.workingDays && currentDepartment.workingDays.length > 0) {
-                                        const d = new Date(day.isoDate + 'T00:00:00');
-                                        working = currentDepartment.workingDays.includes(d.getDay() as any);
-                                    }
-
+                                    const dayDate = new Date(day.isoDate)
+                                    const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                     const holiday = !!holidayInfo
                                     const isShortenedDay = holidayInfo?.isShortenedDay
                                     const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
@@ -428,8 +474,9 @@ export default function SimpleView({
                                     return (
                                         <TableHead
                                             key={day.isoDate}
-                                            className={`text-center ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
-                                                }`}
+                                            className={`text-center transition-colors ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${
+                                                isNonWorkingDay && showHolidayHighlight ? 'bg-red-100 dark:bg-red-950' : ''
+                                            } ${isWeekend && showWeekendHighlight ? 'ring-1 ring-inset ring-yellow-300/60 dark:ring-yellow-700/50 bg-yellow-50/30 dark:bg-yellow-900/10' : ''} ${isShortenedDay && showShortenedHighlight ? 'bg-orange-100 dark:bg-orange-950/50' : ''}`}
                                         >
                                             <div className="flex flex-col items-center">
                                                 <span>{isCompact ? day.label.split(' ')[0] : day.label}</span>
@@ -503,14 +550,8 @@ export default function SimpleView({
                                             const d = new Date(day.isoDate)
                                             return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
                                         })
-                                        const currentDepartment = selectedDepartmentId ? departments.find(d => d.id === selectedDepartmentId) : null;
-                                        let working = isWorkingDay(day.isoDate, orgSchedule);
-                                        
-                                        if (currentDepartment && currentDepartment.workingDays && currentDepartment.workingDays.length > 0) {
-                                            const d = new Date(day.isoDate + 'T00:00:00');
-                                            working = currentDepartment.workingDays.includes(d.getDay() as any);
-                                        }
-
+                                        const dayDate = new Date(day.isoDate)
+                                        const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                         const holiday = !!holidayInfo
                                         const isShortenedDay = holidayInfo?.isShortenedDay
                                         const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
@@ -519,12 +560,15 @@ export default function SimpleView({
                                         return (
                                             <TableCell
                                                 key={day.isoDate}
-                                                className={`${isCompact ? "p-0 px-0.5" : "p-2"} ${timeOff
-                                                    ? getTimeOffColor(timeOff.type)
-                                                    : isNonWorkingDay
-                                                        ? 'bg-red-50 dark:bg-red-950/10'
-                                                        : ''
-                                                    }`}
+                                                className={`transition-colors ${isCompact ? "p-0 px-0.5" : "p-2"} ${
+                                                    timeOff
+                                                        ? getTimeOffColor(timeOff.type)
+                                                        : isNonWorkingDay && showHolidayHighlight
+                                                            ? 'bg-red-50 dark:bg-red-950/10'
+                                                            : isShortenedDay && showShortenedHighlight
+                                                                ? 'bg-orange-50 dark:bg-orange-950/10'
+                                                                : ''
+                                                } ${isWeekend && showWeekendHighlight ? 'ring-1 ring-inset ring-yellow-300/60 dark:ring-yellow-700/50 bg-yellow-50/30 dark:bg-yellow-900/10' : ''}`}
                                             >
                                                 {timeOff ? (
                                                     <div className="text-xs text-center py-1 px-2 rounded border">
