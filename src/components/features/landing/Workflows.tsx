@@ -46,7 +46,7 @@ export default function Workflows() {
           </div>
 
           {/* Spotlight cards */}
-          <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
+          <Spotlight className="department mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
             {workflows.map((workflow, index) => (
               <motion.div
                 key={index}
@@ -54,12 +54,12 @@ export default function Workflows() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="group/card relative h-full overflow-hidden rounded-2xl bg-card/30 p-px before:pointer-events-none before:absolute before:-left-40 before:-top-40 before:z-10 before:h-80 before:w-80 before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:rounded-full before:bg-primary/60 before:opacity-0 before:blur-3xl before:transition-opacity before:duration-500 after:pointer-events-none after:absolute after:-left-48 after:-top-48 after:z-30 after:h-64 after:w-64 after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)] after:rounded-full after:bg-primary after:opacity-0 after:blur-3xl after:transition-opacity after:duration-500 hover:after:opacity-20 group-hover:before:opacity-100"
+                className="department/card relative h-full overflow-hidden rounded-2xl bg-card/30 p-px before:pointer-events-none before:absolute before:-left-40 before:-top-40 before:z-10 before:h-80 before:w-80 before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:rounded-full before:bg-primary/60 before:opacity-0 before:blur-3xl before:transition-opacity before:duration-500 after:pointer-events-none after:absolute after:-left-48 after:-top-48 after:z-30 after:h-64 after:w-64 after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)] after:rounded-full after:bg-primary after:opacity-0 after:blur-3xl after:transition-opacity after:duration-500 hover:after:opacity-20 department-hover:before:opacity-100"
               >
                 <div className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-background border border-glassBorder">
                   {/* Arrow indicator */}
                   <div
-                    className="absolute right-6 top-6 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-textPrimary opacity-0 transition-opacity group-hover/card:opacity-100"
+                    className="absolute right-6 top-6 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-textPrimary opacity-0 transition-opacity department-hover/card:opacity-100"
                     aria-hidden="true"
                   >
                     <ArrowRight className="h-4 w-4" />

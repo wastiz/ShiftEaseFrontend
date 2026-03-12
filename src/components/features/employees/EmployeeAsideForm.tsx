@@ -4,13 +4,13 @@ import { useTranslations } from "next-intl"
 import { EmployeeForm, EmployeeFormValues } from "./EmployeeForm"
 import { Button } from "@/components/ui/shadcn/button"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
-import { Employee, Group } from "@/types"
+import { Employee, Department } from "@/types"
 
 interface EmployeeAsideFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     selectedEmployee: Employee | null
-    groups: Group[]
+    departments: Department[]
     onCreate: (data: EmployeeFormValues) => void
     onUpdate: (id: number, data: EmployeeFormValues) => void
     onDelete: (id: number) => void
@@ -23,7 +23,7 @@ export function EmployeeAsideForm({
     open,
     onOpenChange,
     selectedEmployee,
-    groups,
+    departments,
     onCreate,
     onUpdate,
     onDelete,
@@ -52,19 +52,19 @@ export function EmployeeAsideForm({
             hourlyRate: undefined,
             employmentRate: undefined,
             priority: undefined,
-            groupIds: [],
-            primaryGroupId: null,
+            departmentIds: [],
+            primaryDepartmentId: null,
         },
     })
 
-    const selectedGroupIds = watch("groupIds")
-    const primaryGroupId = watch("primaryGroupId")
+    const selectedDepartmentIds = watch("departmentIds")
+    const primaryDepartmentId = watch("primaryDepartmentId")
 
     useEffect(() => {
-        if (primaryGroupId && !selectedGroupIds.includes(primaryGroupId)) {
-            reset({ ...watch(), primaryGroupId: null }, { keepDefaultValues: true })
+        if (primaryDepartmentId && !selectedDepartmentIds.includes(primaryDepartmentId)) {
+            reset({ ...watch(), primaryDepartmentId: null }, { keepDefaultValues: true })
         }
-    }, [selectedGroupIds, primaryGroupId, reset, watch])
+    }, [selectedDepartmentIds, primaryDepartmentId, reset, watch])
 
     useEffect(() => {
         if (open) {
@@ -78,8 +78,8 @@ export function EmployeeAsideForm({
                     hourlyRate: selectedEmployee.hourlyRate,
                     employmentRate: selectedEmployee.employmentRate,
                     priority: selectedEmployee.priority as "high" | "medium" | "low" | undefined,
-                    groupIds: selectedEmployee.groupIds ?? [],
-                    primaryGroupId: selectedEmployee.primaryGroupId ?? null,
+                    departmentIds: selectedEmployee.departmentIds ?? [],
+                    primaryDepartmentId: selectedEmployee.primaryDepartmentId ?? null,
                 })
             } else {
                 reset({
@@ -91,8 +91,8 @@ export function EmployeeAsideForm({
                     hourlyRate: undefined,
                     employmentRate: undefined,
                     priority: undefined,
-                    groupIds: [],
-                    primaryGroupId: null,
+                    departmentIds: [],
+                    primaryDepartmentId: null,
                 })
             }
         }
@@ -144,8 +144,8 @@ export function EmployeeAsideForm({
                 register={register}
                 control={control}
                 errors={errors}
-                groups={groups}
-                selectedGroupIds={selectedGroupIds}
+                departments={departments}
+                selectedDepartmentIds={selectedDepartmentIds}
                 onSubmit={handleSubmit(onSubmit)}
             />
         </AsideDrawer>

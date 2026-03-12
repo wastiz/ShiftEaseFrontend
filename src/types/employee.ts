@@ -8,9 +8,9 @@ export interface Employee {
     hourlyRate: number;
     employmentRate: number;
     priority: string;
-    groupIds: number[];
-    primaryGroupId?: number | null;
-    groupNames?: string[] | null;
+    departmentIds: number[];
+    primaryDepartmentId?: number | null;
+    departmentNames?: string[] | null;
     onVacation?: boolean;
     onSickLeave?: boolean;
     onWork?: boolean;
@@ -45,6 +45,6 @@ export interface EmployeeCreateError {
 export type EmployeeMinData = {
     id: number;
     name: string;
-    groupNames: string[];
+    departmentNames: string[];
     position?: string;
 }

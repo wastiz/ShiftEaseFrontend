@@ -35,9 +35,10 @@ import {
     getTimeOffLabelKey,
     isHoliday,
     isWorkingDay,
-    timeToMinutes
+    timeToMinutes,
+    dayNames
 } from "@/helpers/dateHelper";
-import { WarningMessage } from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import { WarningMessage } from "@/app/(private)/(employer)/schedules/[departmentId]/page";
 import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
 import { MessageIndicator } from "@/components/features/schedules/MessageIndicator";
 import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
@@ -45,7 +46,7 @@ import { CoverageCheckModal } from "@/components/features/schedules/CoverageChec
 type SimpleViewProps = {
     employees: EmployeeMinData[];
     shiftTypes: ShiftType[];
-    groups?: Group[];
+    departments?: Department[];
     shiftsData: Shift[];
     setShiftsData: (shifts: Shift[]) => void;
     daysOfMonth: DateData[];
@@ -63,7 +64,7 @@ type SimpleViewProps = {
 export default function SimpleView({
     employees,
     shiftTypes,
-    groups = [],
+    departments = [],
     shiftsData,
     setShiftsData,
     daysOfMonth,
@@ -80,7 +81,7 @@ export default function SimpleView({
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
-    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
@@ -92,10 +93,10 @@ export default function SimpleView({
     const filteredEmployees = useMemo(() => {
         let result = employees;
 
-        if (selectedGroupId !== null) {
-            const group = groups.find(g => g.id === selectedGroupId);
-            if (group) {
-                result = result.filter(emp => emp.groupNames.includes(group.name));
+        if (selectedDepartmentId !== null) {
+            const department = departments.find(g => g.id === selectedDepartmentId);
+            if (department) {
+                result = result.filter(emp => emp.departmentNames.includes(department.name));
             }
         }
 
@@ -109,7 +110,7 @@ export default function SimpleView({
         });
 
         return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
+    }, [employees, departments, selectedDepartmentId, selectedShiftTypes, shiftsData]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
@@ -124,8 +125,8 @@ export default function SimpleView({
         );
     };
 
-    const handleGroupFilterToggle = (groupId: number) => {
-        setSelectedGroupId(prev => prev === groupId ? null : groupId);
+    const handleDepartmentFilterToggle = (departmentId: number) => {
+        setSelectedDepartmentId(prev => prev === departmentId ? null : departmentId);
     };
 
     const assignShift = (employeeId: number, date: string, shiftTypeId: number) => {
@@ -277,24 +278,24 @@ export default function SimpleView({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-auto">
-                            <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
+                            <Filter className={(selectedShiftTypes.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
                         <div className="space-y-4">
-                            {groups.length > 0 && (
+                            {departments.length > 0 && (
                                 <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Filter by Group</h4>
+                                    <h4 className="font-medium text-sm">Filter by Department</h4>
                                     <div className="space-y-2">
-                                        {groups.map((g) => (
+                                        {departments.map((g) => (
                                             <div key={g.id} className="flex items-center space-x-2">
                                                 <Checkbox
-                                                    id={`filter-group-${g.id}`}
-                                                    checked={selectedGroupId === g.id}
-                                                    onCheckedChange={() => handleGroupFilterToggle(g.id)}
+                                                    id={`filter-department-${g.id}`}
+                                                    checked={selectedDepartmentId === g.id}
+                                                    onCheckedChange={() => handleDepartmentFilterToggle(g.id)}
                                                 />
                                                 <Label
-                                                    htmlFor={`filter-group-${g.id}`}
+                                                    htmlFor={`filter-department-${g.id}`}
                                                     className="flex items-center gap-2 cursor-pointer"
                                                 >
                                                     {g.color && (
@@ -334,11 +335,11 @@ export default function SimpleView({
                                     ))}
                                 </div>
                             </div>
-                            {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
+                            {(selectedShiftTypes.length > 0 || selectedDepartmentId !== null) && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
+                                    onClick={() => { setSelectedShiftTypes([]); setSelectedDepartmentId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters
@@ -467,7 +468,6 @@ export default function SimpleView({
                                     const dayDate = new Date(day.isoDate)
                                     const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                     const holiday = !!holidayInfo
-                                    const working = isWorkingDay(day.isoDate, orgSchedule)
                                     const isShortenedDay = holidayInfo?.isShortenedDay
                                     const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
 
@@ -505,22 +505,22 @@ export default function SimpleView({
                                                 <div className="truncate">{row.employeeName}</div>
                                                 {!isCompact && (
                                                     <div className="flex items-center gap-1 flex-wrap mt-0.5">
-                                                        {row.groupNames.slice(0, 2).map(name => (
+                                                        {row.departmentNames.slice(0, 2).map(name => (
                                                             <span key={name} className="text-xs text-muted-foreground">
                                                                 {name}
                                                             </span>
                                                         ))}
-                                                        {row.groupNames.length > 2 && (
+                                                        {row.departmentNames.length > 2 && (
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
-                                                                        +{row.groupNames.length - 2} more
+                                                                        +{row.departmentNames.length - 2} more
                                                                     </button>
                                                                 </PopoverTrigger>
                                                                 <PopoverContent className="w-48 p-2" side="right">
-                                                                    <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                                    <p className="text-xs font-medium mb-1.5 text-muted-foreground">All departments</p>
                                                                     <ul className="space-y-1">
-                                                                        {row.groupNames.map(name => (
+                                                                        {row.departmentNames.map(name => (
                                                                             <li key={name} className="text-sm">{name}</li>
                                                                         ))}
                                                                     </ul>
@@ -553,7 +553,6 @@ export default function SimpleView({
                                         const dayDate = new Date(day.isoDate)
                                         const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                         const holiday = !!holidayInfo
-                                        const working = isWorkingDay(day.isoDate, orgSchedule)
                                         const isShortenedDay = holidayInfo?.isShortenedDay
                                         const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
                                         const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
@@ -605,7 +604,7 @@ export default function SimpleView({
                 daysOfMonth={daysOfMonth}
                 orgHolidays={orgHolidays}
                 orgSchedule={orgSchedule}
-                groups={groups}
+                departments={departments}
             />
         </div>
     );

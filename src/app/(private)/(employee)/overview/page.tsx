@@ -27,8 +27,8 @@ export default function EmployeePersonalPage() {
     const calendarMonth = currentMonth.getMonth() + 1;
     const calendarYear = currentMonth.getFullYear();
 
-    const primaryGroupId = employeeUser.groupIds?.[0];
-    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(calendarMonth, calendarYear, primaryGroupId);
+    const primaryDepartmentId = employeeUser.departmentIds?.[0];
+    const {data: scheduleData, isLoading} = useGetConfirmedSchedule(calendarMonth, calendarYear, primaryDepartmentId);
 
     useEffect(() => {
         if (scheduleData) {

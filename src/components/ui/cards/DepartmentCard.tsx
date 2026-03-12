@@ -2,29 +2,29 @@ import { Clock } from "lucide-react"
 import { Card } from "@/components/ui/shadcn/card"
 import { Button } from "@/components/ui/shadcn/button"
 
-type GroupCardAction = {
+type DepartmentCardAction = {
     label: string
     onClick: () => void
     variant?: "default" | "secondary" | "destructive" | "outline" | "ghost"
 }
 
-type GroupCardProps = {
+type DepartmentCardProps = {
     name: string
     description?: string
     color: string
     workingHours?: string
     className?: string
-    actions?: GroupCardAction[]
+    actions?: DepartmentCardAction[]
 }
 
-export default function GroupCard({
+export default function DepartmentCard({
     name,
     description,
     color,
     workingHours,
     className = "",
     actions = [],
-}: GroupCardProps) {
+}: DepartmentCardProps) {
     return (
         <Card
             className={`overflow-hidden ${className}`}

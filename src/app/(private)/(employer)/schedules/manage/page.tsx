@@ -23,14 +23,14 @@ import ScheduleCalendar from "@/components/features/schedules/ScheduleCalendar/S
 import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import { Holiday, WorkDay } from "@/types"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/shadcn/toggle-group"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/shadcn/toggle-department"
 import { Calendar, Download, List, Loader2, Settings } from "lucide-react"
 import SimpleView from "@/components/features/schedules/ScheduleSimple/ScheduleSimple"
 import { toast } from "sonner"
 import { useTranslations } from 'next-intl'
 import SchedulePresetDialog, { SchedulePreset } from "@/components/features/schedules/SchedulePresetDialog";
 import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
-import { ButtonGroup } from "@/components/ui/shadcn/button-group";
+import { ButtonGroup } from "@/components/ui/shadcn/button-department";
 
 const today = new Date()
 
@@ -260,7 +260,7 @@ export default function ManageSchedule() {
                     setShiftsData={setShiftsData}
                     shiftTypes={data?.shiftTypes ?? []}
                     employees={data?.employees ?? []}
-                    groups={data?.groups ?? []}
+                    departments={data?.departments ?? []}
                     daysOfMonth={daysOfMonth}
                     currentMonth={currentMonth}
                     currentYear={currentYear}
@@ -277,7 +277,7 @@ export default function ManageSchedule() {
                 <SimpleView
                     employees={data?.employees ?? []}
                     shiftTypes={data?.shiftTypes ?? []}
-                    groups={data?.groups ?? []}
+                    departments={data?.departments ?? []}
                     shiftsData={shiftsData}
                     setShiftsData={setShiftsData}
                     daysOfMonth={daysOfMonth}

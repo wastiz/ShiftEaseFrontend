@@ -26,11 +26,11 @@ const AnimatedLink = memo(function AnimatedLink({
         <button
             onClick={onClick}
             className={cn(
-                'group flex w-full items-center gap-3 rounded-lg p-3 text-sm transition-all duration-200 select-none hover:bg-white/10 text-white/90 hover:text-white',
+                'department flex w-full items-center gap-3 rounded-lg p-3 text-sm transition-all duration-200 select-none hover:bg-white/10 text-white/90 hover:text-white',
                 className
             )}
         >
-            <div className="transition-all duration-200 group-hover:scale-105 group-hover:text-orange-300 text-orange-400">
+            <div className="transition-all duration-200 department-hover:scale-105 department-hover:text-orange-300 text-orange-400">
                 {icon}
             </div>
             <span className="font-medium">{children}</span>
@@ -56,7 +56,7 @@ const AnimatedButton = memo(function AnimatedButton({
     return (
         <button
             className={cn(
-                'group flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-left text-sm transition-all duration-200 select-none font-medium',
+                'department flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-left text-sm transition-all duration-200 select-none font-medium',
                 isDestructive
                     ? 'hover:bg-red-500/10 hover:text-red-400 text-red-400'
                     : 'hover:bg-white/10 hover:text-white text-white/90',
@@ -64,7 +64,7 @@ const AnimatedButton = memo(function AnimatedButton({
             )}
             onClick={onClick}
         >
-            <div className="transition-transform duration-200 group-hover:scale-105">
+            <div className="transition-transform duration-200 department-hover:scale-105">
                 {icon}
             </div>
             <span>{children}</span>

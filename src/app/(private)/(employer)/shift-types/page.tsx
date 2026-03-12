@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import {
     useCreateShiftType,
     useDeleteShiftType,
-    useGetGroups,
+    useGetDepartments,
     useGetShiftTypes,
     useUpdateShiftType,
 } from "@/hooks/api";
@@ -33,7 +33,7 @@ export default function ShiftTypes() {
     const t = useTranslations("employer.shiftTypes")
 
     const { data: shifts = [], isLoading, isError } = useGetShiftTypes();
-    const { data: groups = [] } = useGetGroups();
+    const { data: departments = [] } = useGetDepartments();
 
     const createMutation = useCreateShiftType();
     const updateMutation = useUpdateShiftType(selectedShift?.id ?? 0);
@@ -98,7 +98,7 @@ export default function ShiftTypes() {
                         else setDrawerOpen(true);
                     }}
                     selectedShift={selectedShift}
-                    groups={groups}
+                    departments={departments}
                     onCreate={handleCreate}
                     onUpdate={handleUpdate}
                     onDelete={handleDeleteClick}

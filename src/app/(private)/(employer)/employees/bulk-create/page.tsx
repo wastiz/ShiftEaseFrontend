@@ -30,7 +30,7 @@ import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { toast } from 'sonner';
 import Header from '@/components/ui/Header';
 import Main from '@/components/ui/Main';
-import { useBulkCreateEmployees, useGetGroups } from '@/hooks/api';
+import { useBulkCreateEmployees, useGetDepartments } from '@/hooks/api';
 import { BulkCreateResult } from '@/types';
 import CSVImporter from '@/components/features/employees/bulk-import/CSVImporter';
 import { useTranslations } from 'next-intl';
@@ -42,8 +42,8 @@ const employeeSchema = z.object({
     email: z.string().email('Invalid email'),
     phone: z.string().min(1, 'Phone is required'),
     position: z.string().min(1, 'Position is required'),
-    groupIds: z.array(z.number()),
-    primaryGroupId: z.number().nullable(),
+    departmentIds: z.array(z.number()),
+    primaryDepartmentId: z.number().nullable(),
     hourlyRate: z.coerce.number().min(0, 'Hourly rate must be positive'),
     priority: z.enum(['low', 'medium', 'high']),
 });
@@ -61,8 +61,8 @@ const emptyEmployee: BulkEmployee = {
     email: '',
     phone: '',
     position: '',
-    groupIds: [],
-    primaryGroupId: null,
+    departmentIds: [],
+    primaryDepartmentId: null,
     hourlyRate: 0,
     priority: 'medium',
 };
@@ -72,7 +72,7 @@ export default function BulkAddEmployees() {
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<BulkCreateResult | null>(null);
 
-    const { data: groups } = useGetGroups();
+    const { data: departments } = useGetDepartments();
     const bulkCreate = useBulkCreateEmployees();
 
     const form = useForm<FormValues>({
@@ -120,17 +120,17 @@ export default function BulkAddEmployees() {
             '# - Email: "Email", "E-mail", "Mail"',
             '# - Phone: "Phone", "Telephone", "Mobile"',
             '# - Position: "Position", "Role", "Job Title"',
-            '# - Groups: "Groups", "Group IDs", "Teams" (comma/semicolon/pipe separated)',
+            '# - Departments: "Departments", "Department IDs", "Teams" (comma/semicolon/pipe separated)',
             '# - Rate: "Hourly Rate", "Rate", "Wage"',
             '# - Priority: "Priority" (high/medium/low)',
             '',
-            'First Name,Last Name,Email,Phone,Position,Groups,Hourly Rate,Priority',
+            'First Name,Last Name,Email,Phone,Position,Departments,Hourly Rate,Priority',
             'John,Doe,john.doe@example.com,+1234567890,Manager,"1,2",25,high',
             'Jane,Smith,jane.smith@example.com,+0987654321,Senior Cashier,1,22,medium',
             'Bob,Johnson,bob.j@example.com,+1112223333,Cashier,,18,low',
             '',
             '# Alternative format with Full Name:',
-            '# Full Name,Email,Phone,Position,Groups,Hourly Rate,Priority',
+            '# Full Name,Email,Phone,Position,Departments,Hourly Rate,Priority',
             '# Alice Williams,alice.w@example.com,+4445556666,Assistant Manager,"1,2",23,medium',
         ].join('\n');
 
@@ -346,7 +346,7 @@ export default function BulkAddEmployees() {
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[200px]">{t('email')}</th>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('phone')}</th>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[150px]">{t('position')}</th>
-                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[180px]">{t('groups')}</th>
+                                                    <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[180px]">{t('departments')}</th>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">{t('hourlyRate')}</th>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b min-w-[120px]">{t('priority')}</th>
                                                     <th className="p-3 text-left text-xs font-medium whitespace-nowrap border-b sticky right-0 bg-muted/50">{t('actions')}</th>
@@ -429,7 +429,7 @@ export default function BulkAddEmployees() {
                                                         <td className="p-3">
                                                             <FormField
                                                                 control={form.control}
-                                                                name={`employees.${index}.groupIds`}
+                                                                name={`employees.${index}.departmentIds`}
                                                                 render={({ field }) => (
                                                                     <FormItem>
                                                                         <Popover>
@@ -441,36 +441,36 @@ export default function BulkAddEmployees() {
                                                                                         className="h-9 w-full justify-between text-xs"
                                                                                     >
                                                                                         {field.value && field.value.length > 0
-                                                                                            ? t('groupCount', { count: field.value.length })
-                                                                                            : t('selectGroups')}
+                                                                                            ? t('departmentCount', { count: field.value.length })
+                                                                                            : t('selectDepartments')}
                                                                                         <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
                                                                                     </Button>
                                                                                 </FormControl>
                                                                             </PopoverTrigger>
                                                                             <PopoverContent className="w-[200px] p-0">
                                                                                 <Command>
-                                                                                    <CommandInput placeholder={t('searchGroups')} />
-                                                                                    <CommandEmpty>{t('noGroupFound')}</CommandEmpty>
+                                                                                    <CommandInput placeholder={t('searchDepartments')} />
+                                                                                    <CommandEmpty>{t('noDepartmentFound')}</CommandEmpty>
                                                                                     <CommandGroup className="max-h-64 overflow-auto">
-                                                                                        {groups?.map((group) => {
-                                                                                            const isSelected = field.value?.includes(group.id);
+                                                                                        {departments?.map((department) => {
+                                                                                            const isSelected = field.value?.includes(department.id);
                                                                                             return (
                                                                                                 <CommandItem
-                                                                                                    key={group.id}
+                                                                                                    key={department.id}
                                                                                                     onSelect={() => {
                                                                                                         const currentValue = field.value || [];
                                                                                                         let newValue: number[];
                                                                                                         if (isSelected) {
-                                                                                                            newValue = currentValue.filter((id: number) => id !== group.id);
+                                                                                                            newValue = currentValue.filter((id: number) => id !== department.id);
                                                                                                         } else {
-                                                                                                            newValue = [...currentValue, group.id];
+                                                                                                            newValue = [...currentValue, department.id];
                                                                                                         }
                                                                                                         field.onChange(newValue);
 
-                                                                                                        // Clear primaryGroupId if it's no longer in selected groups
-                                                                                                        const currentPrimaryId = form.getValues(`employees.${index}.primaryGroupId`);
+                                                                                                        // Clear primaryDepartmentId if it's no longer in selected departments
+                                                                                                        const currentPrimaryId = form.getValues(`employees.${index}.primaryDepartmentId`);
                                                                                                         if (currentPrimaryId && !newValue.includes(currentPrimaryId)) {
-                                                                                                            form.setValue(`employees.${index}.primaryGroupId`, null);
+                                                                                                            form.setValue(`employees.${index}.primaryDepartmentId`, null);
                                                                                                         }
                                                                                                     }}
                                                                                                 >
@@ -479,7 +479,7 @@ export default function BulkAddEmployees() {
                                                                                                             checked={isSelected}
                                                                                                             className="h-4 w-4"
                                                                                                         />
-                                                                                                        <span className="text-sm">{group.name}</span>
+                                                                                                        <span className="text-sm">{department.name}</span>
                                                                                                     </div>
                                                                                                 </CommandItem>
                                                                                             );
@@ -496,28 +496,28 @@ export default function BulkAddEmployees() {
                                                         <td className="p-3">
                                                             <FormField
                                                                 control={form.control}
-                                                                name={`employees.${index}.primaryGroupId`}
+                                                                name={`employees.${index}.primaryDepartmentId`}
                                                                 render={({ field }) => {
-                                                                    const rowGroupIds = form.watch(`employees.${index}.groupIds`) || [];
+                                                                    const rowDepartmentIds = form.watch(`employees.${index}.departmentIds`) || [];
                                                                     return (
                                                                         <FormItem>
                                                                             <Select
                                                                                 onValueChange={(val) => field.onChange(val === 'none' ? null : parseInt(val))}
                                                                                 value={field.value?.toString() || 'none'}
-                                                                                disabled={rowGroupIds.length === 0}
+                                                                                disabled={rowDepartmentIds.length === 0}
                                                                             >
                                                                                 <FormControl>
                                                                                     <SelectTrigger className="h-9 text-xs">
-                                                                                        <SelectValue placeholder={rowGroupIds.length === 0 ? "—" : t('selectPrimaryGroup')} />
+                                                                                        <SelectValue placeholder={rowDepartmentIds.length === 0 ? "—" : t('selectPrimaryDepartment')} />
                                                                                     </SelectTrigger>
                                                                                 </FormControl>
                                                                                 <SelectContent>
                                                                                     <SelectItem value="none">None</SelectItem>
-                                                                                    {rowGroupIds.map((id) => {
-                                                                                        const group = groups?.find(g => g.id === id);
-                                                                                        return group ? (
+                                                                                    {rowDepartmentIds.map((id) => {
+                                                                                        const department = departments?.find(g => g.id === id);
+                                                                                        return department ? (
                                                                                             <SelectItem key={id} value={id.toString()}>
-                                                                                                {group.name}
+                                                                                                {department.name}
                                                                                             </SelectItem>
                                                                                         ) : null;
                                                                                     })}
