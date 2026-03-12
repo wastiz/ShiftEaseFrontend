@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { useTranslations } from "next-intl"
 import { UseFormReturn } from "react-hook-form"
 import { Trash } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/shadcn/dialog"
 import { Button } from "@/components/ui/shadcn/button"
 import { Label } from "@/components/ui/shadcn/label"
 import { Input } from "@/components/ui/shadcn/input"
@@ -170,8 +170,7 @@ export function DepartmentConditionsModal({
                     </div>
 
                     <div className="space-y-4">
-                        <Label className="text-base font-semibold">General Conditions</Label>
-                        <div className="grid grid-cols-3 gap-6 items-end">
+                        <div className="flex gap-4">
                             <div className="space-y-2">
                                 <Label>Schedule Pattern</Label>
                                 <Select value={schedulePattern} onValueChange={setSchedulePattern}>
@@ -196,20 +195,9 @@ export function DepartmentConditionsModal({
                                 <TimePicker value={endTime} onChange={setEndTime} />
                             </div>
                         </div>
-
-                        <div className="flex justify-center gap-4 pt-6 pb-6 border-b">
-                            <Button variant="outline" className="w-32" onClick={() => onOpenChange(false)}>
-                                {tCommon('cancel')}
-                            </Button>
-                            <Button className="w-32" onClick={handleSave}>
-                                {tCommon('save')}
-                            </Button>
-                        </div>
                     </div>
 
                     <div className="space-y-4">
-                        <Label className="text-base font-semibold">Shift Types Preview</Label>
-                        
                         {!departmentId ? (
                             <div className="text-sm text-amber-600 bg-amber-50 p-4 rounded-md border border-amber-200">
                                 Please create and save the department first before configuring its specific Shift Types.
@@ -304,8 +292,10 @@ export function DepartmentConditionsModal({
                                                             style={getShiftStyle(st, idx, departmentShiftTypes)}
                                                             title={`${st.name} (${st.startTime} - ${st.endTime})`}
                                                         >
-                                                            <div className="text-[10px] font-bold leading-tight truncate px-0.5" style={{ color: st.color }}>{st.name}</div>
-                                                            <div className="text-[9px] text-muted-foreground font-medium opacity-0 group-hover:opacity-100 transition-opacity truncate px-0.5">{st.startTime} - {st.endTime}</div>
+                                                            <div className="text-[10px] font-bold leading-tight px-0.5" style={{ color: st.color }}>{st.name}</div>
+                                                            <div className="text-[9px] text-muted-foreground font-medium transition-opacity px-0.5">
+                                                                <span>{st.minEmployees} - {st.maxEmployees}</span>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                     {!isWorkingDay && (
@@ -324,6 +314,14 @@ export function DepartmentConditionsModal({
                         )}
                     </div>
                 </div>
+                <DialogFooter>
+                    <Button variant="outline" className="w-32" onClick={() => onOpenChange(false)}>
+                        {tCommon('cancel')}
+                    </Button>
+                    <Button className="w-32" onClick={handleSave}>
+                        {tCommon('save')}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

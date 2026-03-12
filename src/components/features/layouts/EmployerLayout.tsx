@@ -26,7 +26,7 @@ export default function EmployerLayout({
         { title: t('schedules'), url: "/schedules", icon: "CalendarCheck" as const },
         { title: t('employees'), url: "/employees", icon: "IdCardLanyard" as const },
         { title: t('departments'), url: "/departments", icon: "UserRound" as const },
-        // { title: t('shiftTypes'), url: "/shift-types", icon: "FileType" as const },
+        { title: t('shiftTypes'), url: "/shift-types", icon: "FileType" as const },
     ];
 
     return (
