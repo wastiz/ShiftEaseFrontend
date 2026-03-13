@@ -9,7 +9,7 @@ import { EmployeeMeData } from "@/types";
 
 const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/google-callback"];
 const EMPLOYEE_ROUTES = ["/overview", "/vacation", "/sick-leave", "/personal-day", "/preferences"];
-const EMPLOYER_ROUTES = ["/dashboard", "/account", "/departments", "/employees", "/shift-types", "/schedules", "/organizations"];
+const EMPLOYER_ROUTES = ["/dashboard", "/account", "/departments", "/employees", "/shift-types", "/shift-templates", "/schedules", "/organizations"];
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();

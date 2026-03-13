@@ -6,19 +6,19 @@ import { Input } from "@/components/ui/shadcn/input"
 import { TimePicker } from "@/components/ui/inputs/TimePicker"
 import ColorPicker from "@/components/ui/inputs/ColorPicker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
-import { Department, ShiftTypeFormValues } from "@/types"
+import { Department, ShiftTemplateFormValues } from "@/types"
 
-interface ShiftTypeFormProps {
+interface ShiftTemplateFormProps {
     formId: string
-    register: UseFormRegister<ShiftTypeFormValues>
-    control: Control<ShiftTypeFormValues>
-    errors: FieldErrors<ShiftTypeFormValues>
+    register: UseFormRegister<ShiftTemplateFormValues>
+    control: Control<ShiftTemplateFormValues>
+    errors: FieldErrors<ShiftTemplateFormValues>
     minEmployees?: number
     departments: Department[]
     onSubmit: (e: React.FormEvent) => void
 }
 
-export function ShiftTypeForm({
+export function ShiftTemplateForm({
     formId,
     register,
     control,
@@ -26,7 +26,7 @@ export function ShiftTypeForm({
     minEmployees,
     departments,
     onSubmit,
-}: ShiftTypeFormProps) {
+}: ShiftTemplateFormProps) {
     const t = useTranslations('employer.shiftTypes');
 
     return (

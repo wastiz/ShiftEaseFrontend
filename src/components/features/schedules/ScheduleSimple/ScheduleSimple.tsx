@@ -12,13 +12,13 @@ import {
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
 import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
-import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
+import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
-import ShiftTypeSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
+import ShiftTemplateSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
 import {
     Popover,
     PopoverContent,
@@ -45,7 +45,7 @@ import { CoverageCheckModal } from "@/components/features/schedules/CoverageChec
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
-    shiftTypes: ShiftType[];
+    shiftTypes: ShiftTemplate[];
     departments?: Department[];
     shiftsData: Shift[];
     setShiftsData: (shifts: Shift[]) => void;
@@ -80,7 +80,7 @@ export default function SimpleView({
 }: SimpleViewProps) {
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
-    const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
+    const [selectedShiftTemplates, setSelectedShiftTemplates] = useState<number[]>([]);
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
@@ -100,25 +100,25 @@ export default function SimpleView({
             }
         }
 
-        if (selectedShiftTypes.length === 0) return result;
+        if (selectedShiftTemplates.length === 0) return result;
 
         const employeeIdsWithSelectedShifts = new Set<number>();
         shiftsData.forEach(shift => {
-            if (selectedShiftTypes.includes(shift.shiftTypeId)) {
+            if (selectedShiftTemplates.includes(shift.shiftTypeId)) {
                 shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
             }
         });
 
         return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, departments, selectedDepartmentId, selectedShiftTypes, shiftsData]);
+    }, [employees, departments, selectedDepartmentId, selectedShiftTemplates, shiftsData]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
         [filteredEmployees, shiftsData, dates]
     );
 
-    const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
-        setSelectedShiftTypes(prev =>
+    const handleShiftTemplateFilterToggle = (shiftTypeId: number) => {
+        setSelectedShiftTemplates(prev =>
             prev.includes(shiftTypeId)
                 ? prev.filter(id => id !== shiftTypeId)
                 : [...prev, shiftTypeId]
@@ -278,7 +278,7 @@ export default function SimpleView({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-auto">
-                            <Filter className={(selectedShiftTypes.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
+                            <Filter className={(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
@@ -318,8 +318,8 @@ export default function SimpleView({
                                         <div key={st.id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`filter-simple-${st.id}`}
-                                                checked={selectedShiftTypes.includes(st.id)}
-                                                onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                checked={selectedShiftTemplates.includes(st.id)}
+                                                onCheckedChange={() => handleShiftTemplateFilterToggle(st.id)}
                                             />
                                             <Label
                                                 htmlFor={`filter-simple-${st.id}`}
@@ -335,11 +335,11 @@ export default function SimpleView({
                                     ))}
                                 </div>
                             </div>
-                            {(selectedShiftTypes.length > 0 || selectedDepartmentId !== null) && (
+                            {(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => { setSelectedShiftTypes([]); setSelectedDepartmentId(null); }}
+                                    onClick={() => { setSelectedShiftTemplates([]); setSelectedDepartmentId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters
@@ -422,7 +422,7 @@ export default function SimpleView({
                     {layoutPosition === 'top' ? (
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {shiftTypes.map((st) => (
-                                <ShiftTypeSmallCard
+                                <ShiftTemplateSmallCard
                                     key={st.id}
                                     name={st.name}
                                     id={st.id}
@@ -435,7 +435,7 @@ export default function SimpleView({
                     ) : (
                         <div className="space-y-2">
                             {shiftTypes.map((st) => (
-                                <ShiftTypeSmallCard
+                                <ShiftTemplateSmallCard
                                     key={st.id}
                                     name={st.name}
                                     id={st.id}
@@ -469,7 +469,7 @@ export default function SimpleView({
                                     const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                     const holiday = !!holidayInfo
                                     const isShortenedDay = holidayInfo?.isShortenedDay
-                                    const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
+                                    const isNonWorkingDay = (holiday && !isShortenedDay)
 
                                     return (
                                         <TableHead
@@ -554,7 +554,7 @@ export default function SimpleView({
                                         const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                         const holiday = !!holidayInfo
                                         const isShortenedDay = holidayInfo?.isShortenedDay
-                                        const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
+                                        const isNonWorkingDay = (holiday && !isShortenedDay)
                                         const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
 
                                         return (

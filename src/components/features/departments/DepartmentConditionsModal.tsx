@@ -11,7 +11,7 @@ import { TimePicker } from "@/components/ui/inputs/TimePicker"
 import ColorPicker from "@/components/ui/inputs/ColorPicker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
 import { DepartmentFormValues, DayOfWeek } from "@/types"
-import { useGetShiftTypes, useCreateShiftType, useDeleteShiftType } from "@/hooks/api/employer/shift-types"
+import { useGetShiftTemplates, useCreateShiftTemplate, useDeleteShiftTemplate } from "@/hooks/api/employer/shift-templates"
 
 const timeToPercent = (timeStr: string) => {
     if (!timeStr) return 0;
@@ -46,9 +46,9 @@ export function DepartmentConditionsModal({
     const tCommon = useTranslations('common')
     
     // Shift Types API
-    const { data: allShiftTypes = [] } = useGetShiftTypes()
-    const createShiftTypeMutation = useCreateShiftType()
-    const deleteShiftTypeMutation = useDeleteShiftType()
+    const { data: allShiftTypes = [] } = useGetShiftTemplates()
+    const createShiftTypeMutation = useCreateShiftTemplate()
+    const deleteShiftTypeMutation = useDeleteShiftTemplate()
 
     const departmentShiftTypes = allShiftTypes.filter(st => st.departmentId === departmentId)
 

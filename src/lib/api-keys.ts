@@ -20,8 +20,8 @@ export const departmentKeys = {
     all: ["departments"] as const,
 };
 
-export const shiftTypeKeys = {
-    all: ["shift-types"] as const,
+export const shiftTemplateKeys = {
+    all: ["shift-templates"] as const,
 };
 
 export const scheduleKeys = {

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/shadcn/button'
 import { PanelLeft, PanelTop, Filter } from 'lucide-react'
 import DayContainer from './DayContainer'
-import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftType, WorkDay } from '@/types'
+import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from '@/types'
 import { EmployeeTimeOff } from '@/types/schedule'
 import { Dispatch, SetStateAction, useState, useMemo, useEffect } from 'react'
 import {
@@ -28,7 +28,7 @@ import ScheduleData from "@/components/features/schedules/ScheduleData"
 type ScheduleCalendarProps = {
     shiftsData: Shift[]
     setShiftsData?: Dispatch<SetStateAction<Shift[]>>
-    shiftTypes: ShiftType[]
+    shiftTypes: ShiftTemplate[]
     employees: EmployeeMinData[]
     departments?: Department[]
     daysOfMonth: DateData[]
@@ -66,7 +66,7 @@ export default function ScheduleCalendar({
 }: ScheduleCalendarProps) {
 
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
-    const [selectedShiftTypeIds, setSelectedShiftTypeIds] = useState<number[]>([])
+    const [selectedShiftTemplateIds, setSelectedShiftTemplateIds] = useState<number[]>([])
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null)
 
     // Set default department to first department when departments become available
@@ -82,7 +82,7 @@ export default function ScheduleCalendar({
     )
 
     // Shift types that belong to the selected department
-    const departmentShiftTypes = useMemo(
+    const departmentShiftTemplates = useMemo(
         () => selectedDepartmentId !== null
             ? shiftTypes.filter(st => st.departmentId === selectedDepartmentId)
             : shiftTypes,
@@ -99,33 +99,33 @@ export default function ScheduleCalendar({
 
     // Shifts that belong to the selected department (by shift type)
     const departmentShifts = useMemo(() => {
-        const departmentShiftTypeIds = new Set(departmentShiftTypes.map(st => st.id))
-        return shiftsData.filter(s => departmentShiftTypeIds.has(s.shiftTypeId))
-    }, [shiftsData, departmentShiftTypes])
+        const departmentShiftTemplateIds = new Set(departmentShiftTemplates.map(st => st.id))
+        return shiftsData.filter(s => departmentShiftTemplateIds.has(s.shiftTypeId))
+    }, [shiftsData, departmentShiftTemplates])
 
     // Further filter employees by selected shift types (inside the department)
     const visibleEmployees = useMemo(() => {
-        if (selectedShiftTypeIds.length === 0) return departmentEmployees
+        if (selectedShiftTemplateIds.length === 0) return departmentEmployees
 
         const empIds = new Set<number>()
         departmentShifts.forEach(shift => {
-            if (selectedShiftTypeIds.includes(shift.shiftTypeId)) {
+            if (selectedShiftTemplateIds.includes(shift.shiftTypeId)) {
                 shift.employees.forEach(e => empIds.add(e.id))
             }
         })
         return departmentEmployees.filter(emp => empIds.has(emp.id))
-    }, [departmentEmployees, selectedShiftTypeIds, departmentShifts])
+    }, [departmentEmployees, selectedShiftTemplateIds, departmentShifts])
 
     // Shift types visible in the panel (filtered within department)
-    const visibleShiftTypes = useMemo(
-        () => selectedShiftTypeIds.length > 0
-            ? departmentShiftTypes.filter(st => selectedShiftTypeIds.includes(st.id))
-            : departmentShiftTypes,
-        [departmentShiftTypes, selectedShiftTypeIds]
+    const visibleShiftTemplates = useMemo(
+        () => selectedShiftTemplateIds.length > 0
+            ? departmentShiftTemplates.filter(st => selectedShiftTemplateIds.includes(st.id))
+            : departmentShiftTemplates,
+        [departmentShiftTemplates, selectedShiftTemplateIds]
     )
 
-    const handleShiftTypeFilterToggle = (id: number) => {
-        setSelectedShiftTypeIds(prev =>
+    const handleShiftTemplateFilterToggle = (id: number) => {
+        setSelectedShiftTemplateIds(prev =>
             prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         )
     }
@@ -150,7 +150,7 @@ export default function ScheduleCalendar({
                         value={selectedDepartmentId?.toString() ?? ''}
                         onValueChange={(v) => {
                             setSelectedDepartmentId(Number(v))
-                            setSelectedShiftTypeIds([])
+                            setSelectedShiftTemplateIds([])
                         }}
                     >
                         <SelectTrigger className="w-44">
@@ -177,23 +177,23 @@ export default function ScheduleCalendar({
                 {isEditable && (
                     <>
                         {/* Shift type filter within the selected department */}
-                        {departmentShiftTypes.length > 0 && (
+                        {departmentShiftTemplates.length > 0 && (
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" size="icon">
-                                        <Filter className={selectedShiftTypeIds.length > 0 ? 'text-primary' : ''} />
+                                        <Filter className={selectedShiftTemplateIds.length > 0 ? 'text-primary' : ''} />
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-72">
                                     <div className="space-y-3">
                                         <h4 className="font-medium text-sm">Filter by Shift Type</h4>
                                         <div className="space-y-2">
-                                            {departmentShiftTypes.map(st => (
+                                            {departmentShiftTemplates.map(st => (
                                                 <div key={st.id} className="flex items-center space-x-2">
                                                     <Checkbox
                                                         id={`cal-filter-${st.id}`}
-                                                        checked={selectedShiftTypeIds.includes(st.id)}
-                                                        onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                        checked={selectedShiftTemplateIds.includes(st.id)}
+                                                        onCheckedChange={() => handleShiftTemplateFilterToggle(st.id)}
                                                     />
                                                     <Label
                                                         htmlFor={`cal-filter-${st.id}`}
@@ -208,12 +208,12 @@ export default function ScheduleCalendar({
                                                 </div>
                                             ))}
                                         </div>
-                                        {selectedShiftTypeIds.length > 0 && (
+                                        {selectedShiftTemplateIds.length > 0 && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"
-                                                onClick={() => setSelectedShiftTypeIds([])}
+                                                onClick={() => setSelectedShiftTemplateIds([])}
                                             >
                                                 Clear
                                             </Button>
@@ -244,7 +244,7 @@ export default function ScheduleCalendar({
             <ScheduleData
                 isEditable={isEditable}
                 layoutPosition={layoutPosition}
-                shiftTypes={visibleShiftTypes}
+                shiftTypes={visibleShiftTemplates}
                 filteredEmployees={visibleEmployees}
             >
                 <section className="flex-1 flex flex-col min-w-0 space-y-4">
@@ -273,7 +273,7 @@ export default function ScheduleCalendar({
                                     key={day.isoDate}
                                     date={day.isoDate}
                                     dateLabel={day.label}
-                                    shiftTypes={departmentShiftTypes}
+                                    shiftTypes={departmentShiftTemplates}
                                     employees={departmentEmployees}
                                     shiftsData={departmentShifts}
                                     setShiftsData={setShiftsData}

@@ -24,7 +24,7 @@ export default function EntityCheckResult({ entities }: EntityCheckResultProps) 
     }> = [
         { key: 'departments', label: t('departments'), createLabel: t('createDepartments'), path: '/departments' },
         { key: 'employees', label: t('employees'), createLabel: t('createEmployees'), path: '/employees' },
-        { key: 'shiftTypes', label: t('shiftTypes'), createLabel: t('createShiftTypes'), path: '/shift-types' },
+        { key: 'shiftTypes', label: t('shiftTypes'), createLabel: t('createShiftTypes'), path: '/shift-templates' },
     ];
 
     return (

@@ -1,4 +1,4 @@
-export type ShiftTypeFormValues = {
+export type ShiftTemplateFormValues = {
     name: string;
     startTime: string;
     endTime: string;
@@ -8,7 +8,7 @@ export type ShiftTypeFormValues = {
     departmentId: number;
 }
 
-export type ShiftType = {
+export type ShiftTemplate = {
     id: number;
     name: string;
     startTime: string;

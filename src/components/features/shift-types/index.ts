@@ -1,2 +1,2 @@
-export { ShiftTypeAsideForm } from "./ShiftTypeAsideForm"
-export { ShiftTypeForm } from "./ShiftTypeForm"
+export { ShiftTemplateAsideForm } from "./ShiftTypeAsideForm"
+export { ShiftTemplateForm } from "./ShiftTypeForm"

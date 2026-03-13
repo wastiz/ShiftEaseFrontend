@@ -4,10 +4,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-import { ShiftType, ShiftTypeFormValues } from "@/types";
+import { ShiftTemplate, ShiftTemplateFormValues } from "@/types";
 import Header from "@/components/ui/Header";
-import ShiftTypeCard from "@/components/ui/cards/ShiftTypeCard";
-import { ShiftTypeAsideForm } from "@/components/features/shift-types";
+import ShiftTemplateCard from "@/components/ui/cards/ShiftTypeCard";
+import { ShiftTemplateAsideForm } from "@/components/features/shift-types";
 import {
     Dialog,
     DialogContent,
@@ -17,29 +17,29 @@ import {
 } from "@/components/ui/shadcn/dialog";
 import { Button } from "@/components/ui/shadcn/button";
 import {
-    useCreateShiftType,
-    useDeleteShiftType,
+    useCreateShiftTemplate,
+    useDeleteShiftTemplate,
     useGetDepartments,
-    useGetShiftTypes,
-    useUpdateShiftType,
+    useGetShiftTemplates,
+    useUpdateShiftTemplate,
 } from "@/hooks/api";
 import {roundToMinutes} from "@/helpers/dateHelper";
 import {useTranslations} from "next-intl";
 
-export default function ShiftTypes() {
+export default function ShiftTemplates() {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [selectedShift, setSelectedShift] = useState<ShiftType | null>(null);
+    const [selectedShift, setSelectedShift] = useState<ShiftTemplate | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
     const t = useTranslations("employer.shiftTypes")
 
-    const { data: shifts = [], isLoading, isError } = useGetShiftTypes();
+    const { data: shifts = [], isLoading, isError } = useGetShiftTemplates();
     const { data: departments = [] } = useGetDepartments();
 
-    const createMutation = useCreateShiftType();
-    const updateMutation = useUpdateShiftType(selectedShift?.id ?? 0);
-    const deleteMutation = useDeleteShiftType();
+    const createMutation = useCreateShiftTemplate();
+    const updateMutation = useUpdateShiftTemplate(selectedShift?.id ?? 0);
+    const deleteMutation = useDeleteShiftTemplate();
 
-    const openDrawer = (shift?: ShiftType) => {
+    const openDrawer = (shift?: ShiftTemplate) => {
         setSelectedShift(shift ?? null);
         setDrawerOpen(true);
     };
@@ -49,7 +49,7 @@ export default function ShiftTypes() {
         setDrawerOpen(false);
     };
 
-    const handleCreate = (data: ShiftTypeFormValues) => {
+    const handleCreate = (data: ShiftTemplateFormValues) => {
         createMutation.mutate(data, {
             onSuccess: () => {
                 toast.success("Shift type created!");
@@ -59,7 +59,7 @@ export default function ShiftTypes() {
         });
     };
 
-    const handleUpdate = (_id: number, data: ShiftTypeFormValues) => {
+    const handleUpdate = (_id: number, data: ShiftTemplateFormValues) => {
         updateMutation.mutate(
             { id: selectedShift?.id ?? 0, ...data },
             {
@@ -91,7 +91,7 @@ export default function ShiftTypes() {
     return (
         <>
             <Header title={t("title")}>
-                <ShiftTypeAsideForm
+                <ShiftTemplateAsideForm
                     open={drawerOpen}
                     onOpenChange={(open) => {
                         if (!open) closeDrawer();
@@ -131,7 +131,7 @@ export default function ShiftTypes() {
                 {shifts.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {shifts.map((shift  ) => (
-                            <ShiftTypeCard
+                            <ShiftTemplateCard
                                 key={shift.id}
                                 name={shift.name}
                                 employees={`${shift.minEmployees}-${shift.maxEmployees}`}

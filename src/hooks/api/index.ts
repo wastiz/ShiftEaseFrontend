@@ -2,7 +2,7 @@ export * from "./auth";
 
 export * from "./employer/organizations"
 export * from "./employer/departments"
-export * from "./employer/shift-types"
+export * from "./employer/shift-templates"
 export * from "./employer/schedules"
 export * from "./employer/employees"
 

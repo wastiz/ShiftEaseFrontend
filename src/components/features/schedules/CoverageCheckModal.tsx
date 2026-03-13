@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/shadcn/dialog'
 import { Badge } from '@/components/ui/shadcn/badge'
 import { CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react'
-import { DateData, Department, Holiday, Shift, ShiftType, WorkDay } from '@/types'
+import { DateData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from '@/types'
 import { isHoliday, isWorkingDay, roundToMinutes } from '@/helpers/dateHelper'
 
 type IssueSeverity = 'understaffed' | 'overstaffed'
@@ -22,8 +22,8 @@ type DayIssue = {
     severity: IssueSeverity
 }
 
-type ShiftTypeCoverage = {
-    shiftType: ShiftType
+type ShiftTemplateCoverage = {
+    shiftType: ShiftTemplate
     departmentName: string
     totalWorkingDays: number
     okDays: number
@@ -33,7 +33,7 @@ type ShiftTypeCoverage = {
 type CoverageCheckModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    shiftTypes: ShiftType[]
+    shiftTypes: ShiftTemplate[]
     shiftsData: Shift[]
     daysOfMonth: DateData[]
     orgHolidays: Holiday[]
@@ -51,7 +51,7 @@ export function CoverageCheckModal({
     orgSchedule,
     departments,
 }: CoverageCheckModalProps) {
-    const coverage = useMemo<ShiftTypeCoverage[]>(() => {
+    const coverage = useMemo<ShiftTemplateCoverage[]>(() => {
         const workingDays = daysOfMonth.filter(
             day => !isHoliday(day.isoDate, orgHolidays) && isWorkingDay(day.isoDate, orgSchedule)
         )

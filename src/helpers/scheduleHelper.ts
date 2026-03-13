@@ -1,4 +1,4 @@
-import { Shift, EmployeeMinData, ShiftType } from "@/types";
+import { Shift, EmployeeMinData } from "@/types";
 
 export type EmployeeScheduleRow = {
     employeeId: number;

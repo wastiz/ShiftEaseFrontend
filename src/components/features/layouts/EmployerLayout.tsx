@@ -25,8 +25,8 @@ export default function EmployerLayout({
         { title: t('dashboard'), url: "/dashboard", icon: "LayoutDashboard" as const, isActive: true },
         { title: t('schedules'), url: "/schedules", icon: "CalendarCheck" as const },
         { title: t('employees'), url: "/employees", icon: "IdCardLanyard" as const },
-        { title: t('departments'), url: "/departments", icon: "UserRound" as const },
-        { title: t('shiftTypes'), url: "/shift-types", icon: "FileType" as const },
+        { title: t('departments'), url: "/departments", icon: "Building2" as const },
+        { title: t('shiftTemplates'), url: "/shift-templates", icon: "FileType" as const },
     ];
 
     return (

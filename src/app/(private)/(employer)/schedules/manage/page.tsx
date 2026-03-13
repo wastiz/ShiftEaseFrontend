@@ -23,14 +23,14 @@ import ScheduleCalendar from "@/components/features/schedules/ScheduleCalendar/S
 import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import { Holiday, WorkDay } from "@/types"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/shadcn/toggle-department"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/shadcn/toggle-group"
 import { Calendar, Download, List, Loader2, Settings } from "lucide-react"
 import SimpleView from "@/components/features/schedules/ScheduleSimple/ScheduleSimple"
 import { toast } from "sonner"
 import { useTranslations } from 'next-intl'
 import SchedulePresetDialog, { SchedulePreset } from "@/components/features/schedules/SchedulePresetDialog";
 import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
-import { ButtonGroup } from "@/components/ui/shadcn/button-department";
+import { ButtonGroup } from "@/components/ui/shadcn/button-group";
 
 const today = new Date()
 
@@ -156,7 +156,7 @@ export default function ManageSchedule() {
         }
 
         const preset = (currentPreset?.mode === 'standard' ? currentPreset : null) || {
-            AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
+            AllowedShiftTemplateIds: data?.shiftTypes?.map(st => st.id) || [],
             MaxConsecutiveShifts: DEFAULT_MAX_CONSECUTIVE_SHIFTS,
             SchedulePattern: SchedulePattern.Custom,
             MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK,
@@ -166,7 +166,7 @@ export default function ManageSchedule() {
             {
                 startDate: daysOfMonth[0].isoDate,
                 endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                AllowedShiftTypeIds: preset.AllowedShiftTypeIds,
+                AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
                 MaxConsecutiveShifts: preset.MaxConsecutiveShifts,
                 SchedulePattern: preset.SchedulePattern,
                 MinDaysOffPerWeek: preset.MinDaysOffPerWeek,

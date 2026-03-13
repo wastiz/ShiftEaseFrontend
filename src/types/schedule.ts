@@ -1,7 +1,7 @@
 import { Holiday, WorkDay } from "@/types/organizations";
 import { EmployeeMinData } from "@/types/employee";
 import { Department } from "@/types/department";
-import { ShiftType } from "@/types/shiftType";
+import { ShiftTemplate } from "@/types/shiftType";
 
 export interface ScheduleSummary {
     confirmedSchedules: ScheduleItem[];
@@ -28,7 +28,7 @@ export interface DayIssue {
 
 export type ScheduleEditorData = {
     employees: EmployeeMinData[];
-    shiftTypes: ShiftType[];
+    shiftTypes: ShiftTemplate[];
     departments: Department[];
     organizationHolidays: Holiday[];
     organizationSchedule: WorkDay[];

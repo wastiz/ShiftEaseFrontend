@@ -1,25 +1,25 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslations } from "next-intl"
-import { Department, ShiftType, ShiftTypeFormValues } from "@/types"
+import { Department, ShiftTemplate, ShiftTemplateFormValues } from "@/types"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
 import { Button } from "@/components/ui/shadcn/button"
-import { ShiftTypeForm } from "./ShiftTypeForm"
+import { ShiftTemplateForm } from "./ShiftTypeForm"
 
-interface ShiftTypeAsideFormProps {
+interface ShiftTemplateAsideFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    selectedShift: ShiftType | null
+    selectedShift: ShiftTemplate | null
     departments: Department[]
-    onCreate: (data: ShiftTypeFormValues) => void
-    onUpdate: (id: number, data: ShiftTypeFormValues) => void
+    onCreate: (data: ShiftTemplateFormValues) => void
+    onUpdate: (id: number, data: ShiftTemplateFormValues) => void
     onDelete: (id: number) => void
     isCreating?: boolean
     isUpdating?: boolean
     isDeleting?: boolean
 }
 
-export function ShiftTypeAsideForm({
+export function ShiftTemplateAsideForm({
     open,
     onOpenChange,
     selectedShift,
@@ -30,7 +30,7 @@ export function ShiftTypeAsideForm({
     isCreating,
     isUpdating,
     isDeleting,
-}: ShiftTypeAsideFormProps) {
+}: ShiftTemplateAsideFormProps) {
     const t = useTranslations('employer.shiftTypes')
     const tCommon = useTranslations('common')
     const formId = "shift-type-form"
@@ -42,7 +42,7 @@ export function ShiftTypeAsideForm({
         reset,
         watch,
         formState: { errors },
-    } = useForm<ShiftTypeFormValues>({
+    } = useForm<ShiftTemplateFormValues>({
         defaultValues: {
             name: "",
             startTime: "09:00",
@@ -80,7 +80,7 @@ export function ShiftTypeAsideForm({
         }
     }, [open, selectedShift, reset])
 
-    const onSubmit = (data: ShiftTypeFormValues) => {
+    const onSubmit = (data: ShiftTemplateFormValues) => {
         if (selectedShift) {
             onUpdate(selectedShift.id, data)
         } else {
@@ -92,9 +92,9 @@ export function ShiftTypeAsideForm({
         <AsideDrawer
             open={open}
             onOpenChange={onOpenChange}
-            title={selectedShift ? t('editShiftType') : t('addShiftType')}
+            title={selectedShift ? t('editShiftTemplate') : t('addShiftTemplate')}
             description={t('configureDetails')}
-            trigger={<Button>+ {t('addShiftType')}</Button>}
+            trigger={<Button>+ {t('addShiftTemplate')}</Button>}
             footer={
                 <>
                     <Button
@@ -121,7 +121,7 @@ export function ShiftTypeAsideForm({
                 </>
             }
         >
-            <ShiftTypeForm
+            <ShiftTemplateForm
                 formId={formId}
                 register={register}
                 control={control}
