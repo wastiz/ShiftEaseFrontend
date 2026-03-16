@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Department, DepartmentFormValues } from "@/types";
+import { Department } from "@/types";
 import Header from "@/components/ui/Header";
 import Loader from "@/components/ui/Loader";
 import DepartmentCard from "@/components/ui/cards/DepartmentCard";
@@ -22,6 +22,8 @@ import {
     useUpdateDepartment,
     useDeleteDepartment,
 } from "@/hooks/api";
+import { useCreateShiftTemplate } from "@/hooks/api/employer/shift-templates";
+import { DepartmentFormValues, PendingShiftTemplate } from "@/types";
 import {useTranslations} from "next-intl";
 
 export default function Departments() {
@@ -36,6 +38,7 @@ export default function Departments() {
     const createMutation = useCreateDepartment();
     const updateMutation = useUpdateDepartment(selectedDepartment?.id ?? 0);
     const deleteMutation = useDeleteDepartment();
+    const createShiftTemplate = useCreateShiftTemplate();
 
     const openDrawer = (department?: Department) => {
         setSelectedDepartment(department ?? null);
@@ -47,10 +50,15 @@ export default function Departments() {
         setDrawerOpen(false);
     };
 
-    const handleCreate = (data: DepartmentFormValues) => {
+    const handleCreate = (data: DepartmentFormValues, pendingTemplates: PendingShiftTemplate[]) => {
         createMutation.mutate(data, {
-            onSuccess: () => {
-                toast.success("Department created!");
+            onSuccess: (response) => {
+                const newDepartmentId = response.data?.id
+                if (newDepartmentId && pendingTemplates.length > 0) {
+                    pendingTemplates.forEach(template => {
+                        createShiftTemplate.mutate({ ...template, departmentId: newDepartmentId })
+                    })
+                }
                 closeDrawer();
             },
             onError: () => toast.error("Failed to create department"),

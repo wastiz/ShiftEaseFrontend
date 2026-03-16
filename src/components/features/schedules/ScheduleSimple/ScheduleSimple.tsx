@@ -413,7 +413,7 @@ export default function SimpleView({
 
             <div className={`flex flex-1 min-h-0 ${layoutPosition === 'left' ? 'flex-row gap-4' : 'flex-col gap-4'}`}>
                 <div className={`border rounded-lg p-4 bg-muted/50 flex-shrink-0 flex flex-col ${layoutPosition === 'left' ? 'w-64 border-r overflow-y-auto max-h-[calc(100vh-200px)]' : ''}`}>
-                    <h3 className="font-semibold mb-3">Available Shift Types</h3>
+                    <h3 className="font-semibold mb-3">{t("availableShiftTemplates")}</h3>
                     {layoutPosition === 'top' ? (
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {shiftTypes.map((st) => (

@@ -8,6 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/shadcn/dropdown-menu";
 import { Label } from "@/components/ui/shadcn/label";
+import {useTranslations} from "next-intl";
 
 type ColorPickerProps = {
     value: string;

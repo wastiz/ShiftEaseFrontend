@@ -47,7 +47,10 @@
     "phone": "Телефон",
     "signIn": "Войти",
     "signUp": "Регистрация",
-    "logIn": "Войти"
+    "logIn": "Войти",
+    "startTime": "Начало",
+    "endTime": "Конец",
+    "color": "Цвет"
   },
   "auth": {
     "loginTitle": "Войти в аккаунт {role}",
@@ -680,6 +683,7 @@
   "schedule": {
     "manageSchedule": "Управление расписанием",
     "selectDepartment": "Выберите отдел",
+    "availableShiftTemplates": "Доступные шаблоны смен",
     "simpleView": "Простой вид",
     "calendarView": "Вид календаря",
     "compactView": "Компактный вид",
