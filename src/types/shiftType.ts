@@ -1,14 +1,14 @@
-export type ShiftTypeFormValues = {
+export type ShiftTemplateFormValues = {
     name: string;
     startTime: string;
     endTime: string;
     minEmployees: number;
     maxEmployees: number;
     color: string;
-    groupId: number;
+    departmentId: number;
 }
 
-export type ShiftType = {
+export type ShiftTemplate = {
     id: number;
     name: string;
     startTime: string;
@@ -16,6 +16,6 @@ export type ShiftType = {
     minEmployees: number;
     maxEmployees: number;
     color: string;
-    groupId: number;
+    departmentId: number;
 };
 

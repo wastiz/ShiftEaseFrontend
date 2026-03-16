@@ -53,7 +53,7 @@ export default function SignInRightBlock () {
                             initial={{opacity: 0, x: -20}}
                             animate={{opacity: 1, x: 0}}
                             transition={{delay: 0.4 + index * 0.1, duration: 0.5}}
-                            className="flex items-start space-x-4 group"
+                            className="flex items-start space-x-4 department"
                         >
                             <div
                                 className={`flex-shrink-0 w-12 h-12 ${feature.iconBg} rounded-xl flex items-center justify-center shadow-sm border border-textSecondary/20`}>

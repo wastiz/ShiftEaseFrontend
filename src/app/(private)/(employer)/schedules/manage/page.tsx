@@ -156,7 +156,7 @@ export default function ManageSchedule() {
         }
 
         const preset = (currentPreset?.mode === 'standard' ? currentPreset : null) || {
-            AllowedShiftTypeIds: data?.shiftTypes?.map(st => st.id) || [],
+            AllowedShiftTemplateIds: data?.shiftTypes?.map(st => st.id) || [],
             MaxConsecutiveShifts: DEFAULT_MAX_CONSECUTIVE_SHIFTS,
             SchedulePattern: SchedulePattern.Custom,
             MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK,
@@ -166,7 +166,7 @@ export default function ManageSchedule() {
             {
                 startDate: daysOfMonth[0].isoDate,
                 endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                AllowedShiftTypeIds: preset.AllowedShiftTypeIds,
+                AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
                 MaxConsecutiveShifts: preset.MaxConsecutiveShifts,
                 SchedulePattern: preset.SchedulePattern,
                 MinDaysOffPerWeek: preset.MinDaysOffPerWeek,
@@ -203,7 +203,7 @@ export default function ManageSchedule() {
     if (error) return <p className="p-4 text-red-500">{t('failedToLoad')}</p>
 
     return (
-        <>
+        <div className="flex flex-col h-screen overflow-hidden">
             <Header title={t('manageSchedule')}>
                 <div className="flex gap-2">
                     <ButtonGroup>
@@ -254,13 +254,14 @@ export default function ManageSchedule() {
                 </Button>
             </Header>
 
+            <div className="flex-1 overflow-hidden">
             {viewMode === 'calendar' ? (
                 <ScheduleCalendar
                     shiftsData={shiftsData}
                     setShiftsData={setShiftsData}
                     shiftTypes={data?.shiftTypes ?? []}
                     employees={data?.employees ?? []}
-                    groups={data?.groups ?? []}
+                    departments={data?.departments ?? []}
                     daysOfMonth={daysOfMonth}
                     currentMonth={currentMonth}
                     currentYear={currentYear}
@@ -277,7 +278,7 @@ export default function ManageSchedule() {
                 <SimpleView
                     employees={data?.employees ?? []}
                     shiftTypes={data?.shiftTypes ?? []}
-                    groups={data?.groups ?? []}
+                    departments={data?.departments ?? []}
                     shiftsData={shiftsData}
                     setShiftsData={setShiftsData}
                     daysOfMonth={daysOfMonth}
@@ -292,6 +293,7 @@ export default function ManageSchedule() {
                     warningMessage={null}
                 />
             )}
+            </div>
 
             <SchedulePresetDialog
                 open={presetDialogOpen}
@@ -309,6 +311,6 @@ export default function ManageSchedule() {
                     warnings={generateResult.warnings}
                 />
             )}
-        </>
+        </div>
     )
 }

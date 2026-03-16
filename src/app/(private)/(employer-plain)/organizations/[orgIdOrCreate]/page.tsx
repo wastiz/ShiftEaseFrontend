@@ -38,7 +38,7 @@ import { Switch } from "@/components/ui/shadcn/switch";
 import {
     ToggleGroup,
     ToggleGroupItem,
-} from "@/components/ui/shadcn/toggle-group";
+} from "@/components/ui/shadcn/toggle-department";
 import { useAddOrganization, useGetOrganization, useUpdateOrganization } from "@/hooks/api";
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";

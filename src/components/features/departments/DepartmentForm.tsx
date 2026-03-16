@@ -9,28 +9,26 @@ import ColorPicker from "@/components/ui/inputs/ColorPicker"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/shadcn/tooltip"
 import { Switch } from "@/components/ui/shadcn/switch"
 import { TimePicker } from "@/components/ui/inputs/TimePicker"
-import { GroupFormValues } from "@/types"
+import { DepartmentFormValues } from "@/types"
 
-interface GroupFormProps {
+interface DepartmentFormProps {
     formId: string
-    register: UseFormRegister<GroupFormValues>
-    control: Control<GroupFormValues>
-    errors: FieldErrors<GroupFormValues>
-    hasCustomTime: boolean
-    setHasCustomTime: (value: boolean) => void
+    register: UseFormRegister<DepartmentFormValues>
+    control: Control<DepartmentFormValues>
+    errors: FieldErrors<DepartmentFormValues>
+    onOpenConditionsModal: () => void
     onSubmit: (e: React.FormEvent) => void
 }
 
-export function GroupForm({
+export function DepartmentForm({
     formId,
     register,
     control,
     errors,
-    hasCustomTime,
-    setHasCustomTime,
+    onOpenConditionsModal,
     onSubmit,
-}: GroupFormProps) {
-    const t = useTranslations('employer.groups');
+}: DepartmentFormProps) {
+    const t = useTranslations('employer.departments');
     const tCommon = useTranslations('common');
 
     return (
@@ -42,11 +40,11 @@ export function GroupForm({
             {/* Name */}
             <FormField>
                 <Label>
-                    {t('groupName')} <span className="text-red-500 ml-1">*</span>
+                    {t('departmentName')} <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Input
                     {...register("name", { required: t('nameRequired') })}
-                    placeholder={t('enterGroupName')}
+                    placeholder={t('enterDepartmentName')}
                 />
                 {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -77,12 +75,11 @@ export function GroupForm({
                 />
             </FormField>
 
-            {/* Custom working time */}
-            <div className="border-t pt-4 space-y-4">
-                <div className="flex items-center justify-between">
+            {/* Department Conditions Button */}
+            <div className="border-t pt-4 mt-4">
+                <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                        <Label>{t('customWorkingHours')}</Label>
-
+                        <Label>{t('departmentConditions')}</Label>
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -90,50 +87,20 @@ export function GroupForm({
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs">
                                     <p>
-                                        {t('customWorkingHoursTooltip')}
+                                        {t('departmentConditionsTooltip')}
                                     </p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-
-                    <Switch
-                        checked={hasCustomTime}
-                        onCheckedChange={setHasCustomTime}
-                    />
                 </div>
-
-                {hasCustomTime && (
-                    <div className="space-y-4 pl-4 border-l-2">
-                        <FormField>
-                            <Label>{t('startTime')}</Label>
-                            <Controller
-                                name="startTime"
-                                control={control}
-                                render={({ field }) => (
-                                    <TimePicker
-                                        value={field.value ?? ""}
-                                        onChange={field.onChange}
-                                    />
-                                )}
-                            />
-                        </FormField>
-
-                        <FormField>
-                            <Label>{t('endTime')}</Label>
-                            <Controller
-                                name="endTime"
-                                control={control}
-                                render={({ field }) => (
-                                    <TimePicker
-                                        value={field.value ?? ""}
-                                        onChange={field.onChange}
-                                    />
-                                )}
-                            />
-                        </FormField>
-                    </div>
-                )}
+                <button
+                    type="button"
+                    onClick={onOpenConditionsModal}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-muted transition-colors text-sm font-medium"
+                >
+                    {t('configureConditions')}
+                </button>
             </div>
         </form>
     )

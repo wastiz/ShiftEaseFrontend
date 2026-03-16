@@ -1,10 +1,10 @@
-import { Shift, EmployeeMinData, ShiftType } from "@/types";
+import { Shift, EmployeeMinData } from "@/types";
 
 export type EmployeeScheduleRow = {
     employeeId: number;
     employeeName: string;
     position: string;
-    groupNames: string[];
+    departmentNames: string[];
     totalHours: number;
     days: Map<string, DayAssignment>;
 };
@@ -52,8 +52,8 @@ export function transformToSimpleView(
         return {
             employeeId: emp.id,
             employeeName: emp.name,
-            position: emp.groupNames.join(', '),
-            groupNames: emp.groupNames,
+            position: emp.departmentNames.join(', '),
+            departmentNames: emp.departmentNames,
             totalHours,
             days: daysMap,
         };

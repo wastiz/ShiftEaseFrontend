@@ -54,7 +54,7 @@ export interface OrganizationFormValues {
 export interface OrganizationDashboardData {
     id: number;
     name: string;
-    groupCount: number;
+    departmentCount: number;
     shiftTypeCount: number;
     employeeCount: number;
     scheduleCount: number;

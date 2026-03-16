@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Group, GroupFormValues } from "@/types";
+import { Department, DepartmentFormValues } from "@/types";
 import Header from "@/components/ui/Header";
 import Loader from "@/components/ui/Loader";
-import GroupCard from "@/components/ui/cards/GroupCard";
-import { GroupAsideForm } from "@/components/features/groups";
+import DepartmentCard from "@/components/ui/cards/DepartmentCard";
+import { DepartmentAsideForm } from "@/components/features/departments";
 import { Button } from "@/components/ui/shadcn/button";
 import {
     Dialog,
@@ -17,53 +17,53 @@ import {
     DialogFooter,
 } from "@/components/ui/shadcn/dialog";
 import {
-    useGetGroups,
-    useCreateGroup,
-    useUpdateGroup,
-    useDeleteGroup,
+    useGetDepartments,
+    useCreateDepartment,
+    useUpdateDepartment,
+    useDeleteDepartment,
 } from "@/hooks/api";
 import {useTranslations} from "next-intl";
 
-export default function Groups() {
-    const t = useTranslations("employer.groups");
+export default function Departments() {
+    const t = useTranslations("employer.departments");
     const tCommon = useTranslations("common")
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+    const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
-    const { data: groups = [], isLoading } = useGetGroups();
+    const { data: departments = [], isLoading } = useGetDepartments();
 
-    const createMutation = useCreateGroup();
-    const updateMutation = useUpdateGroup(selectedGroup?.id ?? 0);
-    const deleteMutation = useDeleteGroup();
+    const createMutation = useCreateDepartment();
+    const updateMutation = useUpdateDepartment(selectedDepartment?.id ?? 0);
+    const deleteMutation = useDeleteDepartment();
 
-    const openDrawer = (group?: Group) => {
-        setSelectedGroup(group ?? null);
+    const openDrawer = (department?: Department) => {
+        setSelectedDepartment(department ?? null);
         setDrawerOpen(true);
     };
 
     const closeDrawer = () => {
-        setSelectedGroup(null);
+        setSelectedDepartment(null);
         setDrawerOpen(false);
     };
 
-    const handleCreate = (data: GroupFormValues) => {
+    const handleCreate = (data: DepartmentFormValues) => {
         createMutation.mutate(data, {
             onSuccess: () => {
-                toast.success("Group created!");
+                toast.success("Department created!");
                 closeDrawer();
             },
-            onError: () => toast.error("Failed to create group"),
+            onError: () => toast.error("Failed to create department"),
         });
     };
 
-    const handleUpdate = (_id: number, data: GroupFormValues) => {
+    const handleUpdate = (_id: number, data: DepartmentFormValues) => {
         updateMutation.mutate(data, {
             onSuccess: () => {
-                toast.success("Group updated!");
+                toast.success("Department updated!");
                 closeDrawer();
             },
-            onError: () => toast.error("Failed to update group"),
+            onError: () => toast.error("Failed to update department"),
         });
     };
 
@@ -75,17 +75,17 @@ export default function Groups() {
         if (!confirmDeleteId) return;
         deleteMutation.mutate(confirmDeleteId, {
             onSuccess: () => {
-                toast.success("Group deleted!");
+                toast.success("Department deleted!");
                 setConfirmDeleteId(null);
                 closeDrawer();
             },
-            onError: () => toast.error("Failed to delete group"),
+            onError: () => toast.error("Failed to delete department"),
         });
     };
 
-    const getWorkingHours = (group: Group) => {
-        if (group.startTime && group.endTime) {
-            return `${group.startTime} - ${group.endTime}`;
+    const getWorkingHours = (department: Department) => {
+        if (department.startTime && department.endTime) {
+            return `${department.startTime} - ${department.endTime}`;
         }
         return t("usesOrganizationHours");
     };
@@ -93,13 +93,13 @@ export default function Groups() {
     return (
         <>
             <Header title={t("title")}>
-                <GroupAsideForm
+                <DepartmentAsideForm
                     open={drawerOpen}
                     onOpenChange={(open) => {
                         if (!open) closeDrawer();
                         else setDrawerOpen(true);
                     }}
-                    selectedGroup={selectedGroup}
+                    selectedDepartment={selectedDepartment}
                     onCreate={handleCreate}
                     onUpdate={handleUpdate}
                     onDelete={handleDeleteClick}
@@ -112,19 +112,19 @@ export default function Groups() {
             <main className="p-4">
                 {isLoading ? (
                     <Loader />
-                ) : groups.length > 0 ? (
+                ) : departments.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {groups.map((group) => (
-                            <GroupCard
-                                key={group.id}
-                                name={group.name}
-                                description={group.description}
-                                color={group.color}
-                                workingHours={getWorkingHours(group)}
+                        {departments.map((department) => (
+                            <DepartmentCard
+                                key={department.id}
+                                name={department.name}
+                                description={department.description}
+                                color={department.color}
+                                workingHours={getWorkingHours(department)}
                                 actions={[
                                     {
                                         label: tCommon("edit"),
-                                        onClick: () => openDrawer(group),
+                                        onClick: () => openDrawer(department),
                                     },
                                 ]}
                             />
@@ -132,9 +132,9 @@ export default function Groups() {
                     </div>
                 ) : (
                     <div className="mt-40 flex flex-col justify-center items-center space-y-4">
-                        <h4>No groups yet</h4>
+                        <h4>No departments yet</h4>
                         <Button onClick={() => openDrawer()}>
-                            Create your first group
+                            Create your first department
                         </Button>
                     </div>
                 )}
@@ -146,9 +146,9 @@ export default function Groups() {
                 >
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Delete Group</DialogTitle>
+                            <DialogTitle>Delete Department</DialogTitle>
                         </DialogHeader>
-                        <p>Are you sure you want to delete this group?</p>
+                        <p>Are you sure you want to delete this department?</p>
                         <DialogFooter className="flex justify-end gap-2">
                             <Button
                                 variant="secondary"

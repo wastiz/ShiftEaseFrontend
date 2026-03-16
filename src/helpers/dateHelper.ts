@@ -44,10 +44,11 @@ export function isHoliday(date: string, holidays: Holiday[]) {
     )
 }
 
+export const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
 export function isWorkingDay(date: string, workDays: WorkDay[]) {
     const d = new Date(date + 'T00:00:00')
     const dayOfWeek = d.getDay()
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const currentDayName = dayNames[dayOfWeek]
 
     return workDays.some(wd => wd.dayOfWeek === currentDayName)

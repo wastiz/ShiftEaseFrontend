@@ -10,17 +10,17 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/shadcn/popover"
-import { Group } from "@/types"
+import { Department } from "@/types"
 
 export interface EmployeeFiltersState {
     search: string
-    groupIds: number[]
+    departmentIds: number[]
 }
 
 interface EmployeeFiltersProps {
     filters: EmployeeFiltersState
     onFiltersChange: (filters: EmployeeFiltersState) => void
-    groups: Group[]
+    departments: Department[]
     totalCount: number
     filteredCount: number
 }
@@ -28,39 +28,39 @@ interface EmployeeFiltersProps {
 export function EmployeeFilters({
     filters,
     onFiltersChange,
-    groups,
+    departments,
     totalCount,
     filteredCount,
 }: EmployeeFiltersProps) {
     const t = useTranslations('employer.employees')
     const tCommon = useTranslations('common')
-    const hasActiveFilters = filters.search || filters.groupIds.length > 0
+    const hasActiveFilters = filters.search || filters.departmentIds.length > 0
 
-    const selectedGroups = useMemo(
-        () => groups.filter((g) => filters.groupIds.includes(g.id)),
-        [groups, filters.groupIds]
+    const selectedDepartments = useMemo(
+        () => departments.filter((g) => filters.departmentIds.includes(g.id)),
+        [departments, filters.departmentIds]
     )
 
     const updateSearch = (search: string) => {
         onFiltersChange({ ...filters, search })
     }
 
-    const toggleGroup = (groupId: number) => {
-        const newGroupIds = filters.groupIds.includes(groupId)
-            ? filters.groupIds.filter((id) => id !== groupId)
-            : [...filters.groupIds, groupId]
-        onFiltersChange({ ...filters, groupIds: newGroupIds })
+    const toggleDepartment = (departmentId: number) => {
+        const newDepartmentIds = filters.departmentIds.includes(departmentId)
+            ? filters.departmentIds.filter((id) => id !== departmentId)
+            : [...filters.departmentIds, departmentId]
+        onFiltersChange({ ...filters, departmentIds: newDepartmentIds })
     }
 
-    const removeGroup = (groupId: number) => {
+    const removeDepartment = (departmentId: number) => {
         onFiltersChange({
             ...filters,
-            groupIds: filters.groupIds.filter((id) => id !== groupId),
+            departmentIds: filters.departmentIds.filter((id) => id !== departmentId),
         })
     }
 
     const clearFilters = () => {
-        onFiltersChange({ search: "", groupIds: [] })
+        onFiltersChange({ search: "", departmentIds: [] })
     }
 
     return (
@@ -85,42 +85,42 @@ export function EmployeeFilters({
                     )}
                 </div>
 
-                {/* Groups filter */}
+                {/* Departments filter */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="gap-2">
                             <Filter className="h-4 w-4" />
                             {tCommon('filter')}
-                            {filters.groupIds.length > 0 && (
+                            {filters.departmentIds.length > 0 && (
                                 <Badge variant="secondary" className="ml-1 px-1.5">
-                                    {filters.groupIds.length}
+                                    {filters.departmentIds.length}
                                 </Badge>
                             )}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-64 p-3" align="end">
                         <div className="space-y-2">
-                            <p className="text-sm font-medium">{t('filterByGroup')}</p>
-                            {groups.length === 0 ? (
+                            <p className="text-sm font-medium">{t('filterByDepartment')}</p>
+                            {departments.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    {t('noGroupsAvailable')}
+                                    {t('noDepartmentsAvailable')}
                                 </p>
                             ) : (
                                 <div className="space-y-1 max-h-48 overflow-y-auto">
-                                    {groups.map((group) => {
-                                        const isSelected = filters.groupIds.includes(group.id)
+                                    {departments.map((department) => {
+                                        const isSelected = filters.departmentIds.includes(department.id)
                                         return (
                                             <div
-                                                key={group.id}
+                                                key={department.id}
                                                 className="flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-accent"
-                                                onClick={() => toggleGroup(group.id)}
+                                                onClick={() => toggleDepartment(department.id)}
                                             >
                                                 <Checkbox checked={isSelected} />
                                                 <div
                                                     className="w-3 h-3 rounded-full"
-                                                    style={{ backgroundColor: group.color }}
+                                                    style={{ backgroundColor: department.color }}
                                                 />
-                                                <span className="text-sm">{group.name}</span>
+                                                <span className="text-sm">{department.name}</span>
                                             </div>
                                         )
                                     })}
@@ -139,21 +139,21 @@ export function EmployeeFilters({
             </div>
 
             {/* Active filters display */}
-            {(selectedGroups.length > 0 || hasActiveFilters) && (
+            {(selectedDepartments.length > 0 || hasActiveFilters) && (
                 <div className="flex flex-wrap items-center gap-2">
-                    {selectedGroups.map((group) => (
+                    {selectedDepartments.map((department) => (
                         <Badge
-                            key={group.id}
+                            key={department.id}
                             variant="secondary"
                             className="gap-1 pr-1"
                             style={{
-                                backgroundColor: `${group.color}20`,
-                                borderColor: group.color,
+                                backgroundColor: `${department.color}20`,
+                                borderColor: department.color,
                             }}
                         >
-                            {group.name}
+                            {department.name}
                             <button
-                                onClick={() => removeGroup(group.id)}
+                                onClick={() => removeDepartment(department.id)}
                                 className="ml-1 rounded-full hover:bg-black/10 p-0.5"
                             >
                                 <X className="h-3 w-3" />
@@ -174,5 +174,5 @@ export function EmployeeFilters({
 
 export const emptyFilters: EmployeeFiltersState = {
     search: "",
-    groupIds: [],
+    departmentIds: [],
 }

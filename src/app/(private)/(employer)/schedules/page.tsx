@@ -147,7 +147,7 @@ export default function Schedules() {
 
     const { data: entities, isLoading: loadingEntities, error: entitiesError } = useCheckEntities()
 
-    const hasAllEntities = !!(entities?.groups && entities?.employees && entities?.shiftTypes)
+    const hasAllEntities = !!(entities?.departments && entities?.employees && entities?.shiftTypes)
 
     const {
         data: scheduleSummary,
@@ -164,7 +164,7 @@ export default function Schedules() {
     }, [hasAllEntities])
 
     const handleEditClick = (scheduleId: number) => {
-        router.push(`/schedules/${scheduleId}`)
+        router.push(`/schedules/manage`)
     }
 
     const handleGoToSchedule = () => {

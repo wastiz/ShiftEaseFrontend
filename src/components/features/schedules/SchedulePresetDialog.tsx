@@ -8,13 +8,13 @@ import { Label } from '@/components/ui/shadcn/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs'
 import { SchedulePattern } from '@/types/schedule'
-import { ShiftType } from '@/types/shiftType'
+import { ShiftTemplate } from '@/types/shiftType'
 import { Checkbox } from '@/components/ui/shadcn/checkbox'
 import { useTranslations } from 'next-intl'
 
 export type StandardPreset = {
     mode: 'standard'
-    AllowedShiftTypeIds: number[]
+    AllowedShiftTemplateIds: number[]
     MaxConsecutiveShifts: number
     SchedulePattern: SchedulePattern
     MinDaysOffPerWeek: number
@@ -32,7 +32,7 @@ export type SchedulePreset = StandardPreset | RetailPreset
 type SchedulePresetDialogProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    shiftTypes: ShiftType[]
+    shiftTypes: ShiftTemplate[]
     onSave: (preset: SchedulePreset) => void
 }
 
@@ -40,7 +40,7 @@ const STORAGE_KEY_STANDARD = 'schedule_preset_standard'
 const STORAGE_KEY_RETAIL = 'schedule_preset_retail'
 
 const defaultStandardPreset: Omit<StandardPreset, 'mode'> = {
-    AllowedShiftTypeIds: [],
+    AllowedShiftTemplateIds: [],
     MaxConsecutiveShifts: 5,
     SchedulePattern: SchedulePattern.Custom,
     MinDaysOffPerWeek: 2,
@@ -73,10 +73,10 @@ export default function SchedulePresetDialog({
             if (stored) {
                 setStandard(JSON.parse(stored))
             } else {
-                setStandard({ ...defaultStandardPreset, AllowedShiftTypeIds: shiftTypes.map(st => st.id) })
+                setStandard({ ...defaultStandardPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
             }
         } catch {
-            setStandard({ ...defaultStandardPreset, AllowedShiftTypeIds: shiftTypes.map(st => st.id) })
+            setStandard({ ...defaultStandardPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
         }
 
         // Load retail preset
@@ -103,14 +103,14 @@ export default function SchedulePresetDialog({
         onOpenChange(false)
     }
 
-    const toggleShiftType = (id: number) => {
+    const toggleShiftTemplate = (id: number) => {
         setStandard(prev => {
-            const selected = prev.AllowedShiftTypeIds.includes(id)
+            const selected = prev.AllowedShiftTemplateIds.includes(id)
             return {
                 ...prev,
-                AllowedShiftTypeIds: selected
-                    ? prev.AllowedShiftTypeIds.filter(x => x !== id)
-                    : [...prev.AllowedShiftTypeIds, id],
+                AllowedShiftTemplateIds: selected
+                    ? prev.AllowedShiftTemplateIds.filter(x => x !== id)
+                    : [...prev.AllowedShiftTemplateIds, id],
             }
         })
     }
@@ -127,7 +127,7 @@ export default function SchedulePresetDialog({
     }
 
     const isSaveDisabled =
-        activeTab === 'standard' && standard.AllowedShiftTypeIds.length === 0
+        activeTab === 'standard' && standard.AllowedShiftTemplateIds.length === 0
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,14 +200,14 @@ export default function SchedulePresetDialog({
                             </div>
 
                             <div className="space-y-2">
-                                <Label>{t('allowedShiftTypes')}</Label>
+                                <Label>{t('allowedShiftTemplates')}</Label>
                                 <div className="space-y-2 border rounded-md p-4 max-h-60 overflow-y-auto">
                                     {shiftTypes.map((st) => (
                                         <div key={st.id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`shift-${st.id}`}
-                                                checked={standard.AllowedShiftTypeIds.includes(st.id)}
-                                                onCheckedChange={() => toggleShiftType(st.id)}
+                                                checked={standard.AllowedShiftTemplateIds.includes(st.id)}
+                                                onCheckedChange={() => toggleShiftTemplate(st.id)}
                                             />
                                             <label
                                                 htmlFor={`shift-${st.id}`}
@@ -222,8 +222,8 @@ export default function SchedulePresetDialog({
                                         </div>
                                     ))}
                                 </div>
-                                {standard.AllowedShiftTypeIds.length === 0 && (
-                                    <p className="text-sm text-red-500">{t('selectAtLeastOneShiftType')}</p>
+                                {standard.AllowedShiftTemplateIds.length === 0 && (
+                                    <p className="text-sm text-red-500">{t('selectAtLeastOneShiftTemplate')}</p>
                                 )}
                             </div>
                         </div>

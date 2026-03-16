@@ -25,15 +25,15 @@ export function useScheduleSummaries(enabled: boolean) {
     });
 }
 
-export function useGetConfirmedSchedule(month: number, year: number, groupId?: number) {
+export function useGetConfirmedSchedule(month: number, year: number, departmentId?: number) {
     return useQuery<Schedule>({
-        queryKey: [...scheduleKeys.confirmed(month, year), groupId],
+        queryKey: [...scheduleKeys.confirmed(month, year), departmentId],
         queryFn: async () => {
             const res = await api.get<Schedule>("/schedules/confirmed", {
                 params: {
                     month,
                     year,
-                    ...(groupId !== undefined && { groupId }),
+                    ...(departmentId !== undefined && { departmentId }),
                 },
             });
             return res.data;

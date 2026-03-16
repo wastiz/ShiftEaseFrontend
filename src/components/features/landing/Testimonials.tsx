@@ -25,7 +25,7 @@ const testimonials = [
   },
   {
     name: "Maria L.",
-    company: "Restaurant Group",
+    company: "Restaurant Department",
     role: "Operations Manager",
     content:
       "Our staff loves the mobile app. They can swap shifts, request time off, and see their schedules instantly. Reduced no-shows by 40%.",
@@ -116,7 +116,7 @@ export default function Testimonials() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
                 viewport={{ once: true }}
-                className="group"
+                className="department"
               >
                 <article
                   className={`relative rounded-2xl bg-gradient-to-br from-white/5 via-transparent to-white/5 p-5 backdrop-blur-sm transition-opacity border border-white/10 hover:border-primary/30 ${

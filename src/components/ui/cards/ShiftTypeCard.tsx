@@ -2,28 +2,28 @@ import { Card } from "@/components/ui/shadcn/card"
 import { Button } from "@/components/ui/shadcn/button"
 import {useTranslations} from "next-intl";
 
-type ShiftTypeCardAction = {
+type ShiftTemplateCardAction = {
     onClick: () => void
     variant?: "default" | "secondary" | "destructive" | "outline" | "ghost"
 }
 
-type ShiftTypeCardProps = {
+type ShiftTemplateCardProps = {
     name: string
     employees: string
     timeRange: string
     color?: string
     className?: string
-    actions?: ShiftTypeCardAction[]
+    actions?: ShiftTemplateCardAction[]
 }
 
-export default function ShiftTypeCard({
+export default function ShiftTemplateCard({
     name,
     employees,
     timeRange,
     color,
     className = "",
     actions = [],
-}: ShiftTypeCardProps) {
+}: ShiftTemplateCardProps) {
     const t = useTranslations("employer.shiftTypes")
     const tCommon = useTranslations("common")
     return (

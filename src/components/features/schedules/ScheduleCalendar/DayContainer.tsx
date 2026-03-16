@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { toast } from 'sonner'
 import ShiftBox from './ShiftBox'
-import { Holiday, WorkDay, Shift, ShiftType, EmployeeMinData } from "@/types";
+import { Holiday, WorkDay, Shift, ShiftTemplate, EmployeeMinData } from "@/types";
 import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
 import {
     getEmployeeTimeOff,
@@ -20,7 +20,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '
 type DayContainerProps = {
     date: string
     dateLabel: string
-    shiftTypes: ShiftType[]
+    shiftTypes: ShiftTemplate[]
     employees: EmployeeMinData[]
     shiftsData: Shift[]
     setShiftsData?: (shifts: Shift[] | ((prev: Shift[]) => Shift[])) => void
@@ -73,7 +73,7 @@ export default function DayContainer({
         return dropTargetForElements({
             element: ref.current,
             onDrop: ({ source }) => {
-                if (source.data.type === 'shiftType') {
+                if (source.data.type === 'shiftTemplate') {
                     const st = shiftTypes.find((x) => x.id === source.data.id)
                     if (!st) return
 

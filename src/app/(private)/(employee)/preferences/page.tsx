@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/shadcn/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
 import { Calendar } from '@/components/ui/shadcn/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/shadcn/popover';
-import { useGetShiftTypes, usePreferences, useSavePreferences } from '@/hooks/api';
+import { useGetShiftTemplates, usePreferences, useSavePreferences } from '@/hooks/api';
 import { toast } from 'sonner';
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
@@ -19,7 +19,7 @@ export default function PreferencesPage() {
     const tCommon = useTranslations('common');
     const { user } = useAuthStore();
     const { data: preferences, isLoading } = usePreferences(user.id);
-    const { data: shiftTypes } = useGetShiftTypes();
+    const { data: shiftTypes } = useGetShiftTemplates();
     const savePreferences = useSavePreferences(user.id);
 
     const WEEK_DAYS = [

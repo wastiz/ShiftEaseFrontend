@@ -11,14 +11,12 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop } from "lucide-react";
-import { DateData, EmployeeMinData, Group, Holiday, Shift, ShiftType, WorkDay } from "@/types";
-import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
+import { Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
+import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from "@/types";
+import { EmployeeTimeOff } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
-import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
-import ShiftTypeSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
+import ShiftTemplateSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
 import {
     Popover,
     PopoverContent,
@@ -33,19 +31,17 @@ import {
     getHolidayName,
     getTimeOffColor,
     getTimeOffLabelKey,
-    isHoliday,
-    isWorkingDay,
-    timeToMinutes
+    timeToMinutes,
 } from "@/helpers/dateHelper";
-import { WarningMessage } from "@/app/(private)/(employer)/schedules/[groupId]/page";
+import { WarningMessage } from "@/app/(private)/(employer)/schedules/[departmentId]/page";
 import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
 import { MessageIndicator } from "@/components/features/schedules/MessageIndicator";
 import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
-    shiftTypes: ShiftType[];
-    groups?: Group[];
+    shiftTypes: ShiftTemplate[];
+    departments?: Department[];
     shiftsData: Shift[];
     setShiftsData: (shifts: Shift[]) => void;
     daysOfMonth: DateData[];
@@ -63,7 +59,7 @@ type SimpleViewProps = {
 export default function SimpleView({
     employees,
     shiftTypes,
-    groups = [],
+    departments = [],
     shiftsData,
     setShiftsData,
     daysOfMonth,
@@ -79,49 +75,53 @@ export default function SimpleView({
 }: SimpleViewProps) {
     const t = useTranslations('schedule');
     const dates = daysOfMonth.map((d) => d.isoDate);
-    const [selectedShiftTypes, setSelectedShiftTypes] = useState<number[]>([]);
-    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+    const [selectedShiftTemplates, setSelectedShiftTemplates] = useState<number[]>([]);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
 
+    const [showWeekendHighlight, setShowWeekendHighlight] = useState(true);
+    const [showHolidayHighlight, setShowHolidayHighlight] = useState(true);
+    const [showShortenedHighlight, setShowShortenedHighlight] = useState(true);
+
     const filteredEmployees = useMemo(() => {
         let result = employees;
 
-        if (selectedGroupId !== null) {
-            const group = groups.find(g => g.id === selectedGroupId);
-            if (group) {
-                result = result.filter(emp => emp.groupNames.includes(group.name));
+        if (selectedDepartmentId !== null) {
+            const department = departments.find(g => g.id === selectedDepartmentId);
+            if (department) {
+                result = result.filter(emp => emp.departmentNames.includes(department.name));
             }
         }
 
-        if (selectedShiftTypes.length === 0) return result;
+        if (selectedShiftTemplates.length === 0) return result;
 
         const employeeIdsWithSelectedShifts = new Set<number>();
         shiftsData.forEach(shift => {
-            if (selectedShiftTypes.includes(shift.shiftTypeId)) {
+            if (selectedShiftTemplates.includes(shift.shiftTypeId)) {
                 shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
             }
         });
 
         return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, groups, selectedGroupId, selectedShiftTypes, shiftsData]);
+    }, [employees, departments, selectedDepartmentId, selectedShiftTemplates, shiftsData]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
         [filteredEmployees, shiftsData, dates]
     );
 
-    const handleShiftTypeFilterToggle = (shiftTypeId: number) => {
-        setSelectedShiftTypes(prev =>
+    const handleShiftTemplateFilterToggle = (shiftTypeId: number) => {
+        setSelectedShiftTemplates(prev =>
             prev.includes(shiftTypeId)
                 ? prev.filter(id => id !== shiftTypeId)
                 : [...prev, shiftTypeId]
         );
     };
 
-    const handleGroupFilterToggle = (groupId: number) => {
-        setSelectedGroupId(prev => prev === groupId ? null : groupId);
+    const handleDepartmentFilterToggle = (departmentId: number) => {
+        setSelectedDepartmentId(prev => prev === departmentId ? null : departmentId);
     };
 
     const assignShift = (employeeId: number, date: string, shiftTypeId: number) => {
@@ -241,7 +241,7 @@ export default function SimpleView({
     };
 
     return (
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4 h-full overflow-hidden">
             <div className="flex items-center gap-3 flex-shrink-0">
                 <MonthNavigator
                     currentMonth={currentMonth}
@@ -273,24 +273,24 @@ export default function SimpleView({
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="ml-auto">
-                            <Filter className={(selectedShiftTypes.length > 0 || selectedGroupId !== null) ? "text-primary" : ""} />
+                            <Filter className={(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
                         <div className="space-y-4">
-                            {groups.length > 0 && (
+                            {departments.length > 0 && (
                                 <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Filter by Group</h4>
+                                    <h4 className="font-medium text-sm">Filter by Department</h4>
                                     <div className="space-y-2">
-                                        {groups.map((g) => (
+                                        {departments.map((g) => (
                                             <div key={g.id} className="flex items-center space-x-2">
                                                 <Checkbox
-                                                    id={`filter-group-${g.id}`}
-                                                    checked={selectedGroupId === g.id}
-                                                    onCheckedChange={() => handleGroupFilterToggle(g.id)}
+                                                    id={`filter-department-${g.id}`}
+                                                    checked={selectedDepartmentId === g.id}
+                                                    onCheckedChange={() => handleDepartmentFilterToggle(g.id)}
                                                 />
                                                 <Label
-                                                    htmlFor={`filter-group-${g.id}`}
+                                                    htmlFor={`filter-department-${g.id}`}
                                                     className="flex items-center gap-2 cursor-pointer"
                                                 >
                                                     {g.color && (
@@ -313,8 +313,8 @@ export default function SimpleView({
                                         <div key={st.id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`filter-simple-${st.id}`}
-                                                checked={selectedShiftTypes.includes(st.id)}
-                                                onCheckedChange={() => handleShiftTypeFilterToggle(st.id)}
+                                                checked={selectedShiftTemplates.includes(st.id)}
+                                                onCheckedChange={() => handleShiftTemplateFilterToggle(st.id)}
                                             />
                                             <Label
                                                 htmlFor={`filter-simple-${st.id}`}
@@ -330,16 +330,64 @@ export default function SimpleView({
                                     ))}
                                 </div>
                             </div>
-                            {(selectedShiftTypes.length > 0 || selectedGroupId !== null) && (
+                            {(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) && (
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => { setSelectedShiftTypes([]); setSelectedGroupId(null); }}
+                                    onClick={() => { setSelectedShiftTemplates([]); setSelectedDepartmentId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters
                                 </Button>
                             )}
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Settings className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                        <div className="space-y-4">
+                            <h4 className="font-medium text-sm">Highlights</h4>
+                            <div className="space-y-3">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-weekend"
+                                        checked={showWeekendHighlight}
+                                        onCheckedChange={(c) => setShowWeekendHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-weekend" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded ring-1 ring-inset ring-yellow-300/60 bg-yellow-50/30" />
+                                        Weekends
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-holiday"
+                                        checked={showHolidayHighlight}
+                                        onCheckedChange={(c) => setShowHolidayHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-holiday" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded bg-red-100" />
+                                        Holidays / Day Off
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="highlight-shortened"
+                                        checked={showShortenedHighlight}
+                                        onCheckedChange={(c) => setShowShortenedHighlight(!!c)}
+                                    />
+                                    <Label htmlFor="highlight-shortened" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                                        <div className="w-3 h-3 rounded bg-orange-100" />
+                                        Shortened Days
+                                    </Label>
+                                </div>
+                            </div>
                         </div>
                     </PopoverContent>
                 </Popover>
@@ -369,7 +417,7 @@ export default function SimpleView({
                     {layoutPosition === 'top' ? (
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {shiftTypes.map((st) => (
-                                <ShiftTypeSmallCard
+                                <ShiftTemplateSmallCard
                                     key={st.id}
                                     name={st.name}
                                     id={st.id}
@@ -382,7 +430,7 @@ export default function SimpleView({
                     ) : (
                         <div className="space-y-2">
                             {shiftTypes.map((st) => (
-                                <ShiftTypeSmallCard
+                                <ShiftTemplateSmallCard
                                     key={st.id}
                                     name={st.name}
                                     id={st.id}
@@ -396,10 +444,10 @@ export default function SimpleView({
                 </div>
 
                 <div className={`flex-1 border rounded-lg overflow-auto ${isCompact ? "overflow-x-hidden" : ""}`}>
-                    <Table className={isCompact ? "table-fixed w-full" : ""}>
-                        <TableHeader>
+                    <Table noWrapper className={isCompact ? "table-fixed w-full" : ""}>
+                        <TableHeader className="sticky top-0 z-20 bg-background">
                             <TableRow>
-                                <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky left-0 bg-background z-20 border-r`}>
+                                <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky top-0 left-0 bg-background z-30 border-r`}>
                                     <div className="flex items-center justify-between gap-1">
                                         <span className="truncate">Employees</span>
                                         <Badge variant="secondary" className={isCompact ? "px-1 text-[9px]" : ""}>
@@ -412,16 +460,18 @@ export default function SimpleView({
                                         const d = new Date(day.isoDate)
                                         return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
                                     })
+                                    const dayDate = new Date(day.isoDate)
+                                    const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                     const holiday = !!holidayInfo
-                                    const working = isWorkingDay(day.isoDate, orgSchedule)
                                     const isShortenedDay = holidayInfo?.isShortenedDay
-                                    const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
+                                    const isNonWorkingDay = (holiday && !isShortenedDay)
 
                                     return (
                                         <TableHead
                                             key={day.isoDate}
-                                            className={`text-center ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${isNonWorkingDay ? 'bg-red-100 dark:bg-red-950' : ''
-                                                }`}
+                                            className={`text-center transition-colors ${isCompact ? 'p-0 px-0.5 text-[10px] min-w-0' : 'min-w-[150px]'} ${
+                                                isNonWorkingDay && showHolidayHighlight ? 'bg-red-100 dark:bg-red-950' : ''
+                                            } ${isWeekend && showWeekendHighlight ? 'ring-1 ring-inset ring-yellow-300/60 dark:ring-yellow-700/50 bg-yellow-50/30 dark:bg-yellow-900/10' : ''} ${isShortenedDay && showShortenedHighlight ? 'bg-orange-100 dark:bg-orange-950/50' : ''}`}
                                         >
                                             <div className="flex flex-col items-center">
                                                 <span>{isCompact ? day.label.split(' ')[0] : day.label}</span>
@@ -450,22 +500,22 @@ export default function SimpleView({
                                                 <div className="truncate">{row.employeeName}</div>
                                                 {!isCompact && (
                                                     <div className="flex items-center gap-1 flex-wrap mt-0.5">
-                                                        {row.groupNames.slice(0, 2).map(name => (
+                                                        {row.departmentNames.slice(0, 2).map(name => (
                                                             <span key={name} className="text-xs text-muted-foreground">
                                                                 {name}
                                                             </span>
                                                         ))}
-                                                        {row.groupNames.length > 2 && (
+                                                        {row.departmentNames.length > 2 && (
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <button className="text-xs text-primary underline-offset-2 hover:underline cursor-pointer">
-                                                                        +{row.groupNames.length - 2} more
+                                                                        +{row.departmentNames.length - 2} more
                                                                     </button>
                                                                 </PopoverTrigger>
                                                                 <PopoverContent className="w-48 p-2" side="right">
-                                                                    <p className="text-xs font-medium mb-1.5 text-muted-foreground">All groups</p>
+                                                                    <p className="text-xs font-medium mb-1.5 text-muted-foreground">All departments</p>
                                                                     <ul className="space-y-1">
-                                                                        {row.groupNames.map(name => (
+                                                                        {row.departmentNames.map(name => (
                                                                             <li key={name} className="text-sm">{name}</li>
                                                                         ))}
                                                                     </ul>
@@ -495,21 +545,25 @@ export default function SimpleView({
                                             const d = new Date(day.isoDate)
                                             return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
                                         })
+                                        const dayDate = new Date(day.isoDate)
+                                        const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
                                         const holiday = !!holidayInfo
-                                        const working = isWorkingDay(day.isoDate, orgSchedule)
                                         const isShortenedDay = holidayInfo?.isShortenedDay
-                                        const isNonWorkingDay = (holiday && !isShortenedDay) || (!working && !isShortenedDay)
+                                        const isNonWorkingDay = (holiday && !isShortenedDay)
                                         const timeOff = getEmployeeTimeOff(row.employeeId, day.isoDate, employeeTimeOffs)
 
                                         return (
                                             <TableCell
                                                 key={day.isoDate}
-                                                className={`${isCompact ? "p-0 px-0.5" : "p-2"} ${timeOff
-                                                    ? getTimeOffColor(timeOff.type)
-                                                    : isNonWorkingDay
-                                                        ? 'bg-red-50 dark:bg-red-950/10'
-                                                        : ''
-                                                    }`}
+                                                className={`transition-colors ${isCompact ? "p-0 px-0.5" : "p-2"} ${
+                                                    timeOff
+                                                        ? getTimeOffColor(timeOff.type)
+                                                        : isNonWorkingDay && showHolidayHighlight
+                                                            ? 'bg-red-50 dark:bg-red-950/10'
+                                                            : isShortenedDay && showShortenedHighlight
+                                                                ? 'bg-orange-50 dark:bg-orange-950/10'
+                                                                : ''
+                                                } ${isWeekend && showWeekendHighlight ? 'ring-1 ring-inset ring-yellow-300/60 dark:ring-yellow-700/50 bg-yellow-50/30 dark:bg-yellow-900/10' : ''}`}
                                             >
                                                 {timeOff ? (
                                                     <div className="text-xs text-center py-1 px-2 rounded border">
@@ -545,7 +599,7 @@ export default function SimpleView({
                 daysOfMonth={daysOfMonth}
                 orgHolidays={orgHolidays}
                 orgSchedule={orgSchedule}
-                groups={groups}
+                departments={departments}
             />
         </div>
     );

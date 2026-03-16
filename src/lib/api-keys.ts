@@ -16,12 +16,12 @@ export const organizationKeys = {
     dashboardData: (id: string) => ["organizationDashboardData", id] as const,
 };
 
-export const groupKeys = {
-    all: ["groups"] as const,
+export const departmentKeys = {
+    all: ["departments"] as const,
 };
 
-export const shiftTypeKeys = {
-    all: ["shift-types"] as const,
+export const shiftTemplateKeys = {
+    all: ["shift-templates"] as const,
 };
 
 export const scheduleKeys = {

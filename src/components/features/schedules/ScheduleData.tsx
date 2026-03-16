@@ -1,12 +1,12 @@
-import ShiftTypeSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
+import ShiftTemplateSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
 import EmployeeSmallCard from "@/components/ui/cards/EmployeeSmallCard";
-import { EmployeeMinData, ShiftType } from "@/types";
+import { EmployeeMinData, ShiftTemplate } from "@/types";
 import { ReactNode } from "react";
 
 interface ScheduleDataProps {
     isEditable: boolean;
     layoutPosition: "left" | "top";
-    shiftTypes: ShiftType[];
+    shiftTypes: ShiftTemplate[];
     filteredEmployees: EmployeeMinData[];
     children: ReactNode;
 }
@@ -29,7 +29,7 @@ export default function ScheduleData({
                         <h4 className="font-semibold mb-2">Shift Types</h4>
                         <div className="flex gap-2 overflow-x-auto">
                             {shiftTypes.map((st) => (
-                                <ShiftTypeSmallCard
+                                <ShiftTemplateSmallCard
                                     key={st.id}
                                     id={st.id}
                                     name={st.name}
@@ -64,7 +64,7 @@ export default function ScheduleData({
                             <h4 className="font-semibold mb-2">Shift Types</h4>
                             <div className="space-y-2">
                                 {shiftTypes.map((st) => (
-                                    <ShiftTypeSmallCard
+                                    <ShiftTemplateSmallCard
                                         key={st.id}
                                         id={st.id}
                                         name={st.name}

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/shadcn/dialog'
 import { Badge } from '@/components/ui/shadcn/badge'
 import { CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react'
-import { DateData, Group, Holiday, Shift, ShiftType, WorkDay } from '@/types'
+import { DateData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from '@/types'
 import { isHoliday, isWorkingDay, roundToMinutes } from '@/helpers/dateHelper'
 
 type IssueSeverity = 'understaffed' | 'overstaffed'
@@ -22,9 +22,9 @@ type DayIssue = {
     severity: IssueSeverity
 }
 
-type ShiftTypeCoverage = {
-    shiftType: ShiftType
-    groupName: string
+type ShiftTemplateCoverage = {
+    shiftType: ShiftTemplate
+    departmentName: string
     totalWorkingDays: number
     okDays: number
     issues: DayIssue[]
@@ -33,12 +33,12 @@ type ShiftTypeCoverage = {
 type CoverageCheckModalProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
-    shiftTypes: ShiftType[]
+    shiftTypes: ShiftTemplate[]
     shiftsData: Shift[]
     daysOfMonth: DateData[]
     orgHolidays: Holiday[]
     orgSchedule: WorkDay[]
-    groups: Group[]
+    departments: Department[]
 }
 
 export function CoverageCheckModal({
@@ -49,15 +49,15 @@ export function CoverageCheckModal({
     daysOfMonth,
     orgHolidays,
     orgSchedule,
-    groups,
+    departments,
 }: CoverageCheckModalProps) {
-    const coverage = useMemo<ShiftTypeCoverage[]>(() => {
+    const coverage = useMemo<ShiftTemplateCoverage[]>(() => {
         const workingDays = daysOfMonth.filter(
             day => !isHoliday(day.isoDate, orgHolidays) && isWorkingDay(day.isoDate, orgSchedule)
         )
 
         return shiftTypes.map(st => {
-            const group = groups.find(g => g.id === st.groupId)
+            const department = departments.find(g => g.id === st.departmentId)
             const issues: DayIssue[] = []
 
             workingDays.forEach(day => {
@@ -87,13 +87,13 @@ export function CoverageCheckModal({
 
             return {
                 shiftType: st,
-                groupName: group?.name ?? '—',
+                departmentName: department?.name ?? '—',
                 totalWorkingDays: workingDays.length,
                 okDays: workingDays.length - issues.filter(i => i.severity === 'understaffed').length,
                 issues,
             }
         })
-    }, [shiftTypes, shiftsData, daysOfMonth, orgHolidays, orgSchedule, groups])
+    }, [shiftTypes, shiftsData, daysOfMonth, orgHolidays, orgSchedule, departments])
 
     const totalWorkingDays = coverage[0]?.totalWorkingDays ?? 0
     const allOk = coverage.every(c => c.issues.filter(i => i.severity === 'understaffed').length === 0)
@@ -127,7 +127,7 @@ export function CoverageCheckModal({
 
                 {/* Per shift type */}
                 <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                    {coverage.map(({ shiftType, groupName, totalWorkingDays: total, okDays, issues }) => {
+                    {coverage.map(({ shiftType, departmentName, totalWorkingDays: total, okDays, issues }) => {
                         const understaffedIssues = issues.filter(i => i.severity === 'understaffed')
                         const overstaffedIssues = issues.filter(i => i.severity === 'overstaffed')
                         const isOk = understaffedIssues.length === 0
@@ -143,7 +143,7 @@ export function CoverageCheckModal({
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="font-medium text-sm">{shiftType.name}</span>
-                                            <Badge variant="outline" className="text-xs">{groupName}</Badge>
+                                            <Badge variant="outline" className="text-xs">{departmentName}</Badge>
                                             <span className="text-xs text-muted-foreground">
                                                 {roundToMinutes(shiftType.startTime)} – {roundToMinutes(shiftType.endTime)}
                                             </span>

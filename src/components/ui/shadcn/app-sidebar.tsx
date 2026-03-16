@@ -6,7 +6,8 @@ import {
     Bell,
     UserRound,
     FileType,
-    IdCardLanyard, CalendarCheck, Bolt, CalendarPlus2, TreePalm, ArrowBigLeft
+    IdCardLanyard, CalendarCheck, Bolt, CalendarPlus2, TreePalm, ArrowBigLeft,
+    Building2
 } from "lucide-react"
 import { useTranslations } from 'next-intl'
 
@@ -53,7 +54,8 @@ const iconMap = {
     Bolt,
     CalendarPlus2,
     TreePalm,
-    ArrowBigLeft
+    ArrowBigLeft,
+    Building2
 }
 
 export function AppSidebar({ user, navMain, ...props }: AppSidebarProps) {

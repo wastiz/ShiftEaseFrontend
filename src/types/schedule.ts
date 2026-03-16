@@ -1,7 +1,7 @@
 import { Holiday, WorkDay } from "@/types/organizations";
 import { EmployeeMinData } from "@/types/employee";
-import { Group } from "@/types/group";
-import { ShiftType } from "@/types/shiftType";
+import { Department } from "@/types/department";
+import { ShiftTemplate } from "@/types/shiftType";
 
 export interface ScheduleSummary {
     confirmedSchedules: ScheduleItem[];
@@ -28,8 +28,8 @@ export interface DayIssue {
 
 export type ScheduleEditorData = {
     employees: EmployeeMinData[];
-    shiftTypes: ShiftType[];
-    groups: Group[];
+    shiftTypes: ShiftTemplate[];
+    departments: Department[];
     organizationHolidays: Holiday[];
     organizationSchedule: WorkDay[];
     employeeTimeOffs: EmployeeTimeOff[]
@@ -74,7 +74,7 @@ export type Shift = {
 export type EmployeeShiftAssignment = {
     id: number;
     name: string;
-    groupName?: string;
+    departmentName?: string;
     note?: string;
 }
 
@@ -154,9 +154,9 @@ export enum GenerateStatus {
 }
 
 export enum GenerateErrorCode {
-    GroupNotFound = "GroupNotFound",
+    DepartmentNotFound = "DepartmentNotFound",
     OrganizationNotFound = "OrganizationNotFound",
-    NoEmployeesInGroup = "NoEmployeesInGroup",
+    NoEmployeesInDepartment = "NoEmployeesInDepartment",
     NoShiftTypes = "NoShiftTypes",
     SelectedShiftTypesNotFound = "SelectedShiftTypesNotFound",
     NoWorkDaysConfigured = "NoWorkDaysConfigured",

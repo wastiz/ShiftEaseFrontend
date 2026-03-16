@@ -42,11 +42,11 @@ export default function HeroHome() {
               >
                 <Link
                   href="/sign-in"
-                  className="btn-primary group mb-4 w-full sm:mb-0 sm:w-auto flex items-center justify-center"
+                  className="btn-primary department mb-4 w-full sm:mb-0 sm:w-auto flex items-center justify-center"
                 >
                   <span className="relative inline-flex items-center">
                     {t("getStarted")}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform department-hover:translate-x-0.5" />
                   </span>
                 </Link>
                 <Link
