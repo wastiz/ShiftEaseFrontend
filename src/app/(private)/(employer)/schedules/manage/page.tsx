@@ -203,7 +203,7 @@ export default function ManageSchedule() {
     if (error) return <p className="p-4 text-red-500">{t('failedToLoad')}</p>
 
     return (
-        <>
+        <div className="flex flex-col h-screen overflow-hidden">
             <Header title={t('manageSchedule')}>
                 <div className="flex gap-2">
                     <ButtonGroup>
@@ -254,6 +254,7 @@ export default function ManageSchedule() {
                 </Button>
             </Header>
 
+            <div className="flex-1 overflow-hidden">
             {viewMode === 'calendar' ? (
                 <ScheduleCalendar
                     shiftsData={shiftsData}
@@ -292,6 +293,7 @@ export default function ManageSchedule() {
                     warningMessage={null}
                 />
             )}
+            </div>
 
             <SchedulePresetDialog
                 open={presetDialogOpen}
@@ -309,6 +311,6 @@ export default function ManageSchedule() {
                     warnings={generateResult.warnings}
                 />
             )}
-        </>
+        </div>
     )
 }

@@ -164,7 +164,7 @@ export default function Schedules() {
     }, [hasAllEntities])
 
     const handleEditClick = (scheduleId: number) => {
-        router.push(`/schedules/${scheduleId}`)
+        router.push(`/schedules/manage`)
     }
 
     const handleGoToSchedule = () => {

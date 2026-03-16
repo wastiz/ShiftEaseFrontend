@@ -11,12 +11,10 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { ChevronLeft, ChevronRight, X, Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
+import { Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
 import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from "@/types";
-import { EmployeeTimeOff, TimeOffType } from "@/types/schedule";
+import { EmployeeTimeOff } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
-import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { toast } from "sonner";
 import ShiftTemplateSmallCard from "@/components/ui/cards/ShiftTypeSmallCard";
 import {
@@ -33,10 +31,7 @@ import {
     getHolidayName,
     getTimeOffColor,
     getTimeOffLabelKey,
-    isHoliday,
-    isWorkingDay,
     timeToMinutes,
-    dayNames
 } from "@/helpers/dateHelper";
 import { WarningMessage } from "@/app/(private)/(employer)/schedules/[departmentId]/page";
 import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
@@ -246,7 +241,7 @@ export default function SimpleView({
     };
 
     return (
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4 h-full overflow-hidden">
             <div className="flex items-center gap-3 flex-shrink-0">
                 <MonthNavigator
                     currentMonth={currentMonth}
@@ -449,10 +444,10 @@ export default function SimpleView({
                 </div>
 
                 <div className={`flex-1 border rounded-lg overflow-auto ${isCompact ? "overflow-x-hidden" : ""}`}>
-                    <Table className={isCompact ? "table-fixed w-full" : ""}>
-                        <TableHeader>
+                    <Table noWrapper className={isCompact ? "table-fixed w-full" : ""}>
+                        <TableHeader className="sticky top-0 z-20 bg-background">
                             <TableRow>
-                                <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky left-0 bg-background z-20 border-r`}>
+                                <TableHead className={`${isCompact ? "w-[120px] px-2 text-[10px]" : "w-[180px]"} sticky top-0 left-0 bg-background z-30 border-r`}>
                                     <div className="flex items-center justify-between gap-1">
                                         <span className="truncate">Employees</span>
                                         <Badge variant="secondary" className={isCompact ? "px-1 text-[9px]" : ""}>
