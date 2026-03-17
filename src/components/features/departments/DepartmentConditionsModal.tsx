@@ -76,15 +76,13 @@ export function DepartmentConditionsModal({
     // Form Watches
     const formWorkingDays = form.watch("workingDays")
     const formDefaultPattern = form.watch("defaultSchedulePattern") ?? SchedulePattern.Flexible
+    const formDefaultPatternKey = SchedulePattern[formDefaultPattern] as string
     const formStartTime = form.watch("startTime") || "09:00"
     const formEndTime = form.watch("endTime") || "17:00"
 
-    // Default working days to all if empty or undefined
-    const initialWorkingDays = formWorkingDays?.length ? formWorkingDays : [0, 1, 2, 3, 4, 5, 6] as DayOfWeek[]
-
     // Local State
-    const [workingDays, setWorkingDays] = useState<DayOfWeek[]>(initialWorkingDays)
-    const [schedulePattern, setSchedulePattern] = useState<SchedulePattern>(formDefaultPattern)
+    const [workingDays, setWorkingDays] = useState<DayOfWeek[]>([])
+    const [schedulePatternKey, setSchedulePatternKey] = useState<string>(formDefaultPatternKey)
     const [startTime, setStartTime] = useState<string>(formStartTime)
     const [endTime, setEndTime] = useState<string>(formEndTime)
 
@@ -99,16 +97,28 @@ export function DepartmentConditionsModal({
     React.useEffect(() => {
         if (open) {
             const wd = form.getValues("workingDays")
-            setWorkingDays(wd && wd.length > 0 ? wd : [0, 1, 2, 3, 4, 5, 6])
-            setSchedulePattern(form.getValues("defaultSchedulePattern") ?? SchedulePattern.Flexible)
-            setStartTime(form.getValues("startTime") || "09:00")
-            setEndTime(form.getValues("endTime") || "17:00")
+
+            setWorkingDays(
+                wd?.length
+                    ? wd.map(Number)
+                    : [0, 1, 2, 3, 4, 5, 6]
+            )
         }
     }, [open, form])
 
+    React.useEffect(() => {
+        if (open) {
+            setWorkingDays(formWorkingDays?.length ? (formWorkingDays as DayOfWeek[]) : [0, 1, 2, 3, 4, 5, 6])
+            const pattern = form.getValues("defaultSchedulePattern") ?? SchedulePattern.Flexible
+            setSchedulePatternKey(SchedulePattern[pattern] as string)
+            setStartTime(form.getValues("startTime") || "09:00")
+            setEndTime(form.getValues("endTime") || "17:00")
+        }
+    }, [open, formWorkingDays, form])
+
     const handleSave = () => {
         form.setValue("workingDays", workingDays, { shouldValidate: true, shouldDirty: true })
-        form.setValue("defaultSchedulePattern", schedulePattern, { shouldValidate: true, shouldDirty: true })
+        form.setValue("defaultSchedulePattern", SchedulePattern[schedulePatternKey as keyof typeof SchedulePattern], { shouldValidate: true, shouldDirty: true })
         form.setValue("startTime", startTime, { shouldValidate: true, shouldDirty: true })
         form.setValue("endTime", endTime, { shouldValidate: true, shouldDirty: true })
         onOpenChange(false)
@@ -210,18 +220,18 @@ export function DepartmentConditionsModal({
                             <div className="space-y-2">
                                 <Label>Schedule Pattern</Label>
                                 <Select
-                                    value={schedulePattern.toString()}
-                                    onValueChange={(v) => setSchedulePattern(parseInt(v) as SchedulePattern)}
+                                    value={schedulePatternKey}
+                                    onValueChange={setSchedulePatternKey}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select Pattern" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value={SchedulePattern.Flexible.toString()}>Flexible</SelectItem>
-                                        <SelectItem value={SchedulePattern.TwoOnTwoOff.toString()}>2 on / 2 off</SelectItem>
-                                        <SelectItem value={SchedulePattern.FiveOnTwoOff.toString()}>5 on / 2 off</SelectItem>
-                                        <SelectItem value={SchedulePattern.ThreeOnThreeOff.toString()}>3 on / 3 off</SelectItem>
-                                        <SelectItem value={SchedulePattern.FourOnFourOff.toString()}>4 on / 4 off</SelectItem>
+                                        <SelectItem value="Flexible">Flexible</SelectItem>
+                                        <SelectItem value="TwoOnTwoOff">2 on / 2 off</SelectItem>
+                                        <SelectItem value="FiveOnTwoOff">5 on / 2 off</SelectItem>
+                                        <SelectItem value="ThreeOnThreeOff">3 on / 3 off</SelectItem>
+                                        <SelectItem value="FourOnFourOff">4 on / 4 off</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -296,7 +306,8 @@ export function DepartmentConditionsModal({
                         <div className="border rounded-md overflow-hidden bg-background shadow-sm">
                             <div className="grid grid-cols-7 border-b bg-muted/50">
                                 {WEEK_DAYS.map(day => {
-                                    const isSelected = workingDays.includes(day.value as DayOfWeek);
+                                    const isSelected = workingDays.includes(day.value as DayOfWeek)
+
                                     return (
                                         <div key={day.value} className="p-3 text-center text-xs font-semibold border-r last:border-r-0 flex flex-col items-center justify-center gap-2 bg-muted/30">
                                             <div className="flex items-center gap-2">
