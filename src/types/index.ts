@@ -13,7 +13,9 @@ export * from "./notification";
 export type Role = "Employer" | "Employee";
 export type Mode = "login" | "register" | "forgot"
 export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-export type SchedulePattern = "Custom" | "TwoOnTwoOff" | "FiveOnTwoOff" | "ThreeOnThreeOff" | "FourOnFourOff";
+// SchedulePattern for departments is re-exported from ./department
+// SchedulePattern for schedule generation is in @/types/schedule (import directly)
+export { SchedulePattern } from "./department";
 
 export const dayNameToEnum: Record<string, number> = {
     sunday: 0,

@@ -7,7 +7,7 @@ export type DepartmentFormValues = {
     startTime?: string;
     endTime?: string;
     workingDays?: DayOfWeek[];
-    defaultSchedulePattern?: string;
+    defaultSchedulePattern?: SchedulePattern;
 };
 
 export type Department = {
@@ -18,6 +18,14 @@ export type Department = {
     startTime?: string;
     endTime?: string;
     workingDays: DayOfWeek[];
-    defaultSchedulePattern: string;
+    defaultSchedulePattern: SchedulePattern;
     autorenewSchedules: boolean
+}
+
+export enum SchedulePattern {
+    Flexible = 0,
+    TwoOnTwoOff = 1,
+    FiveOnTwoOff = 2,
+    ThreeOnThreeOff = 3,
+    FourOnFourOff = 4
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslations } from "next-intl"
-import { Department, DepartmentFormValues } from "@/types"
+import { Department, DepartmentFormValues, PendingShiftTemplate } from "@/types"
+import { SchedulePattern } from "@/types/department"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
 import { Button } from "@/components/ui/shadcn/button"
 import { DepartmentForm } from "./DepartmentForm"
@@ -11,7 +12,7 @@ interface DepartmentAsideFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     selectedDepartment: Department | null
-    onCreate: (data: DepartmentFormValues) => void
+    onCreate: (data: DepartmentFormValues, pendingTemplates: PendingShiftTemplate[]) => void
     onUpdate: (id: number, data: DepartmentFormValues) => void
     onDelete: (id: number) => void
     isCreating?: boolean
@@ -34,6 +35,7 @@ export function DepartmentAsideForm({
     const tCommon = useTranslations('common')
     const formId = "department-form"
     const [isConditionsModalOpen, setIsConditionsModalOpen] = useState(false)
+    const [pendingShiftTemplates, setPendingShiftTemplates] = useState<PendingShiftTemplate[]>([])
 
     const form = useForm<DepartmentFormValues>({
         defaultValues: {
@@ -55,7 +57,7 @@ export function DepartmentAsideForm({
                     startTime: selectedDepartment.startTime ?? "09:00",
                     endTime: selectedDepartment.endTime ?? "17:00",
                     workingDays: selectedDepartment.workingDays ?? [],
-                    defaultSchedulePattern: selectedDepartment.defaultSchedulePattern ?? "Custom"
+                    defaultSchedulePattern: selectedDepartment.defaultSchedulePattern ?? SchedulePattern.Flexible
                 })
             } else {
                 form.reset({
@@ -65,8 +67,9 @@ export function DepartmentAsideForm({
                     startTime: "09:00",
                     endTime: "17:00",
                     workingDays: [],
-                    defaultSchedulePattern: "Custom"
+                    defaultSchedulePattern: SchedulePattern.Flexible,
                 })
+                setPendingShiftTemplates([])
             }
         }
     }, [open, selectedDepartment, form])
@@ -77,7 +80,7 @@ export function DepartmentAsideForm({
         if (selectedDepartment) {
             onUpdate(selectedDepartment.id, payload)
         } else {
-            onCreate(payload)
+            onCreate(payload, pendingShiftTemplates)
         }
     }
 
@@ -128,6 +131,8 @@ export function DepartmentAsideForm({
                 onOpenChange={setIsConditionsModalOpen}
                 form={form}
                 departmentId={selectedDepartment?.id}
+                pendingTemplates={pendingShiftTemplates}
+                onPendingTemplatesChange={setPendingShiftTemplates}
             />
         </AsideDrawer>
     )

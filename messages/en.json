@@ -47,7 +47,10 @@
     "phone": "Phone",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "logIn": "Log In"
+    "logIn": "Log In",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "color": "Color"
   },
   "auth": {
     "loginTitle": "Login to your {role} account",
@@ -680,6 +683,7 @@
   "schedule": {
     "manageSchedule": "Manage Schedule",
     "selectDepartment": "Select department",
+    "availableShiftTemplates": "Available Shift Templates",
     "simpleView": "Simple view",
     "calendarView": "Calendar view",
     "compactView": "Compact View",
@@ -704,7 +708,9 @@
     "maxConsecutiveShifts": "Max Consecutive Shifts",
     "minDaysOffPerWeek": "Min Days Off Per Week",
     "allowedShiftTypes": "Allowed Shift Templates",
+    "allowedShiftTemplates": "Allowed Shift Templates",
     "selectAtLeastOneShiftType": "Please select at least one shift template",
+    "selectAtLeastOneShiftTemplate": "Please select at least one shift template",
     "savePreset": "Save Preset",
     "cancel": "Cancel",
     "presetSettings": "Preset Settings",

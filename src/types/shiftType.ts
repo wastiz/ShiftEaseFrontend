@@ -8,6 +8,8 @@ export type ShiftTemplateFormValues = {
     departmentId: number;
 }
 
+export type PendingShiftTemplate = Omit<ShiftTemplateFormValues, 'departmentId'>
+
 export type ShiftTemplate = {
     id: number;
     name: string;
