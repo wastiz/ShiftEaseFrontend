@@ -40,14 +40,17 @@ type DisplayTemplate = {
 }
 
 const WEEK_DAYS = [
-    { value: 1, label: "Mon" },
-    { value: 2, label: "Tue" },
-    { value: 3, label: "Wed" },
-    { value: 4, label: "Thu" },
-    { value: 5, label: "Fri" },
-    { value: 6, label: "Sat" },
-    { value: 0, label: "Sun" },
+    { value: "Monday", label: "Mon" },
+    { value: "Tuesday", label: "Tue" },
+    { value: "Wednesday", label: "Wed" },
+    { value: "Thursday", label: "Thu" },
+    { value: "Friday", label: "Fri" },
+    { value: "Saturday", label: "Sat" },
+    { value: "Sunday", label: "Sun" },
 ]
+
+const ALL_DAYS = WEEK_DAYS.map(d => d.value)
+
 
 export function DepartmentConditionsModal({
     open,
@@ -74,14 +77,14 @@ export function DepartmentConditionsModal({
         : pendingTemplates.map((t, i) => ({ ...t, id: -(i + 1) }))
 
     // Form Watches
-    const formWorkingDays = form.watch("workingDays")
+    const formWorkingDays = form.watch("workingDays") as unknown as string[];
     const formDefaultPattern = form.watch("defaultSchedulePattern") ?? SchedulePattern.Flexible
     const formDefaultPatternKey = SchedulePattern[formDefaultPattern] as string
     const formStartTime = form.watch("startTime") || "09:00"
     const formEndTime = form.watch("endTime") || "17:00"
 
     // Local State
-    const [workingDays, setWorkingDays] = useState<DayOfWeek[]>([])
+    const [workingDays, setWorkingDays] = useState<string[]>(formWorkingDays)
     const [schedulePatternKey, setSchedulePatternKey] = useState<string>(formDefaultPatternKey)
     const [startTime, setStartTime] = useState<string>(formStartTime)
     const [endTime, setEndTime] = useState<string>(formEndTime)
@@ -96,19 +99,7 @@ export function DepartmentConditionsModal({
 
     React.useEffect(() => {
         if (open) {
-            const wd = form.getValues("workingDays")
-
-            setWorkingDays(
-                wd?.length
-                    ? wd.map(Number)
-                    : [0, 1, 2, 3, 4, 5, 6]
-            )
-        }
-    }, [open, form])
-
-    React.useEffect(() => {
-        if (open) {
-            setWorkingDays(formWorkingDays?.length ? (formWorkingDays as DayOfWeek[]) : [0, 1, 2, 3, 4, 5, 6])
+            setWorkingDays(formWorkingDays?.length ? formWorkingDays : ALL_DAYS)
             const pattern = form.getValues("defaultSchedulePattern") ?? SchedulePattern.Flexible
             setSchedulePatternKey(SchedulePattern[pattern] as string)
             setStartTime(form.getValues("startTime") || "09:00")
@@ -117,18 +108,19 @@ export function DepartmentConditionsModal({
     }, [open, formWorkingDays, form])
 
     const handleSave = () => {
-        form.setValue("workingDays", workingDays, { shouldValidate: true, shouldDirty: true })
+        form.setValue("workingDays", workingDays as unknown as DayOfWeek[], { shouldValidate: true, shouldDirty: true })
         form.setValue("defaultSchedulePattern", SchedulePattern[schedulePatternKey as keyof typeof SchedulePattern], { shouldValidate: true, shouldDirty: true })
         form.setValue("startTime", startTime, { shouldValidate: true, shouldDirty: true })
         form.setValue("endTime", endTime, { shouldValidate: true, shouldDirty: true })
         onOpenChange(false)
     }
 
-    const toggleDay = (day: DayOfWeek) => {
+    const toggleDay = (day: string) => {
         if (workingDays.includes(day)) {
             setWorkingDays(workingDays.filter(d => d !== day))
         } else {
-            setWorkingDays([...workingDays, day].sort())
+            const newDays = [...workingDays, day]
+            setWorkingDays(ALL_DAYS.filter(d => newDays.includes(d)))
         }
     }
 
@@ -306,15 +298,14 @@ export function DepartmentConditionsModal({
                         <div className="border rounded-md overflow-hidden bg-background shadow-sm">
                             <div className="grid grid-cols-7 border-b bg-muted/50">
                                 {WEEK_DAYS.map(day => {
-                                    const isSelected = workingDays.includes(day.value as DayOfWeek)
-
+                                    const isSelected = workingDays.includes(day.value)
                                     return (
                                         <div key={day.value} className="p-3 text-center text-xs font-semibold border-r last:border-r-0 flex flex-col items-center justify-center gap-2 bg-muted/30">
                                             <div className="flex items-center gap-2">
                                                 <Checkbox
                                                     id={`day-check-${day.value}`}
                                                     checked={isSelected}
-                                                    onCheckedChange={() => toggleDay(day.value as DayOfWeek)}
+                                                    onCheckedChange={() => toggleDay(day.value)}
                                                 />
                                                 <Label htmlFor={`day-check-${day.value}`} className={`cursor-pointer ${isSelected ? 'text-foreground' : 'text-muted-foreground opacity-50'}`}>
                                                     {day.label}
@@ -326,7 +317,7 @@ export function DepartmentConditionsModal({
                             </div>
                             <div className="grid grid-cols-7 h-[400px]">
                                 {WEEK_DAYS.map(day => {
-                                    const isWorkingDay = workingDays.includes(day.value as DayOfWeek)
+                                    const isWorkingDay = workingDays.includes(day.value)
                                     return (
                                         <div key={day.value} className={`relative border-r last:border-r-0 ${isWorkingDay ? 'bg-background' : 'bg-muted/10 pattern-diagonal-lines'}`}>
                                             {isWorkingDay && displayTemplates.map((st, idx) => (

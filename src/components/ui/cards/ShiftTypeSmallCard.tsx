@@ -9,7 +9,7 @@ export default function ShiftTemplateSmallCard({ name, id, startTime, endTime, c
         if (!ref.current) return;
         return draggable({
             element: ref.current,
-            getInitialData: () => ({ type: "shiftTemplate", id: id }),
+            getInitialData: () => ({ type: "shiftType", id: id }),
         });
     }, [id]);
 
