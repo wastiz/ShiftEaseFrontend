@@ -91,21 +91,9 @@ export default function ShiftTemplates() {
     return (
         <>
             <Header title={t("title")}>
-                <ShiftTemplateAsideForm
-                    open={drawerOpen}
-                    onOpenChange={(open) => {
-                        if (!open) closeDrawer();
-                        else setDrawerOpen(true);
-                    }}
-                    selectedShift={selectedShift}
-                    departments={departments}
-                    onCreate={handleCreate}
-                    onUpdate={handleUpdate}
-                    onDelete={handleDeleteClick}
-                    isCreating={createMutation.isPending}
-                    isUpdating={updateMutation.isPending}
-                    isDeleting={deleteMutation.isPending}
-                />
+                <Button onClick={() => setDrawerOpen(true)}>
+                    + {t('addShiftTemplate')}
+                </Button>
             </Header>
 
             <main className="p-4">
@@ -176,6 +164,21 @@ export default function ShiftTemplates() {
                     </DialogContent>
                 </Dialog>
             </main>
+            <ShiftTemplateAsideForm
+                open={drawerOpen}
+                onOpenChange={(open) => {
+                    if (!open) closeDrawer();
+                    else setDrawerOpen(true);
+                }}
+                selectedShift={selectedShift}
+                departments={departments}
+                onCreate={handleCreate}
+                onUpdate={handleUpdate}
+                onDelete={handleDeleteClick}
+                isCreating={createMutation.isPending}
+                isUpdating={updateMutation.isPending}
+                isDeleting={deleteMutation.isPending}
+            />
         </>
     );
 }

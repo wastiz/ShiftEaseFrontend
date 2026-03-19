@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/shadcn/button'
 import {
     useExportSchedule,
@@ -37,6 +38,12 @@ const today = new Date()
 const DEFAULT_MAX_CONSECUTIVE_SHIFTS = 5;
 const DEFAULT_MIN_DAYS_OFF_PER_WEEK = 2;
 
+function parseParamInt(value: string | null, fallback: number): number {
+    if (!value) return fallback;
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? fallback : parsed;
+}
+
 export type MessageType = "warning" | "error";
 export type WarningMessage = {
     message: string;
@@ -45,11 +52,18 @@ export type WarningMessage = {
 
 export default function ManageSchedule() {
     const t = useTranslations('schedule');
+    const searchParams = useSearchParams();
+
+    const initialMonth = useMemo(() => {
+        const m = parseParamInt(searchParams.get('month'), today.getMonth() + 1);
+        return m - 1; // convert to 0-indexed
+    }, []);
+    const initialYear = useMemo(() => parseParamInt(searchParams.get('year'), today.getFullYear()), []);
 
     const [viewMode, setViewMode] = useState<'calendar' | 'simple'>('simple');
-    const [currentMonth, setCurrentMonth] = useState(today.getMonth())
-    const [currentYear, setCurrentYear] = useState(today.getFullYear())
-    const [daysOfMonth, setDaysOfMonth] = useState(getDaysInMonth(today.getFullYear(), today.getMonth()))
+    const [currentMonth, setCurrentMonth] = useState(initialMonth)
+    const [currentYear, setCurrentYear] = useState(initialYear)
+    const [daysOfMonth, setDaysOfMonth] = useState(getDaysInMonth(initialYear, initialMonth))
 
     const [isConfirmed, setIsConfirmed] = useState(false)
     const [scheduleId, setScheduleId] = useState<number | null>(null)

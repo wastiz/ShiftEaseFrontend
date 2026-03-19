@@ -90,7 +90,6 @@ export function DepartmentAsideForm({
             onOpenChange={onOpenChange}
             title={selectedDepartment ? t('editDepartment') : t('addDepartment')}
             description={t('configureDetails')}
-            trigger={<Button>+ {t('addDepartment')}</Button>}
             footer={
                 <>
                     {selectedDepartment && (

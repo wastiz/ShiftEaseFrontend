@@ -16,7 +16,7 @@ export default function ShiftTemplateSmallCard({ name, id, startTime, endTime, c
     return (
         <div
             ref={ref}
-            className="flex items-center gap-2 p-2 border rounded cursor-grab active:cursor-grabbing hover:bg-accent/50 transition-colors"
+            className="min-w-32 max-h-20 flex items-center gap-2 p-2 border rounded cursor-grab active:cursor-grabbing hover:bg-accent/50 transition-colors"
             style={{ borderLeftColor: color, borderLeftWidth: "4px" }}
         >
             <div className="flex-1">

@@ -18,6 +18,9 @@ import { Textarea } from "@/components/ui/shadcn/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import FormField from "@/components/ui/FormField";
 import { VacationDto, SickLeaveDto, PersonalDayDto } from "@/types";
+// VacationDto and SickLeaveDto are used as type parameters for mutations
+import { VacationForm } from "./VacationForm";
+import { SickLeaveForm } from "./SickLeaveForm";
 import { Calendar, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
@@ -63,20 +66,6 @@ export default function TimeOffDialog({
     const deletePersonalDayMutation = useDeletePersonalDay(employeeId);
 
     const {
-        register: registerVacation,
-        handleSubmit: handleSubmitVacation,
-        reset: resetVacation,
-        formState: { errors: vacationErrors },
-    } = useForm<VacationDto>();
-
-    const {
-        register: registerSick,
-        handleSubmit: handleSubmitSick,
-        reset: resetSick,
-        formState: { errors: sickErrors },
-    } = useForm<SickLeaveDto>();
-
-    const {
         register: registerPersonal,
         handleSubmit: handleSubmitPersonal,
         reset: resetPersonal,
@@ -87,7 +76,6 @@ export default function TimeOffDialog({
         addVacationMutation.mutate(data, {
             onSuccess: () => {
                 toast.success(t('vacationAddedSuccess'));
-                resetVacation();
                 setViewMode("view");
             },
             onError: () => {
@@ -100,7 +88,6 @@ export default function TimeOffDialog({
         addSickLeaveMutation.mutate(data, {
             onSuccess: () => {
                 toast.success(t('sickLeaveAddedSuccess'));
-                resetSick();
                 setViewMode("view");
             },
             onError: () => {
@@ -142,8 +129,6 @@ export default function TimeOffDialog({
     };
 
     const handleClose = () => {
-        resetVacation();
-        resetSick();
         resetPersonal();
         setViewMode("add");
         onOpenChange(false);
@@ -182,67 +167,15 @@ export default function TimeOffDialog({
                 </div>
 
                 {viewMode === "add" ? (
-                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v )}>
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "vacation" | "sick" | "personal")}>
                         <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="vacation">{t('vacation')}</TabsTrigger>
                             <TabsTrigger value="sick">{t('sickLeave')}</TabsTrigger>
                             <TabsTrigger value="personal">{t('personalDay')}</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="vacation">
-                            <form
-                                id="vacation-form"
-                                onSubmit={handleSubmitVacation(onSubmitVacation)}
-                                className="space-y-4 mt-4"
-                            >
-                                <FormField>
-                                    <Label htmlFor="vacation-startDate">
-                                        {t('startDate')}
-                                        <span className="text-red-500 ml-1">*</span>
-                                    </Label>
-                                    <Input
-                                        id="vacation-startDate"
-                                        type="date"
-                                        {...registerVacation("startDate", {
-                                            required: t('startDateRequired'),
-                                        })}
-                                    />
-                                    {vacationErrors.startDate && (
-                                        <p className="text-red-500 text-sm">
-                                            {vacationErrors.startDate.message}
-                                        </p>
-                                    )}
-                                </FormField>
-
-                                <FormField>
-                                    <Label htmlFor="vacation-endDate">
-                                        {t('endDate')}
-                                        <span className="text-red-500 ml-1">*</span>
-                                    </Label>
-                                    <Input
-                                        id="vacation-endDate"
-                                        type="date"
-                                        {...registerVacation("endDate", {
-                                            required: t('endDateRequired'),
-                                        })}
-                                    />
-                                    {vacationErrors.endDate && (
-                                        <p className="text-red-500 text-sm">
-                                            {vacationErrors.endDate.message}
-                                        </p>
-                                    )}
-                                </FormField>
-
-                                <FormField>
-                                    <Label htmlFor="vacation-reason">{t('reasonOptional')}</Label>
-                                    <Textarea
-                                        id="vacation-reason"
-                                        placeholder={t('enterVacationReason')}
-                                        {...registerVacation("reason")}
-                                    />
-                                </FormField>
-                            </form>
-
+                        <TabsContent value="vacation" className="mt-4">
+                            <VacationForm formId="vacation-form" onSubmit={onSubmitVacation} />
                             <DialogFooter className="mt-6">
                                 <Button variant="outline" onClick={handleClose}>
                                     {tCommon('cancel')}
@@ -257,71 +190,8 @@ export default function TimeOffDialog({
                             </DialogFooter>
                         </TabsContent>
 
-                        <TabsContent value="sick">
-                            <form
-                                id="sick-form"
-                                onSubmit={handleSubmitSick(onSubmitSick)}
-                                className="space-y-4 mt-4"
-                            >
-                                <FormField>
-                                    <Label htmlFor="sick-startDate">
-                                        {t('startDate')}
-                                        <span className="text-red-500 ml-1">*</span>
-                                    </Label>
-                                    <Input
-                                        id="sick-startDate"
-                                        type="date"
-                                        {...registerSick("startDate", {
-                                            required: t('startDateRequired'),
-                                        })}
-                                    />
-                                    {sickErrors.startDate && (
-                                        <p className="text-red-500 text-sm">
-                                            {sickErrors.startDate.message}
-                                        </p>
-                                    )}
-                                </FormField>
-
-                                <FormField>
-                                    <Label htmlFor="sick-endDate">
-                                        {t('endDate')}
-                                        <span className="text-red-500 ml-1">*</span>
-                                    </Label>
-                                    <Input
-                                        id="sick-endDate"
-                                        type="date"
-                                        {...registerSick("endDate", {
-                                            required: t('endDateRequired'),
-                                        })}
-                                    />
-                                    {sickErrors.endDate && (
-                                        <p className="text-red-500 text-sm">
-                                            {sickErrors.endDate.message}
-                                        </p>
-                                    )}
-                                </FormField>
-
-                                <FormField>
-                                    <Label htmlFor="sick-diagnosis">{t('diagnosisOptional')}</Label>
-                                    <Textarea
-                                        id="sick-diagnosis"
-                                        placeholder={t('enterDiagnosis')}
-                                        {...registerSick("diagnosis")}
-                                    />
-                                </FormField>
-
-                                <FormField>
-                                    <Label htmlFor="sick-documentNumber">
-                                        {t('documentNumberOptional')}
-                                    </Label>
-                                    <Input
-                                        id="sick-documentNumber"
-                                        placeholder={t('enterDocumentNumber')}
-                                        {...registerSick("documentNumber")}
-                                    />
-                                </FormField>
-                            </form>
-
+                        <TabsContent value="sick" className="mt-4">
+                            <SickLeaveForm formId="sick-form" onSubmit={onSubmitSick} />
                             <DialogFooter className="mt-6">
                                 <Button variant="outline" onClick={handleClose}>
                                     {tCommon('cancel')}

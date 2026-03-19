@@ -6,13 +6,14 @@ import {
     Calendar,
     Clock,
     AlertCircle,
-    CheckCircle2,
     Plus,
-    FileText,
     Settings,
     TrendingUp,
     Building2,
-    Loader2
+    Loader2,
+    UserPlus,
+    Palmtree,
+    Stethoscope,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
 import { Button } from '@/components/ui/shadcn/button';
@@ -22,8 +23,10 @@ import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
 import Link from 'next/link';
-import { useGetOrganizationData } from '@/hooks/api';
+import { useGetOrganizationData, useCreateEmployee, useGetDepartments } from '@/hooks/api';
 import { useTranslations } from 'next-intl';
+import { EmployeeAsideForm, EmployeeFormValues, AddVacationAsideForm, AddSickLeaveAsideForm } from '@/components/features/employees';
+import { toast } from 'sonner';
 
 export default function EmployerDashboard() {
     const t = useTranslations('dashboard');
@@ -33,11 +36,32 @@ export default function EmployerDashboard() {
     const { data, isLoading } = useGetOrganizationData(organizationId ?? undefined);
     const [selectedDepartment, setSelectedDepartment] = useState<number>(1);
 
-    const departments = [
+    const [addEmployeeOpen, setAddEmployeeOpen] = useState(false);
+    const [addVacationOpen, setAddVacationOpen] = useState(false);
+    const [addSickLeaveOpen, setAddSickLeaveOpen] = useState(false);
+
+    const { data: departments = [] } = useGetDepartments();
+    const createEmployeeMutation = useCreateEmployee();
+
+    const mockShifts = [
         { id: 1, name: 'Morning Shift', employeeCount: 8, scheduleStatus: 'confirmed' },
         { id: 2, name: 'Evening Shift', employeeCount: 10, scheduleStatus: 'pending' },
         { id: 3, name: 'Night Shift', employeeCount: 6, scheduleStatus: 'draft' }
     ];
+
+    const handleCreateEmployee = (data: EmployeeFormValues) => {
+        createEmployeeMutation.mutate(data, {
+            onSuccess: () => {
+                toast.success('Сотрудник добавлен');
+                setAddEmployeeOpen(false);
+            },
+            onError: () => toast.error('Не удалось добавить сотрудника'),
+        });
+    };
+
+    const now = new Date();
+    const currentScheduleUrl = `/schedules/manage?month=${now.getMonth() + 1}&year=${now.getFullYear()}`;
+    const orgSettingsUrl = organizationId ? `/organizations/${organizationId}` : '/organizations';
 
     if (isLoading) {
         return (
@@ -215,31 +239,37 @@ export default function EmployerDashboard() {
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/schedules/create">
+                                    <Link href={currentScheduleUrl}>
                                         <Calendar className="mr-2 h-4 w-4" />
-                                        {t('createNewSchedule')}
+                                        Редактировать текущее расписание
                                     </Link>
                                 </Button>
-                                <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/employees">
-                                        <Users className="mr-2 h-4 w-4" />
-                                        {t('manageEmployees')}
-                                    </Link>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                    onClick={() => setAddEmployeeOpen(true)}
+                                >
+                                    <UserPlus className="mr-2 h-4 w-4" />
+                                    Добавить сотрудника
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                    onClick={() => setAddVacationOpen(true)}
+                                >
+                                    <Palmtree className="mr-2 h-4 w-4" />
+                                    Добавить отпуск сотруднику
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                    onClick={() => setAddSickLeaveOpen(true)}
+                                >
+                                    <Stethoscope className="mr-2 h-4 w-4" />
+                                    Добавить больничный сотруднику
                                 </Button>
                                 <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/shift-types">
-                                        <Clock className="mr-2 h-4 w-4" />
-                                        {t('configureShiftTypes')}
-                                    </Link>
-                                </Button>
-                                <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/reports">
-                                        <FileText className="mr-2 h-4 w-4" />
-                                        {t('viewReports')}
-                                    </Link>
-                                </Button>
-                                <Button variant="outline" className="w-full justify-start" asChild>
-                                    <Link href="/settings">
+                                    <Link href={orgSettingsUrl}>
                                         <Settings className="mr-2 h-4 w-4" />
                                         {t('organizationSettings')}
                                     </Link>
@@ -258,30 +288,30 @@ export default function EmployerDashboard() {
                         <CardContent>
                             <Tabs value={selectedDepartment.toString()} onValueChange={(v) => setSelectedDepartment(Number(v))}>
                                 <TabsList className="w-full justify-start">
-                                    {departments.map((department) => (
-                                        <TabsTrigger key={department.id} value={department.id.toString()}>
-                                            {department.name}
+                                    {mockShifts.map((shift) => (
+                                        <TabsTrigger key={shift.id} value={shift.id.toString()}>
+                                            {shift.name}
                                             <Badge variant="secondary" className="ml-2">
-                                                {department.employeeCount}
+                                                {shift.employeeCount}
                                             </Badge>
                                         </TabsTrigger>
                                     ))}
                                 </TabsList>
 
-                                {departments.map((department) => (
-                                    <TabsContent key={department.id} value={department.id.toString()} className="space-y-4">
+                                {mockShifts.map((shift) => (
+                                    <TabsContent key={shift.id} value={shift.id.toString()} className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <h3 className="text-lg font-semibold">{department.name}</h3>
+                                                <h3 className="text-lg font-semibold">{shift.name}</h3>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {department.employeeCount} {t('employees')}
+                                                    {shift.employeeCount} {t('employees')}
                                                 </p>
                                             </div>
                                             <Badge variant={
-                                                department.scheduleStatus === 'confirmed' ? 'default' :
-                                                    department.scheduleStatus === 'pending' ? 'secondary' : 'outline'
+                                                shift.scheduleStatus === 'confirmed' ? 'default' :
+                                                    shift.scheduleStatus === 'pending' ? 'secondary' : 'outline'
                                             }>
-                                                {t(department.scheduleStatus as 'confirmed' | 'pending' | 'draft')}
+                                                {t(shift.scheduleStatus as 'confirmed' | 'pending' | 'draft')}
                                             </Badge>
                                         </div>
 
@@ -311,12 +341,12 @@ export default function EmployerDashboard() {
 
                                         <div className="flex justify-end gap-2">
                                             <Button variant="outline" asChild>
-                                                <Link href={`/schedules/${department.id}`}>
+                                                <Link href={`/schedules/manage`}>
                                                     {t('viewFullSchedule')}
                                                 </Link>
                                             </Button>
                                             <Button asChild>
-                                                <Link href={`/schedules/${department.id}/edit`}>
+                                                <Link href={`/schedules/manage`}>
                                                     {t('editSchedule')}
                                                 </Link>
                                             </Button>
@@ -373,6 +403,27 @@ export default function EmployerDashboard() {
                     </div>
                 </div>
             </Main>
+
+            <EmployeeAsideForm
+                open={addEmployeeOpen}
+                onOpenChange={setAddEmployeeOpen}
+                selectedEmployee={null}
+                departments={departments}
+                onCreate={handleCreateEmployee}
+                onUpdate={() => {}}
+                onDelete={() => {}}
+                isCreating={createEmployeeMutation.isPending}
+            />
+
+            <AddVacationAsideForm
+                open={addVacationOpen}
+                onOpenChange={setAddVacationOpen}
+            />
+
+            <AddSickLeaveAsideForm
+                open={addSickLeaveOpen}
+                onOpenChange={setAddSickLeaveOpen}
+            />
         </>
     );
 }

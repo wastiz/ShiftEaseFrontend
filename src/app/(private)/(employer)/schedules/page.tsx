@@ -21,6 +21,17 @@ import {
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
+const MONTH_NAMES: Record<string, number> = {
+    january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+    july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
+
+function parseMonthToNumber(month: string): number {
+    const num = parseInt(month);
+    if (!isNaN(num) && num >= 1 && num <= 12) return num;
+    return MONTH_NAMES[month.toLowerCase()] ?? new Date().getMonth() + 1;
+}
+
 function SeverityBadge({ severity }: { severity: string }) {
     const lower = severity.toLowerCase();
     if (lower === 'critical' || lower === 'high') {
@@ -51,7 +62,7 @@ function ScheduleItemCard({
 }: {
     item: ScheduleItem;
     confirmed: boolean;
-    onEdit: (id: number) => void;
+    onEdit: (item: ScheduleItem) => void;
 }) {
     const hasWarnings = item.warnings && item.warnings.length > 0;
 
@@ -131,7 +142,7 @@ function ScheduleItemCard({
                     variant="outline"
                     size="sm"
                     className="ml-auto"
-                    onClick={() => onEdit(item.id)}
+                    onClick={() => onEdit(item)}
                 >
                     Manage <ArrowRight className="h-3.5 w-3.5 ml-1" />
                 </Button>
@@ -163,12 +174,15 @@ export default function Schedules() {
         return () => clearTimeout(timer)
     }, [hasAllEntities])
 
-    const handleEditClick = (scheduleId: number) => {
-        router.push(`/schedules/manage`)
+    const handleEditClick = (item: ScheduleItem) => {
+        const month = parseMonthToNumber(item.month);
+        const year = parseInt(item.year) || new Date().getFullYear();
+        router.push(`/schedules/manage?month=${month}&year=${year}`)
     }
 
     const handleGoToSchedule = () => {
-        router.push("schedules/manage")
+        const now = new Date();
+        router.push(`/schedules/manage?month=${now.getMonth() + 1}&year=${now.getFullYear()}`)
     }
 
     if (loadingEntities) return <Loader />

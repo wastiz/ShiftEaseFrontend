@@ -101,20 +101,9 @@ export default function Departments() {
     return (
         <>
             <Header title={t("title")}>
-                <DepartmentAsideForm
-                    open={drawerOpen}
-                    onOpenChange={(open) => {
-                        if (!open) closeDrawer();
-                        else setDrawerOpen(true);
-                    }}
-                    selectedDepartment={selectedDepartment}
-                    onCreate={handleCreate}
-                    onUpdate={handleUpdate}
-                    onDelete={handleDeleteClick}
-                    isCreating={createMutation.isPending}
-                    isUpdating={updateMutation.isPending}
-                    isDeleting={deleteMutation.isPending}
-                />
+                <Button onClick={() => setDrawerOpen(true)}>
+                    + {t('addDepartment')}
+                </Button>
             </Header>
 
             <main className="p-4">
@@ -175,6 +164,20 @@ export default function Departments() {
                     </DialogContent>
                 </Dialog>
             </main>
+            <DepartmentAsideForm
+                open={drawerOpen}
+                onOpenChange={(open) => {
+                    if (!open) closeDrawer();
+                    else setDrawerOpen(true);
+                }}
+                selectedDepartment={selectedDepartment}
+                onCreate={handleCreate}
+                onUpdate={handleUpdate}
+                onDelete={handleDeleteClick}
+                isCreating={createMutation.isPending}
+                isUpdating={updateMutation.isPending}
+                isDeleting={deleteMutation.isPending}
+            />
         </>
     );
 }
