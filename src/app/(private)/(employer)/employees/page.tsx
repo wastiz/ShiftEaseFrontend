@@ -116,21 +116,9 @@ export default function Employees() {
                 <Button variant="outline" onClick={() => router.push("employees/bulk-create")}>
                     {tCommon("bulkAdd")}
                 </Button>
-                <EmployeeAsideForm
-                    open={drawerOpen}
-                    onOpenChange={(open) => {
-                        if (!open) closeDrawer();
-                        else setDrawerOpen(true);
-                    }}
-                    selectedEmployee={selectedEmployee}
-                    departments={departments}
-                    onCreate={handleCreate}
-                    onUpdate={handleUpdate}
-                    onDelete={handleDeleteClick}
-                    isCreating={createMutation.isPending}
-                    isUpdating={updateMutation.isPending}
-                    isDeleting={deleteMutation.isPending}
-                />
+                <Button onClick={() => setDrawerOpen(true)}>
+                    + {t('addEmployee')}
+                </Button>
             </Header>
 
             <main className="p-4 space-y-4">
@@ -230,6 +218,21 @@ export default function Employees() {
                     />
                 )}
             </main>
+            <EmployeeAsideForm
+                open={drawerOpen}
+                onOpenChange={(open) => {
+                    if (!open) closeDrawer();
+                    else setDrawerOpen(true);
+                }}
+                selectedEmployee={selectedEmployee}
+                departments={departments}
+                onCreate={handleCreate}
+                onUpdate={handleUpdate}
+                onDelete={handleDeleteClick}
+                isCreating={createMutation.isPending}
+                isUpdating={updateMutation.isPending}
+                isDeleting={deleteMutation.isPending}
+            />
         </>
     );
 }
