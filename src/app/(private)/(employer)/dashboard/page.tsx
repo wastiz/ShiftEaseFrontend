@@ -75,7 +75,6 @@ export default function EmployerDashboard() {
         });
     };
 
-    const now = new Date();
     const currentScheduleUrl = `/schedules/manage?month=${now.getMonth() + 1}&year=${now.getFullYear()}`;
     const orgSettingsUrl = organizationId ? `/organizations/${organizationId}` : '/organizations';
 
