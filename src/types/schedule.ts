@@ -54,9 +54,9 @@ export type EmployeeTimeOff = {
 }
 
 export enum TimeOffType {
-    Vacation,
-    SickLeave,
-    PersonalDay
+    Vacation = "Vacation",
+    SickLeave = "SickLeave",
+    PersonalDay = "PersonalDay",
 }
 
 export type Shift = {

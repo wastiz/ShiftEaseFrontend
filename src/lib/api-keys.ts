@@ -7,6 +7,8 @@ export const authKeys = {
 export const employeeKeys = {
     all: ["employees"] as const,
     detail: (id: number) => [...employeeKeys.all, id] as const,
+    timeOffs: (year?: number, month?: number, employeeIds?: number[]) =>
+        ["employees", "time-offs", year, month, employeeIds] as const,
 };
 
 export const organizationKeys = {

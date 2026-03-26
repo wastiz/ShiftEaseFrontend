@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { BulkCreateResult, Employee } from "@/types";
+import { BulkCreateResult, Employee, EmployeeTimeOff, GetEmployeesTimeOffsParams } from "@/types";
 import { employeeKeys } from "@/lib/api-keys";
 
 export function useGetEmployees() {
@@ -64,6 +64,24 @@ export function useUpdateEmployee(id: number) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: employeeKeys.all });
         },
+    });
+}
+
+export function useGetEmployeesTimeOffs(params: GetEmployeesTimeOffsParams = {}, enabled = true) {
+    const { year, month, employeeIds } = params;
+    return useQuery<EmployeeTimeOff[]>({
+        queryKey: employeeKeys.timeOffs(year, month, employeeIds),
+        queryFn: async () => {
+            const res = await api.get<EmployeeTimeOff[]>("/employees/time-offs", {
+                params: {
+                    ...(year !== undefined && { year }),
+                    ...(month !== undefined && { month }),
+                    ...(employeeIds?.length && { employeeIds }),
+                },
+            });
+            return res.data;
+        },
+        enabled,
     });
 }
 

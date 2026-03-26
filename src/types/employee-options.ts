@@ -1,3 +1,5 @@
+import {TimeOffType} from "@/types/schedule";
+
 export interface VacationDto {
     id?: number;
     startDate: string;
@@ -60,6 +62,12 @@ export interface PersonalDayRequestDto {
     date: string;
     reason?: string;
     status?: 'pending' | 'approved' | 'rejected';
+}
+
+export interface GetEmployeesTimeOffsParams {
+    year?: number;
+    month?: number;
+    employeeIds?: number[];
 }
 
 export interface WeekDayPreferenceDto {
