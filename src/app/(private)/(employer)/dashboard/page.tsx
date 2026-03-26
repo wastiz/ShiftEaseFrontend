@@ -23,7 +23,7 @@ import { Alert, AlertDescription } from '@/components/ui/shadcn/alert';
 import Header from "@/components/ui/Header";
 import Main from "@/components/ui/Main";
 import Link from 'next/link';
-import { useGetOrganizationData, useCreateEmployee, useGetDepartments } from '@/hooks/api';
+import { useGetOrganizationData, useCreateEmployee, useGetDepartments, useGetEmployeesTimeOffs } from '@/hooks/api';
 import { useTranslations } from 'next-intl';
 import { EmployeeAsideForm, EmployeeFormValues, AddVacationAsideForm, AddSickLeaveAsideForm } from '@/components/features/employees';
 import { toast } from 'sonner';
@@ -42,6 +42,22 @@ export default function EmployerDashboard() {
 
     const { data: departments = [] } = useGetDepartments();
     const createEmployeeMutation = useCreateEmployee();
+
+    const now = new Date();
+    const { data: thisMonthTimeOffs = [] } = useGetEmployeesTimeOffs({
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+    });
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    const employeeIdsThisWeek = new Set(
+        thisMonthTimeOffs
+            .filter((entry) => new Date(entry.startDate) <= weekEnd && new Date(entry.endDate) >= weekStart)
+            .map((entry) => entry.employeeId)
+    );
+    const upcomingTimeOffCount = employeeIdsThisWeek.size;
 
     const mockShifts = [
         { id: 1, name: 'Morning Shift', employeeCount: 8, scheduleStatus: 'confirmed' },
@@ -394,7 +410,7 @@ export default function EmployerDashboard() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">3</div>
+                                <div className="text-2xl font-bold">{upcomingTimeOffCount}</div>
                                 <p className="text-xs text-muted-foreground mt-1">
                                     {t('requestsThisWeek')}
                                 </p>

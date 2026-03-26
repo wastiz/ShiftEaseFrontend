@@ -1,7 +1,15 @@
 'use client'
 
 import { Button } from '@/components/ui/shadcn/button'
-import { PanelLeft, PanelTop, Filter } from 'lucide-react'
+import { PanelLeft, PanelTop, Filter, X } from 'lucide-react'
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/shadcn/command'
 import DayContainer from './DayContainer'
 import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from '@/types'
 import { EmployeeTimeOff } from '@/types/schedule'
@@ -68,6 +76,9 @@ export default function ScheduleCalendar({
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('left')
     const [selectedShiftTemplateIds, setSelectedShiftTemplateIds] = useState<number[]>([])
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null)
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null)
+    const [employeeSearchOpen, setEmployeeSearchOpen] = useState(false)
+    const [employeeSearchValue, setEmployeeSearchValue] = useState("")
 
     // Set default department to first department when departments become available
     useEffect(() => {
@@ -105,16 +116,30 @@ export default function ScheduleCalendar({
 
     // Further filter employees by selected shift types (inside the department)
     const visibleEmployees = useMemo(() => {
-        if (selectedShiftTemplateIds.length === 0) return departmentEmployees
+        let result = departmentEmployees
 
-        const empIds = new Set<number>()
-        departmentShifts.forEach(shift => {
-            if (selectedShiftTemplateIds.includes(shift.shiftTypeId)) {
-                shift.employees.forEach(e => empIds.add(e.id))
-            }
-        })
-        return departmentEmployees.filter(emp => empIds.has(emp.id))
-    }, [departmentEmployees, selectedShiftTemplateIds, departmentShifts])
+        if (selectedShiftTemplateIds.length > 0) {
+            const empIds = new Set<number>()
+            departmentShifts.forEach(shift => {
+                if (selectedShiftTemplateIds.includes(shift.shiftTypeId)) {
+                    shift.employees.forEach(e => empIds.add(e.id))
+                }
+            })
+            result = result.filter(emp => empIds.has(emp.id))
+        }
+
+        if (selectedEmployeeId !== null) {
+            result = result.filter(emp => emp.id === selectedEmployeeId)
+        }
+
+        return result
+    }, [departmentEmployees, selectedShiftTemplateIds, departmentShifts, selectedEmployeeId])
+
+    const employeeSearchSuggestions = useMemo(() => {
+        if (!employeeSearchValue.trim()) return []
+        const query = employeeSearchValue.toLowerCase()
+        return departmentEmployees.filter(emp => emp.name.toLowerCase().includes(query)).slice(0, 8)
+    }, [departmentEmployees, employeeSearchValue])
 
     // Shift types visible in the panel (filtered within department)
     const visibleShiftTemplates = useMemo(
@@ -173,6 +198,60 @@ export default function ScheduleCalendar({
                         </SelectContent>
                     </Select>
                 )}
+
+                {/* Employee search combobox */}
+                <div className="relative">
+                <Popover open={employeeSearchOpen} onOpenChange={setEmployeeSearchOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className={`w-44 justify-start font-normal ${selectedEmployeeId ? "pr-7" : ""}`}
+                            role="combobox"
+                        >
+                            <span className="truncate text-sm">
+                                {selectedEmployeeId
+                                    ? employees.find(e => e.id === selectedEmployeeId)?.name
+                                    : "Search employee..."}
+                            </span>
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                        <Command>
+                            <CommandInput
+                                placeholder="Search employee..."
+                                value={employeeSearchValue}
+                                onValueChange={setEmployeeSearchValue}
+                            />
+                            <CommandList>
+                                <CommandEmpty>No employees found</CommandEmpty>
+                                <CommandGroup>
+                                    {employeeSearchSuggestions.map(emp => (
+                                        <CommandItem
+                                            key={emp.id}
+                                            value={emp.name}
+                                            onSelect={() => {
+                                                setSelectedEmployeeId(emp.id)
+                                                setEmployeeSearchValue("")
+                                                setEmployeeSearchOpen(false)
+                                            }}
+                                        >
+                                            {emp.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </PopoverContent>
+                </Popover>
+                {selectedEmployeeId && (
+                    <button
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        onClick={() => { setSelectedEmployeeId(null); setEmployeeSearchValue("") }}
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </button>
+                )}
+                </div>
 
                 {isEditable && (
                     <>

@@ -11,7 +11,15 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings } from "lucide-react";
+import { Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings, X } from "lucide-react";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/shadcn/command";
 import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from "@/types";
 import { EmployeeTimeOff } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
@@ -77,6 +85,9 @@ export default function SimpleView({
     const dates = daysOfMonth.map((d) => d.isoDate);
     const [selectedShiftTemplates, setSelectedShiftTemplates] = useState<number[]>([]);
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+    const [employeeSearchOpen, setEmployeeSearchOpen] = useState(false);
+    const [employeeSearchValue, setEmployeeSearchValue] = useState("");
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
@@ -95,17 +106,28 @@ export default function SimpleView({
             }
         }
 
-        if (selectedShiftTemplates.length === 0) return result;
+        if (selectedShiftTemplates.length > 0) {
+            const employeeIdsWithSelectedShifts = new Set<number>();
+            shiftsData.forEach(shift => {
+                if (selectedShiftTemplates.includes(shift.shiftTypeId)) {
+                    shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
+                }
+            });
+            result = result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
+        }
 
-        const employeeIdsWithSelectedShifts = new Set<number>();
-        shiftsData.forEach(shift => {
-            if (selectedShiftTemplates.includes(shift.shiftTypeId)) {
-                shift.employees.forEach(emp => employeeIdsWithSelectedShifts.add(emp.id));
-            }
-        });
+        if (selectedEmployeeId !== null) {
+            result = result.filter(emp => emp.id === selectedEmployeeId);
+        }
 
-        return result.filter(emp => employeeIdsWithSelectedShifts.has(emp.id));
-    }, [employees, departments, selectedDepartmentId, selectedShiftTemplates, shiftsData]);
+        return result;
+    }, [employees, departments, selectedDepartmentId, selectedShiftTemplates, shiftsData, selectedEmployeeId]);
+
+    const employeeSearchSuggestions = useMemo(() => {
+        if (!employeeSearchValue.trim()) return [];
+        const query = employeeSearchValue.toLowerCase();
+        return employees.filter(emp => emp.name.toLowerCase().includes(query)).slice(0, 8);
+    }, [employees, employeeSearchValue]);
 
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates),
@@ -270,9 +292,63 @@ export default function SimpleView({
                 )}
 
 
+                {/* Employee search combobox */}
+                <div className="relative ml-auto">
+                <Popover open={employeeSearchOpen} onOpenChange={setEmployeeSearchOpen}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className={`w-44 justify-start font-normal ${selectedEmployeeId ? "pr-7" : ""}`}
+                            role="combobox"
+                        >
+                            <span className="truncate text-sm">
+                                {selectedEmployeeId
+                                    ? employees.find(e => e.id === selectedEmployeeId)?.name
+                                    : "Search employee..."}
+                            </span>
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0" align="start">
+                        <Command>
+                            <CommandInput
+                                placeholder="Search employee..."
+                                value={employeeSearchValue}
+                                onValueChange={setEmployeeSearchValue}
+                            />
+                            <CommandList>
+                                <CommandEmpty>No employees found</CommandEmpty>
+                                <CommandGroup>
+                                    {employeeSearchSuggestions.map(emp => (
+                                        <CommandItem
+                                            key={emp.id}
+                                            value={emp.name}
+                                            onSelect={() => {
+                                                setSelectedEmployeeId(emp.id);
+                                                setEmployeeSearchValue("");
+                                                setEmployeeSearchOpen(false);
+                                            }}
+                                        >
+                                            {emp.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </PopoverContent>
+                </Popover>
+                {selectedEmployeeId && (
+                    <button
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        onClick={() => { setSelectedEmployeeId(null); setEmployeeSearchValue(""); }}
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </button>
+                )}
+                </div>
+
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" size="icon" className="ml-auto">
+                        <Button variant="outline" size="icon">
                             <Filter className={(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
                         </Button>
                     </PopoverTrigger>
@@ -334,7 +410,7 @@ export default function SimpleView({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => { setSelectedShiftTemplates([]); setSelectedDepartmentId(null); }}
+                                    onClick={() => { setSelectedShiftTemplates([]); setSelectedDepartmentId(null); setSelectedEmployeeId(null); }}
                                     className="w-full"
                                 >
                                     Clear Filters
