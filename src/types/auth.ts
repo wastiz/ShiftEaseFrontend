@@ -78,7 +78,7 @@ export interface ApiError {
     };
 }
 
-export function getErrorMessage(err: ApiError): string {
+export function getErrorMessage(err: ApiError & { message?: string }): string {
     const errorData = err?.response?.data;
     return (
         errorData?.message ||
@@ -86,6 +86,7 @@ export function getErrorMessage(err: ApiError): string {
         (errorData?.errors && Array.isArray(errorData.errors)
             ? errorData.errors.join(', ')
             : null) ||
+        err?.message ||
         'Something went wrong'
     );
 }

@@ -1,4 +1,4 @@
-import { Shift, EmployeeMinData } from "@/types";
+import { Shift, EmployeeMinData, ShiftTemplate } from "@/types";
 
 export type EmployeeScheduleRow = {
     employeeId: number;
@@ -22,7 +22,8 @@ export type DayAssignment = {
 export function transformToSimpleView(
     employees: EmployeeMinData[],
     shifts: Shift[],
-    daysOfMonth: string[]
+    daysOfMonth: string[],
+    shiftTypes?: ShiftTemplate[]
 ): EmployeeScheduleRow[] {
     return employees.map((emp) => {
         const employeeShifts = shifts.filter((shift) =>
@@ -45,7 +46,8 @@ export function transformToSimpleView(
         });
 
         const totalHours = employeeShifts.reduce((sum, shift) => {
-            const duration = calculateShiftDuration(shift.startTime, shift.endTime);
+            const shiftType = shiftTypes?.find((st) => st.id === shift.shiftTypeId);
+            const duration = calculateShiftDuration(shift.startTime, shift.endTime, shiftType?.breakDuration);
             return sum + duration;
         }, 0);
 
@@ -102,12 +104,44 @@ export function transformFromSimpleView(
     return Array.from(shiftsMap.values()).filter((shift) => shift.employees.length > 0);
 }
 
-function calculateShiftDuration(startTime: string, endTime: string): number {
+function calculateShiftDuration(startTime: string, endTime: string, breakDuration?: string | null): number {
     const [startH, startM] = startTime.split(":").map(Number);
     const [endH, endM] = endTime.split(":").map(Number);
 
     let duration = (endH * 60 + endM) - (startH * 60 + startM);
     if (duration < 0) duration += 24 * 60;
 
+    if (breakDuration) {
+        const breakMinutes = parseBreakToMinutes(breakDuration);
+        duration = Math.max(0, duration - breakMinutes);
+    }
+
     return duration / 60;
+}
+
+export function parseBreakToMinutes(breakDuration: string): number {
+    const parts = breakDuration.split(':').map(Number);
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
+}
+
+export function minutesToTimeSpan(minutes: number): string {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+}
+
+export function getWorkingHoursLabel(startTime: string, endTime: string, breakDuration?: string | null): string {
+    const [startH, startM] = startTime.split(":").map(Number);
+    const [endH, endM] = endTime.split(":").map(Number);
+
+    let durationMin = (endH * 60 + endM) - (startH * 60 + startM);
+    if (durationMin < 0) durationMin += 24 * 60;
+
+    if (breakDuration) {
+        durationMin = Math.max(0, durationMin - parseBreakToMinutes(breakDuration));
+    }
+
+    const h = Math.floor(durationMin / 60);
+    const m = durationMin % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }

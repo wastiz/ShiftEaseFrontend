@@ -130,8 +130,8 @@ export default function SimpleView({
     }, [employees, employeeSearchValue]);
 
     const rows = useMemo(
-        () => transformToSimpleView(filteredEmployees, shiftsData, dates),
-        [filteredEmployees, shiftsData, dates]
+        () => transformToSimpleView(filteredEmployees, shiftsData, dates, shiftTypes),
+        [filteredEmployees, shiftsData, dates, shiftTypes]
     );
 
     const handleShiftTemplateFilterToggle = (shiftTypeId: number) => {

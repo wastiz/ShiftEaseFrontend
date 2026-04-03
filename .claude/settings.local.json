@@ -16,7 +16,9 @@
       "Bash(head:*)",
       "mcp__context7__resolve-library-id",
       "mcp__context7__query-docs",
-      "Bash(grep -r \"useGetVacations\\\\|useGetSickLeaves\\\\|useGetPersonalDays\\\\|usePendingVacationRequests\\\\|usePendingSickLeaveRequests\\\\|usePendingPersonalDayRequests\" C:UsersValer4ikDesktopShiftEaseShiftEaseFrontendsrc --include=*.tsx --include=*.ts)"
+      "Bash(grep -r \"useGetVacations\\\\|useGetSickLeaves\\\\|useGetPersonalDays\\\\|usePendingVacationRequests\\\\|usePendingSickLeaveRequests\\\\|usePendingPersonalDayRequests\" C:UsersValer4ikDesktopShiftEaseShiftEaseFrontendsrc --include=*.tsx --include=*.ts)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('employer',{}\\).get\\('shiftTypes',{}\\), indent=2\\)\\)\")",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

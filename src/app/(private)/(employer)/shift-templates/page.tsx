@@ -24,6 +24,7 @@ import {
     useUpdateShiftTemplate,
 } from "@/hooks/api";
 import {roundToMinutes} from "@/helpers/dateHelper";
+import {getWorkingHoursLabel} from "@/helpers/scheduleHelper";
 import {useTranslations} from "next-intl";
 
 export default function ShiftTemplates() {
@@ -118,12 +119,15 @@ export default function ShiftTemplates() {
 
                 {shifts.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {shifts.map((shift  ) => (
+                        {shifts.map((shift) => (
                             <ShiftTemplateCard
                                 key={shift.id}
                                 name={shift.name}
                                 employees={`${shift.minEmployees}-${shift.maxEmployees}`}
                                 timeRange={`${roundToMinutes(shift.startTime)} - ${roundToMinutes(shift.endTime)}`}
+                                workingHours={shift.breakDuration
+                                    ? getWorkingHoursLabel(shift.startTime, shift.endTime, shift.breakDuration)
+                                    : undefined}
                                 color={shift.color}
                                 actions={[
                                     {

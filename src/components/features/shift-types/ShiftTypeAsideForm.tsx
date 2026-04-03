@@ -1,10 +1,11 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslations } from "next-intl"
-import { Department, ShiftTemplate, ShiftTemplateFormValues } from "@/types"
+import { Department, ShiftTemplate, ShiftTemplateFormValues, ShiftTemplateInternalFormValues } from "@/types"
 import { AsideDrawer } from "@/components/ui/AsideDrawer"
 import { Button } from "@/components/ui/shadcn/button"
 import { ShiftTemplateForm } from "./ShiftTypeForm"
+import { minutesToTimeSpan, parseBreakToMinutes } from "@/helpers/scheduleHelper"
 
 interface ShiftTemplateAsideFormProps {
     open: boolean
@@ -42,11 +43,12 @@ export function ShiftTemplateAsideForm({
         reset,
         watch,
         formState: { errors },
-    } = useForm<ShiftTemplateFormValues>({
+    } = useForm<ShiftTemplateInternalFormValues>({
         defaultValues: {
             name: "",
             startTime: "09:00",
             endTime: "17:00",
+            breakDurationMinutes: '',
             minEmployees: 1,
             maxEmployees: 1,
             color: "#3b82f6",
@@ -62,6 +64,9 @@ export function ShiftTemplateAsideForm({
                     name: selectedShift.name,
                     startTime: selectedShift.startTime,
                     endTime: selectedShift.endTime,
+                    breakDurationMinutes: selectedShift.breakDuration
+                        ? parseBreakToMinutes(selectedShift.breakDuration)
+                        : '',
                     minEmployees: selectedShift.minEmployees,
                     maxEmployees: selectedShift.maxEmployees,
                     color: selectedShift.color,
@@ -72,6 +77,7 @@ export function ShiftTemplateAsideForm({
                     name: "",
                     startTime: "09:00",
                     endTime: "17:00",
+                    breakDurationMinutes: '',
                     minEmployees: 1,
                     maxEmployees: 1,
                     color: "#3b82f6",
@@ -80,11 +86,19 @@ export function ShiftTemplateAsideForm({
         }
     }, [open, selectedShift, reset])
 
-    const onSubmit = (data: ShiftTemplateFormValues) => {
+    const onSubmit = (data: ShiftTemplateInternalFormValues) => {
+        const { breakDurationMinutes, ...rest } = data;
+        const payload: ShiftTemplateFormValues = {
+            ...rest,
+            breakDuration: breakDurationMinutes != null && breakDurationMinutes !== ''
+                ? minutesToTimeSpan(Number(breakDurationMinutes))
+                : null,
+        };
+
         if (selectedShift) {
-            onUpdate(selectedShift.id, data)
+            onUpdate(selectedShift.id, payload)
         } else {
-            onCreate(data)
+            onCreate(payload)
         }
     }
 

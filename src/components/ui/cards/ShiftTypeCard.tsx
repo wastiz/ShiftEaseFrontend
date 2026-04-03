@@ -11,6 +11,7 @@ type ShiftTemplateCardProps = {
     name: string
     employees: string
     timeRange: string
+    workingHours?: string
     color?: string
     className?: string
     actions?: ShiftTemplateCardAction[]
@@ -20,6 +21,7 @@ export default function ShiftTemplateCard({
     name,
     employees,
     timeRange,
+    workingHours,
     color,
     className = "",
     actions = [],
@@ -40,6 +42,9 @@ export default function ShiftTemplateCard({
                 <h3 className="text-lg font-semibold">{name}</h3>
                 <p className="text-sm text-muted-foreground">{t("employeesCount")}: <span className={"text-white"}>{employees}</span></p>
                 <p className="text-sm text-muted-foreground">{t("timeRange")}: <span className={"text-white"}>{timeRange}</span></p>
+                {workingHours && (
+                    <p className="text-sm text-muted-foreground">{t("workingHours")}: <span className={"text-white"}>{workingHours}</span></p>
+                )}
 
                 {actions.length > 0 && (
                     <div className="flex gap-2 mt-2">
