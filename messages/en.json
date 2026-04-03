@@ -271,8 +271,12 @@
         "maxEmployeesRequired": "Max employees is required",
         "colorRequired": "Color is required",
         "atLeastOneEmployee": "At least 1 employee is required",
-        "maxMustBeGreater": "Max must be >= Min"
-      }
+        "maxMustBeGreater": "Max must be >= Min",
+        "breakDurationMin": "Must be 0 or greater"
+      },
+      "breakDuration": "Break",
+      "breakDurationPlaceholder": "Break duration (min)",
+      "workingHours": "Working hours"
     },
     "schedules": {
       "title": "Schedules",

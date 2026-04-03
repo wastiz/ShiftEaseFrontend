@@ -271,8 +271,12 @@
         "maxEmployeesRequired": "Макс. сотрудников обязательно",
         "colorRequired": "Цвет обязателен",
         "atLeastOneEmployee": "Минимум 1 сотрудник",
-        "maxMustBeGreater": "Макс. должен быть >= Мин."
-      }
+        "maxMustBeGreater": "Макс. должен быть >= Мин.",
+        "breakDurationMin": "Должно быть 0 или больше"
+      },
+      "breakDuration": "Перерыв",
+      "breakDurationPlaceholder": "Длительность перерыва (мин)",
+      "workingHours": "Рабочих часов"
     },
     "schedules": {
       "title": "Расписания",

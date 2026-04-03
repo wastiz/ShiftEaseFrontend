@@ -26,7 +26,7 @@ export function useEmployerRegister() {
 export function useLogin(role: Role) {
     return useMutation<LoginResponse, Error, LoginPayload>({
         mutationFn: async (payload) => {
-            const res = await api.post<LoginResponse>(`/auth/${role}/login`, payload);
+            const res = await api.post<LoginResponse>(`/auth/${role.toLowerCase()}/login`, payload);
             return res.data;
         },
     });

@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/shadcn/input"
 import { TimePicker } from "@/components/ui/inputs/TimePicker"
 import ColorPicker from "@/components/ui/inputs/ColorPicker"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/shadcn/select"
-import { Department, ShiftTemplateFormValues } from "@/types"
+import { Department, ShiftTemplateInternalFormValues } from "@/types"
 
 interface ShiftTemplateFormProps {
     formId: string
-    register: UseFormRegister<ShiftTemplateFormValues>
-    control: Control<ShiftTemplateFormValues>
-    errors: FieldErrors<ShiftTemplateFormValues>
+    register: UseFormRegister<ShiftTemplateInternalFormValues>
+    control: Control<ShiftTemplateInternalFormValues>
+    errors: FieldErrors<ShiftTemplateInternalFormValues>
     minEmployees?: number
     departments: Department[]
     onSubmit: (e: React.FormEvent) => void
@@ -122,6 +122,23 @@ export function ShiftTemplateForm({
                 />
                 {errors.endTime && (
                     <p className="text-sm text-red-500">{errors.endTime.message}</p>
+                )}
+            </FormField>
+
+            {/* Break duration */}
+            <FormField>
+                <Label>{t('breakDuration')}</Label>
+                <Input
+                    type="number"
+                    min={0}
+                    placeholder={t('breakDurationPlaceholder')}
+                    {...register("breakDurationMinutes", {
+                        valueAsNumber: true,
+                        min: { value: 0, message: t('validation.breakDurationMin') },
+                    })}
+                />
+                {errors.breakDurationMinutes && (
+                    <p className="text-sm text-red-500">{errors.breakDurationMinutes.message}</p>
                 )}
             </FormField>
 

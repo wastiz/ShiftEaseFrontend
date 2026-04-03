@@ -271,8 +271,12 @@
         "maxEmployeesRequired": "Max töötajaid on kohustuslik",
         "colorRequired": "Värv on kohustuslik",
         "atLeastOneEmployee": "Vähemalt 1 töötaja on nõutav",
-        "maxMustBeGreater": "Max peab olema >= Min"
-      }
+        "maxMustBeGreater": "Max peab olema >= Min",
+        "breakDurationMin": "Peab olema 0 või rohkem"
+      },
+      "breakDuration": "Paus",
+      "breakDurationPlaceholder": "Pausi kestus (min)",
+      "workingHours": "Tööaeg"
     },
     "schedules": {
       "title": "Graafikud",
