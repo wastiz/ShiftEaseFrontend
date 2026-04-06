@@ -49,8 +49,14 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        // Skip refresh logic for auth endpoints - they handle their own errors
-        const isAuthEndpoint = originalRequest.url?.startsWith('/auth/');
+        // Skip refresh logic only for endpoints that would cause infinite loops or don't need token refresh
+        const isAuthEndpoint = originalRequest.url === '/auth/refresh' ||
+            originalRequest.url?.includes('/login') ||
+            originalRequest.url?.includes('/register') ||
+            originalRequest.url?.includes('/logout') ||
+            originalRequest.url?.includes('/forgot-password') ||
+            originalRequest.url?.includes('/reset-password') ||
+            originalRequest.url?.includes('/google');
 
         if (response.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             if (isRefreshing) {

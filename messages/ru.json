@@ -750,7 +750,14 @@
       "AllEmployeesOnTimeOff": "Все сотрудники находятся в отпуске в этот период.",
       "HighWorkloadDetected": "Обнаружена высокая нагрузка. Рассмотрите добавление сотрудников.",
       "SomeDaysWithoutShifts": "На некоторые дни не назначены смены."
-    }
+    },
+    "draftRestoreTitle": "Есть несохранённые изменения из предыдущей сессии.",
+    "draftRestore": "Восстановить",
+    "draftDismiss": "Отклонить",
+    "autoSaveUnsaved": "Несохранённые изменения",
+    "autoSaveSaving": "Сохранение...",
+    "autoSaveSynced": "Сохранено",
+    "autoSaveError": "Ошибка автосохранения"
   },
   "profile": {
     "accountSettings": "Настройки аккаунта",

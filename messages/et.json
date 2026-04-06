@@ -750,7 +750,14 @@
       "AllEmployeesOnTimeOff": "Kõik töötajad on sel perioodil puhkusel.",
       "HighWorkloadDetected": "Tuvastati suur töökoormus. Kaaluge töötajate lisamist.",
       "SomeDaysWithoutShifts": "Mõnedele päevadele pole vahetusi määratud."
-    }
+    },
+    "draftRestoreTitle": "Teil on eelmisest seansist salvestamata muudatused.",
+    "draftRestore": "Taasta",
+    "draftDismiss": "Tühista",
+    "autoSaveUnsaved": "Salvestamata muudatused",
+    "autoSaveSaving": "Salvestamine...",
+    "autoSaveSynced": "Salvestatud",
+    "autoSaveError": "Automaatne salvestamine ebaõnnestus"
   },
   "profile": {
     "accountSettings": "Konto seaded",

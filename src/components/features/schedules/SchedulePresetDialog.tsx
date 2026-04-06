@@ -33,7 +33,8 @@ type SchedulePresetDialogProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
     shiftTypes: ShiftTemplate[]
-    onSave: (preset: SchedulePreset) => void
+    onGenerate: (preset: SchedulePreset) => void
+    isGenerating?: boolean
 }
 
 const STORAGE_KEY_STANDARD = 'schedule_preset_standard'
@@ -56,7 +57,8 @@ export default function SchedulePresetDialog({
     open,
     onOpenChange,
     shiftTypes,
-    onSave,
+    onGenerate,
+    isGenerating = false,
 }: SchedulePresetDialogProps) {
     const t = useTranslations('schedule')
 
@@ -95,10 +97,10 @@ export default function SchedulePresetDialog({
     const handleSave = () => {
         if (activeTab === 'standard') {
             localStorage.setItem(STORAGE_KEY_STANDARD, JSON.stringify(standard))
-            onSave({ mode: 'standard', ...standard })
+            onGenerate({ mode: 'standard', ...standard })
         } else {
             localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
-            onSave({ mode: 'retail', ...retail })
+            onGenerate({ mode: 'retail', ...retail })
         }
         onOpenChange(false)
     }
@@ -133,7 +135,7 @@ export default function SchedulePresetDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{t('schedulePresetTitle')}</DialogTitle>
+                    <DialogTitle>{t('generateSchedule')}</DialogTitle>
                     <DialogDescription>{t('schedulePresetDescription')}</DialogDescription>
                 </DialogHeader>
 
@@ -278,8 +280,8 @@ export default function SchedulePresetDialog({
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
                         {t('cancel')}
                     </Button>
-                    <Button onClick={handleSave} disabled={isSaveDisabled}>
-                        {t('savePreset')}
+                    <Button onClick={handleSave} disabled={isSaveDisabled || isGenerating}>
+                        {isGenerating ? t('generating') : t('generateSchedule')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

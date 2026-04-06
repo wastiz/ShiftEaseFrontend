@@ -750,7 +750,14 @@
       "AllEmployeesOnTimeOff": "All employees are on time off during this period.",
       "HighWorkloadDetected": "High workload detected. Consider adding more employees.",
       "SomeDaysWithoutShifts": "Some days have no shifts assigned."
-    }
+    },
+    "draftRestoreTitle": "You have unsaved changes from a previous session.",
+    "draftRestore": "Restore",
+    "draftDismiss": "Dismiss",
+    "autoSaveUnsaved": "Unsaved changes",
+    "autoSaveSaving": "Saving...",
+    "autoSaveSynced": "Saved",
+    "autoSaveError": "Auto-save failed"
   },
   "profile": {
     "accountSettings": "Account Settings",

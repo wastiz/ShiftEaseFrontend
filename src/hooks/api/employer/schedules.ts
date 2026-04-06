@@ -95,6 +95,27 @@ export function useSaveSchedule({ startDate, endDate, shiftsData }: SaveSchedule
     });
 }
 
+export function useAutoSaveSchedule() {
+    return useMutation<void, Error, { startDate: string; endDate: string; shifts: Shift[]; isConfirmed: boolean }>({
+        mutationFn: async ({ startDate, endDate, shifts, isConfirmed }) => {
+            const payload: SchedulePost = {
+                startDate,
+                endDate,
+                isConfirmed,
+                shifts: shifts.map((s) => ({
+                    shiftTypeId: s.shiftTypeId,
+                    date: s.date,
+                    employees: s.employees.map((e) => ({
+                        id: e.id,
+                        note: e.note || "",
+                    })),
+                })),
+            };
+            await api.post('/schedules/update-schedule', payload);
+        },
+    });
+}
+
 export function useUnconfirmSchedule() {
     const queryClient = useQueryClient();
 

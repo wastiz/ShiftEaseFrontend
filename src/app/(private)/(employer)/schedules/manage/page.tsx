@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/shadcn/button'
 import {
+    useAutoSaveSchedule,
     useExportSchedule,
     useGenerateRetailSchedule,
     useGenerateSchedule,
@@ -25,23 +26,24 @@ import { getDaysInMonth } from "@/helpers/dateHelper"
 import Loader from "@/components/ui/Loader"
 import { Holiday, WorkDay } from "@/types"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/shadcn/toggle-group"
-import { Calendar, Download, List, Loader2, Settings } from "lucide-react"
+import { Calendar, Download, List, Loader2 } from "lucide-react"
 import SimpleView from "@/components/features/schedules/ScheduleSimple/ScheduleSimple"
 import { toast } from "sonner"
 import { useTranslations } from 'next-intl'
 import SchedulePresetDialog, { SchedulePreset } from "@/components/features/schedules/SchedulePresetDialog";
 import GenerateResultDialog from "@/components/ui/GenerateResultDialog";
-import { ButtonGroup } from "@/components/ui/shadcn/button-group";
 
 const today = new Date()
-
-const DEFAULT_MAX_CONSECUTIVE_SHIFTS = 5;
-const DEFAULT_MIN_DAYS_OFF_PER_WEEK = 2;
+const AUTOSAVE_DELAY = 60_000 // 60 seconds
 
 function parseParamInt(value: string | null, fallback: number): number {
     if (!value) return fallback;
     const parsed = parseInt(value);
     return isNaN(parsed) ? fallback : parsed;
+}
+
+function lsKey(year: number, month: number) {
+    return `schedule_draft_${year}_${month + 1}`
 }
 
 export type MessageType = "warning" | "error";
@@ -50,13 +52,15 @@ export type WarningMessage = {
     messageType: MessageType
 }
 
+type SaveStatus = 'synced' | 'unsaved' | 'saving' | 'error'
+
 export default function ManageSchedule() {
     const t = useTranslations('schedule');
     const searchParams = useSearchParams();
 
     const initialMonth = useMemo(() => {
         const m = parseParamInt(searchParams.get('month'), today.getMonth() + 1);
-        return m - 1; // convert to 0-indexed
+        return m - 1;
     }, []);
     const initialYear = useMemo(() => parseParamInt(searchParams.get('year'), today.getFullYear()), []);
 
@@ -72,8 +76,7 @@ export default function ManageSchedule() {
     const [orgSchedule, setOrgSchedule] = useState<WorkDay[]>([])
     const [employeeTimeOffs, setEmployeeTimeOffs] = useState<EmployeeTimeOff[]>([])
 
-    const [presetDialogOpen, setPresetDialogOpen] = useState(false)
-    const [currentPreset, setCurrentPreset] = useState<SchedulePreset | null>(null)
+    const [generateDialogOpen, setGenerateDialogOpen] = useState(false)
     const [warningMessage, setWarningMessage] = useState<WarningMessage | null>(null)
     const [resultDialogOpen, setResultDialogOpen] = useState(false)
     const [generateResult, setGenerateResult] = useState<{
@@ -81,6 +84,12 @@ export default function ManageSchedule() {
         error?: GenerateErrorCode;
         warnings?: GenerateWarningCode[];
     } | null>(null)
+
+    // Autosave state
+    const [saveStatus, setSaveStatus] = useState<SaveStatus>('synced')
+    const serverShiftsRef = useRef<string>('[]')
+    const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const autoSave = useAutoSaveSchedule()
 
     useEffect(() => {
         setDaysOfMonth(getDaysInMonth(currentYear, currentMonth))
@@ -92,15 +101,84 @@ export default function ManageSchedule() {
     })
 
     useEffect(() => {
-        if (data) {
-            setShiftsData(data.schedule?.shifts ?? [])
-            setIsConfirmed(data.schedule?.isConfirmed ?? false)
-            setScheduleId(data.schedule?.id ?? null)
-            setOrgHolidays(data.organizationHolidays ?? [])
-            setOrgSchedule(data.organizationSchedule ?? [])
-            setEmployeeTimeOffs(data.employeeTimeOffs ?? [])
-        }
+        if (!data) return
+
+        const serverShifts = data.schedule?.shifts ?? []
+        serverShiftsRef.current = JSON.stringify(serverShifts)
+
+        // Check for a local draft and restore automatically
+        let shiftsToSet = serverShifts
+        try {
+            const stored = localStorage.getItem(lsKey(currentYear, currentMonth))
+            if (stored) {
+                const draft = JSON.parse(stored) as { shifts: Shift[] }
+                if (draft.shifts) shiftsToSet = draft.shifts
+            }
+        } catch {}
+
+        setShiftsData(shiftsToSet)
+        setIsConfirmed(data.schedule?.isConfirmed ?? false)
+        setScheduleId(data.schedule?.id ?? null)
+        setOrgHolidays(data.organizationHolidays ?? [])
+        setOrgSchedule(data.organizationSchedule ?? [])
+        setEmployeeTimeOffs(data.employeeTimeOffs ?? [])
     }, [data])
+
+    // Autosave effect: runs on every shiftsData change
+    useEffect(() => {
+        const key = lsKey(currentYear, currentMonth)
+
+        // If data matches server — nothing to save
+        if (JSON.stringify(shiftsData) === serverShiftsRef.current) {
+            if (autoSaveTimerRef.current) {
+                clearTimeout(autoSaveTimerRef.current)
+                autoSaveTimerRef.current = null
+            }
+            return
+        }
+
+        // Immediately persist to localStorage
+        localStorage.setItem(key, JSON.stringify({ shifts: shiftsData }))
+        setSaveStatus('unsaved')
+
+        // Debounce the API call
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current)
+        autoSaveTimerRef.current = setTimeout(() => {
+            const startDate = daysOfMonth[0].isoDate
+            const endDate = daysOfMonth[daysOfMonth.length - 1].isoDate
+            const currentShifts = shiftsData
+
+            setSaveStatus('saving')
+            autoSave.mutate(
+                { startDate, endDate, shifts: currentShifts, isConfirmed },
+                {
+                    onSuccess: () => {
+                        serverShiftsRef.current = JSON.stringify(currentShifts)
+                        localStorage.removeItem(key)
+                        setSaveStatus('synced')
+                    },
+                    onError: () => setSaveStatus('error'),
+                }
+            )
+        }, AUTOSAVE_DELAY)
+
+        return () => {
+            if (autoSaveTimerRef.current) {
+                clearTimeout(autoSaveTimerRef.current)
+                autoSaveTimerRef.current = null
+            }
+        }
+    }, [shiftsData, currentMonth, currentYear])
+
+    const clearLocalDraft = useCallback(() => {
+        localStorage.removeItem(lsKey(currentYear, currentMonth))
+        serverShiftsRef.current = JSON.stringify(shiftsData)
+        setSaveStatus('synced')
+        if (autoSaveTimerRef.current) {
+            clearTimeout(autoSaveTimerRef.current)
+            autoSaveTimerRef.current = null
+        }
+    }, [currentYear, currentMonth, shiftsData])
 
     const saveMutation = useSaveSchedule({
         startDate: daysOfMonth[0].isoDate,
@@ -139,8 +217,8 @@ export default function ManageSchedule() {
         }
     }
 
-    const handleGenerate = () => {
-        if (currentPreset?.mode === 'retail') {
+    const handleGenerate = (preset: SchedulePreset) => {
+        if (preset.mode === 'retail') {
             if (!scheduleId) {
                 toast.error(t('retailRequiresSchedule'));
                 return;
@@ -148,9 +226,9 @@ export default function ManageSchedule() {
             generateRetailSchedule.mutate(
                 {
                     scheduleId,
-                    totalHours: currentPreset.totalHours,
-                    maxConsecutiveShifts: currentPreset.maxConsecutiveShifts,
-                    minDaysOffPerWeek: currentPreset.minDaysOffPerWeek,
+                    totalHours: preset.totalHours,
+                    maxConsecutiveShifts: preset.maxConsecutiveShifts,
+                    minDaysOffPerWeek: preset.minDaysOffPerWeek,
                 },
                 {
                     onSuccess: onGenerateResult,
@@ -160,19 +238,11 @@ export default function ManageSchedule() {
                             error?.response?.data?.message ||
                             error?.message ||
                             "Something went wrong";
-
                         toast.error(message);
                     }
                 }
             );
             return;
-        }
-
-        const preset = (currentPreset?.mode === 'standard' ? currentPreset : null) || {
-            AllowedShiftTemplateIds: data?.shiftTypes?.map(st => st.id) || [],
-            MaxConsecutiveShifts: DEFAULT_MAX_CONSECUTIVE_SHIFTS,
-            SchedulePattern: SchedulePattern.Custom,
-            MinDaysOffPerWeek: DEFAULT_MIN_DAYS_OFF_PER_WEEK,
         }
 
         generateSchedule.mutate(
@@ -191,16 +261,11 @@ export default function ManageSchedule() {
         )
     }
 
-    const handleSavePreset = (preset: SchedulePreset) => {
-        setCurrentPreset(preset)
-        toast.success(t('presetSaved'))
-    }
-
     const handleConfirmToggle = () => {
         if (isConfirmed && scheduleId) {
-            unconfirmMutation.mutate(scheduleId)
+            unconfirmMutation.mutate(scheduleId, { onSuccess: clearLocalDraft })
         } else {
-            saveMutation.mutate(true)
+            saveMutation.mutate(true, { onSuccess: clearLocalDraft })
         }
     }
 
@@ -218,21 +283,6 @@ export default function ManageSchedule() {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
             <Header title={t('manageSchedule')}>
-                <div className="flex gap-2">
-                    <ButtonGroup>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setPresetDialogOpen(true)}
-                            title={t('presetSettings')}
-                        >
-                            <Settings className="h-4 w-4" />
-                        </Button>
-                        <Button onClick={handleGenerate} disabled={generateSchedule.isPending || generateRetailSchedule.isPending}>
-                            {(generateSchedule.isPending || generateRetailSchedule.isPending) ? t('generating') : t('generateSchedule')}
-                        </Button>
-                    </ButtonGroup>
-                </div>
                 <ToggleGroup
                     type="single"
                     value={viewMode}
@@ -247,9 +297,30 @@ export default function ManageSchedule() {
                     </ToggleGroupItem>
                 </ToggleGroup>
 
-                <Button onClick={() => saveMutation.mutate(false)} disabled={saveMutation.isPending}>
-                    {t('save')}
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending}>
+                        {(generateSchedule.isPending || generateRetailSchedule.isPending) ? t('generating') : t('generateSchedule')}
+                    </Button>
+                </div>
+
+                <div className="relative">
+                    <Button
+                        onClick={() => saveMutation.mutate(false, { onSuccess: clearLocalDraft })}
+                        disabled={saveMutation.isPending}
+                    >
+                        {t('save')}
+                    </Button>
+                    {saveStatus === 'unsaved' && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full" />
+                    )}
+                    {saveStatus === 'saving' && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse" />
+                    )}
+                    {saveStatus === 'error' && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                    )}
+                </div>
+
                 <Button
                     onClick={handleConfirmToggle}
                     disabled={saveMutation.isPending || unconfirmMutation.isPending}
@@ -257,6 +328,7 @@ export default function ManageSchedule() {
                 >
                     {isConfirmed ? t('unconfirm') : t('confirm')}
                 </Button>
+
                 <Button onClick={handleExport} disabled={exportSchedule.isPending || !scheduleId}>
                     {exportSchedule.isPending ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -268,51 +340,52 @@ export default function ManageSchedule() {
             </Header>
 
             <div className="flex-1 overflow-hidden">
-            {viewMode === 'calendar' ? (
-                <ScheduleCalendar
-                    shiftsData={shiftsData}
-                    setShiftsData={setShiftsData}
-                    shiftTypes={data?.shiftTypes ?? []}
-                    employees={data?.employees ?? []}
-                    departments={data?.departments ?? []}
-                    daysOfMonth={daysOfMonth}
-                    currentMonth={currentMonth}
-                    currentYear={currentYear}
-                    setCurrentMonth={setCurrentMonth}
-                    setCurrentYear={setCurrentYear}
-                    isConfirmed={isConfirmed}
-                    isEditable={true}
-                    orgHolidays={orgHolidays}
-                    orgSchedule={orgSchedule}
-                    employeeTimeOffs={employeeTimeOffs}
-                    warningMessage={null}
-                />
-            ) : (
-                <SimpleView
-                    employees={data?.employees ?? []}
-                    shiftTypes={data?.shiftTypes ?? []}
-                    departments={data?.departments ?? []}
-                    shiftsData={shiftsData}
-                    setShiftsData={setShiftsData}
-                    daysOfMonth={daysOfMonth}
-                    currentMonth={currentMonth}
-                    currentYear={currentYear}
-                    setCurrentMonth={setCurrentMonth}
-                    setCurrentYear={setCurrentYear}
-                    isConfirmed={isConfirmed}
-                    orgHolidays={orgHolidays}
-                    orgSchedule={orgSchedule}
-                    employeeTimeOffs={employeeTimeOffs}
-                    warningMessage={null}
-                />
-            )}
+                {viewMode === 'calendar' ? (
+                    <ScheduleCalendar
+                        shiftsData={shiftsData}
+                        setShiftsData={setShiftsData}
+                        shiftTypes={data?.shiftTypes ?? []}
+                        employees={data?.employees ?? []}
+                        departments={data?.departments ?? []}
+                        daysOfMonth={daysOfMonth}
+                        currentMonth={currentMonth}
+                        currentYear={currentYear}
+                        setCurrentMonth={setCurrentMonth}
+                        setCurrentYear={setCurrentYear}
+                        isConfirmed={isConfirmed}
+                        isEditable={true}
+                        orgHolidays={orgHolidays}
+                        orgSchedule={orgSchedule}
+                        employeeTimeOffs={employeeTimeOffs}
+                        warningMessage={null}
+                    />
+                ) : (
+                    <SimpleView
+                        employees={data?.employees ?? []}
+                        shiftTypes={data?.shiftTypes ?? []}
+                        departments={data?.departments ?? []}
+                        shiftsData={shiftsData}
+                        setShiftsData={setShiftsData}
+                        daysOfMonth={daysOfMonth}
+                        currentMonth={currentMonth}
+                        currentYear={currentYear}
+                        setCurrentMonth={setCurrentMonth}
+                        setCurrentYear={setCurrentYear}
+                        isConfirmed={isConfirmed}
+                        orgHolidays={orgHolidays}
+                        orgSchedule={orgSchedule}
+                        employeeTimeOffs={employeeTimeOffs}
+                        warningMessage={null}
+                    />
+                )}
             </div>
 
             <SchedulePresetDialog
-                open={presetDialogOpen}
-                onOpenChange={setPresetDialogOpen}
+                open={generateDialogOpen}
+                onOpenChange={setGenerateDialogOpen}
                 shiftTypes={data?.shiftTypes || []}
-                onSave={handleSavePreset}
+                onGenerate={handleGenerate}
+                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending}
             />
 
             {generateResult && (
