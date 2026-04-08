@@ -124,20 +124,13 @@ export default function SchedulePresetDialog({
     const handleSave = () => {
         if (activeTab === 'standard') {
             localStorage.setItem(STORAGE_KEY_STANDARD, JSON.stringify(standard))
-<<<<<<< Updated upstream
             onGenerate({ mode: 'standard', ...standard })
-        } else {
-            localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
-            onGenerate({ mode: 'retail', ...retail })
-=======
-            onSave({ mode: 'standard', ...standard })
         } else if (activeTab === 'retail') {
             localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
-            onSave({ mode: 'retail', ...retail })
+            onGenerate({ mode: 'retail', ...retail })
         } else {
             localStorage.setItem(STORAGE_KEY_ACO, JSON.stringify(aco))
-            onSave({ mode: 'aco', ...aco })
->>>>>>> Stashed changes
+            onGenerate({ mode: 'aco', ...aco })
         }
         onOpenChange(false)
     }

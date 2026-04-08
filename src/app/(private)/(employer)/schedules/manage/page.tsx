@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/shadcn/button'
 import {
     useAutoSaveSchedule,
     useExportSchedule,
+    useGenerateAcoSchedule,
     useGenerateRetailSchedule,
     useGenerateSchedule,
     useSaveSchedule,
@@ -16,7 +17,6 @@ import Header from "@/components/ui/Header"
 import {
     Shift,
     EmployeeTimeOff,
-    SchedulePattern,
     GenerateStatus,
     GenerateErrorCode,
     GenerateWarningCode
@@ -190,6 +190,7 @@ export default function ManageSchedule() {
     const exportSchedule = useExportSchedule()
     const generateSchedule = useGenerateSchedule()
     const generateRetailSchedule = useGenerateRetailSchedule()
+    const generateAcoSchedule = useGenerateAcoSchedule()
 
     const onGenerateResult = (result: { status: GenerateStatus; error?: GenerateErrorCode; warnings?: GenerateWarningCode[]; shifts?: Shift[] } | undefined) => {
         if (!result) return;
@@ -232,7 +233,7 @@ export default function ManageSchedule() {
                 },
                 {
                     onSuccess: onGenerateResult,
-                    onError: (error: any) => {
+                    onError: (error: Error & { response?: { data?: { error?: string; message?: string } } }) => {
                         const message =
                             error?.response?.data?.error ||
                             error?.response?.data?.message ||
@@ -240,6 +241,23 @@ export default function ManageSchedule() {
                             "Something went wrong";
                         toast.error(message);
                     }
+                }
+            );
+            return;
+        }
+
+        if (preset.mode === 'aco') {
+            generateAcoSchedule.mutate(
+                {
+                    startDate: daysOfMonth[0].isoDate,
+                    endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
+                    AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
+                    NumAnts: preset.NumAnts,
+                    NumIterations: preset.NumIterations,
+                },
+                {
+                    onSuccess: onGenerateResult,
+                    onError: () => toast.error(t('generateError')),
                 }
             );
             return;
@@ -298,8 +316,8 @@ export default function ManageSchedule() {
                 </ToggleGroup>
 
                 <div className="flex gap-2">
-                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending}>
-                        {(generateSchedule.isPending || generateRetailSchedule.isPending) ? t('generating') : t('generateSchedule')}
+                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending}>
+                        {(generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending) ? t('generating') : t('generateSchedule')}
                     </Button>
                 </div>
 
@@ -385,7 +403,7 @@ export default function ManageSchedule() {
                 onOpenChange={setGenerateDialogOpen}
                 shiftTypes={data?.shiftTypes || []}
                 onGenerate={handleGenerate}
-                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending}
+                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending}
             />
 
             {generateResult && (
