@@ -27,7 +27,14 @@ export type RetailPreset = {
     minDaysOffPerWeek: number
 }
 
-export type SchedulePreset = StandardPreset | RetailPreset
+export type AcoPreset = {
+    mode: 'aco'
+    AllowedShiftTemplateIds: number[]
+    NumAnts: number
+    NumIterations: number
+}
+
+export type SchedulePreset = StandardPreset | RetailPreset | AcoPreset
 
 type SchedulePresetDialogProps = {
     open: boolean
@@ -39,6 +46,7 @@ type SchedulePresetDialogProps = {
 
 const STORAGE_KEY_STANDARD = 'schedule_preset_standard'
 const STORAGE_KEY_RETAIL = 'schedule_preset_retail'
+const STORAGE_KEY_ACO = 'schedule_preset_aco'
 
 const defaultStandardPreset: Omit<StandardPreset, 'mode'> = {
     AllowedShiftTemplateIds: [],
@@ -53,6 +61,12 @@ const defaultRetailPreset: Omit<RetailPreset, 'mode'> = {
     minDaysOffPerWeek: 2,
 }
 
+const defaultAcoPreset: Omit<AcoPreset, 'mode'> = {
+    AllowedShiftTemplateIds: [],
+    NumAnts: 20,
+    NumIterations: 50,
+}
+
 export default function SchedulePresetDialog({
     open,
     onOpenChange,
@@ -62,9 +76,10 @@ export default function SchedulePresetDialog({
 }: SchedulePresetDialogProps) {
     const t = useTranslations('schedule')
 
-    const [activeTab, setActiveTab] = useState<'standard' | 'retail'>('standard')
+    const [activeTab, setActiveTab] = useState<'standard' | 'retail' | 'aco'>('standard')
     const [standard, setStandard] = useState<Omit<StandardPreset, 'mode'>>(defaultStandardPreset)
     const [retail, setRetail] = useState<Omit<RetailPreset, 'mode'>>(defaultRetailPreset)
+    const [aco, setAco] = useState<Omit<AcoPreset, 'mode'>>(defaultAcoPreset)
 
     useEffect(() => {
         if (!open) return
@@ -92,21 +107,55 @@ export default function SchedulePresetDialog({
         } catch {
             setRetail(defaultRetailPreset)
         }
+
+        // Load ACO preset
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_ACO)
+            if (stored) {
+                setAco(JSON.parse(stored))
+            } else {
+                setAco({ ...defaultAcoPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
+            }
+        } catch {
+            setAco({ ...defaultAcoPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
+        }
     }, [open, shiftTypes])
 
     const handleSave = () => {
         if (activeTab === 'standard') {
             localStorage.setItem(STORAGE_KEY_STANDARD, JSON.stringify(standard))
+<<<<<<< Updated upstream
             onGenerate({ mode: 'standard', ...standard })
         } else {
             localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
             onGenerate({ mode: 'retail', ...retail })
+=======
+            onSave({ mode: 'standard', ...standard })
+        } else if (activeTab === 'retail') {
+            localStorage.setItem(STORAGE_KEY_RETAIL, JSON.stringify(retail))
+            onSave({ mode: 'retail', ...retail })
+        } else {
+            localStorage.setItem(STORAGE_KEY_ACO, JSON.stringify(aco))
+            onSave({ mode: 'aco', ...aco })
+>>>>>>> Stashed changes
         }
         onOpenChange(false)
     }
 
     const toggleShiftTemplate = (id: number) => {
         setStandard(prev => {
+            const selected = prev.AllowedShiftTemplateIds.includes(id)
+            return {
+                ...prev,
+                AllowedShiftTemplateIds: selected
+                    ? prev.AllowedShiftTemplateIds.filter(x => x !== id)
+                    : [...prev.AllowedShiftTemplateIds, id],
+            }
+        })
+    }
+
+    const toggleAcoShiftTemplate = (id: number) => {
+        setAco(prev => {
             const selected = prev.AllowedShiftTemplateIds.includes(id)
             return {
                 ...prev,
@@ -129,7 +178,8 @@ export default function SchedulePresetDialog({
     }
 
     const isSaveDisabled =
-        activeTab === 'standard' && standard.AllowedShiftTemplateIds.length === 0
+        (activeTab === 'standard' && standard.AllowedShiftTemplateIds.length === 0) ||
+        (activeTab === 'aco' && aco.AllowedShiftTemplateIds.length === 0)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,10 +189,11 @@ export default function SchedulePresetDialog({
                     <DialogDescription>{t('schedulePresetDescription')}</DialogDescription>
                 </DialogHeader>
 
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'standard' | 'retail')}>
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'standard' | 'retail' | 'aco')}>
                     <TabsList className="w-full">
                         <TabsTrigger value="standard" className="flex-1">{t('tabStandard')}</TabsTrigger>
                         <TabsTrigger value="retail" className="flex-1">{t('tabRetail')}</TabsTrigger>
+                        <TabsTrigger value="aco" className="flex-1">{t('tabAco')}</TabsTrigger>
                     </TabsList>
 
                     {/* Standard tab */}
@@ -271,6 +322,65 @@ export default function SchedulePresetDialog({
                                         setRetail(prev => ({ ...prev, minDaysOffPerWeek: parseInt(e.target.value) || 0 }))
                                     }
                                 />
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    {/* ACO tab */}
+                    <TabsContent value="aco">
+                        <div className="space-y-6 py-4">
+                            <div className="space-y-2">
+                                <Label>{t('numAnts')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('numAntsHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={aco.NumAnts}
+                                    onChange={(e) =>
+                                        setAco(prev => ({ ...prev, NumAnts: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('numIterations')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('numIterationsHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={aco.NumIterations}
+                                    onChange={(e) =>
+                                        setAco(prev => ({ ...prev, NumIterations: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('allowedShiftTemplates')}</Label>
+                                <div className="space-y-2 border rounded-md p-4 max-h-60 overflow-y-auto">
+                                    {shiftTypes.map((st) => (
+                                        <div key={st.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`aco-shift-${st.id}`}
+                                                checked={aco.AllowedShiftTemplateIds.includes(st.id)}
+                                                onCheckedChange={() => toggleAcoShiftTemplate(st.id)}
+                                            />
+                                            <label
+                                                htmlFor={`aco-shift-${st.id}`}
+                                                className="text-sm font-medium leading-none cursor-pointer"
+                                            >
+                                                <span
+                                                    className="inline-block w-4 h-4 rounded mr-2"
+                                                    style={{ backgroundColor: st.color }}
+                                                />
+                                                {st.name} ({st.startTime} - {st.endTime})
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                                {aco.AllowedShiftTemplateIds.length === 0 && (
+                                    <p className="text-sm text-red-500">{t('selectAtLeastOneShiftTemplate')}</p>
+                                )}
                             </div>
                         </div>
                     </TabsContent>
