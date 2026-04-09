@@ -721,6 +721,16 @@
     "presetSaved": "Seaded salvestatud",
     "tabStandard": "Standardne",
     "tabRetail": "Jaemüük",
+    "tabAco": "ACO",
+    "tabGa": "GA",
+    "numAnts": "Sipelgate arv",
+    "numAntsHint": "Sipelgate arv iteratsiooni kohta (rohkem = rohkem uurimist, aeglasem)",
+    "numIterations": "Iteratsioonide arv",
+    "numIterationsHint": "ACO iteratsioonide arv (rohkem = parem kvaliteet, aeglasem)",
+    "populationSize": "Populatsiooni suurus",
+    "populationSizeHint": "Isendite arv populatsioonis (rohkem = rohkem mitmekesisust, aeglasem)",
+    "numGenerations": "Põlvkondade arv",
+    "numGenerationsHint": "GA põlvkondade arv (rohkem = parem kvaliteet, aeglasem)",
     "totalHours": "Kogutunnid",
     "totalHoursHint": "Kogutunnid, mis jaotatakse kõigi töötajate vahel perioodil",
     "retailRequiresSchedule": "Enne jaemüügi graafiku genereerimist salvesta graafik",
@@ -750,7 +760,14 @@
       "AllEmployeesOnTimeOff": "Kõik töötajad on sel perioodil puhkusel.",
       "HighWorkloadDetected": "Tuvastati suur töökoormus. Kaaluge töötajate lisamist.",
       "SomeDaysWithoutShifts": "Mõnedele päevadele pole vahetusi määratud."
-    }
+    },
+    "draftRestoreTitle": "Teil on eelmisest seansist salvestamata muudatused.",
+    "draftRestore": "Taasta",
+    "draftDismiss": "Tühista",
+    "autoSaveUnsaved": "Salvestamata muudatused",
+    "autoSaveSaving": "Salvestamine...",
+    "autoSaveSynced": "Salvestatud",
+    "autoSaveError": "Automaatne salvestamine ebaõnnestus"
   },
   "profile": {
     "accountSettings": "Konto seaded",

@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import {
+    AcoScheduleGenerateRequest,
+    GaScheduleGenerateRequest,
     RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
@@ -95,6 +97,27 @@ export function useSaveSchedule({ startDate, endDate, shiftsData }: SaveSchedule
     });
 }
 
+export function useAutoSaveSchedule() {
+    return useMutation<void, Error, { startDate: string; endDate: string; shifts: Shift[]; isConfirmed: boolean }>({
+        mutationFn: async ({ startDate, endDate, shifts, isConfirmed }) => {
+            const payload: SchedulePost = {
+                startDate,
+                endDate,
+                isConfirmed,
+                shifts: shifts.map((s) => ({
+                    shiftTypeId: s.shiftTypeId,
+                    date: s.date,
+                    employees: s.employees.map((e) => ({
+                        id: e.id,
+                        note: e.note || "",
+                    })),
+                })),
+            };
+            await api.post('/schedules/update-schedule', payload);
+        },
+    });
+}
+
 export function useUnconfirmSchedule() {
     const queryClient = useQueryClient();
 
@@ -147,6 +170,34 @@ export function useGenerateRetailSchedule() {
     return useMutation<ScheduleGenerateResult, Error, RetailScheduleGenerateRequest>({
         mutationFn: async (payload) => {
             const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-retail', payload);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateAcoSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, AcoScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-aco', payload);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateGaSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, GaScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-ga', payload);
             return response.data;
         },
         onSuccess: () => {

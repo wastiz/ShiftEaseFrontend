@@ -126,6 +126,22 @@ export type RetailScheduleGenerateRequest = {
     minDaysOffPerWeek: number;
 }
 
+export type AcoScheduleGenerateRequest = {
+    startDate: string;
+    endDate: string;
+    AllowedShiftTypeIds?: number[];
+    NumAnts: number;
+    NumIterations: number;
+}
+
+export type GaScheduleGenerateRequest = {
+    startDate: string;
+    endDate: string;
+    AllowedShiftTypeIds?: number[];
+    PopulationSize: number;
+    NumGenerations: number;
+}
+
 export type ScheduleGenerateResult =
     | {
         status: GenerateStatus.Success;

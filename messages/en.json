@@ -721,6 +721,16 @@
     "presetSaved": "Preset saved successfully",
     "tabStandard": "Standard",
     "tabRetail": "Retail",
+    "tabAco": "ACO",
+    "tabGa": "GA",
+    "numAnts": "Number of Ants",
+    "numAntsHint": "Number of ants per iteration (higher = more exploration, slower)",
+    "numIterations": "Number of Iterations",
+    "numIterationsHint": "Number of ACO iterations (higher = better quality, slower)",
+    "populationSize": "Population Size",
+    "populationSizeHint": "Number of individuals in the population (higher = more diversity, slower)",
+    "numGenerations": "Number of Generations",
+    "numGenerationsHint": "Number of GA generations (higher = better quality, slower)",
     "totalHours": "Total Hours",
     "totalHoursHint": "Total hours to distribute among all employees for the period",
     "retailRequiresSchedule": "Save the schedule first before generating a retail schedule",
@@ -750,7 +760,14 @@
       "AllEmployeesOnTimeOff": "All employees are on time off during this period.",
       "HighWorkloadDetected": "High workload detected. Consider adding more employees.",
       "SomeDaysWithoutShifts": "Some days have no shifts assigned."
-    }
+    },
+    "draftRestoreTitle": "You have unsaved changes from a previous session.",
+    "draftRestore": "Restore",
+    "draftDismiss": "Dismiss",
+    "autoSaveUnsaved": "Unsaved changes",
+    "autoSaveSaving": "Saving...",
+    "autoSaveSynced": "Saved",
+    "autoSaveError": "Auto-save failed"
   },
   "profile": {
     "accountSettings": "Account Settings",
