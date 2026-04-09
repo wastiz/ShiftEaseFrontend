@@ -10,25 +10,8 @@ import {
 import { Badge } from '@/components/ui/shadcn/badge'
 import { CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react'
 import { DateData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from '@/types'
-import { isHoliday, isWorkingDay, roundToMinutes } from '@/helpers/dateHelper'
-
-type IssueSeverity = 'understaffed' | 'overstaffed'
-
-type DayIssue = {
-    isoDate: string
-    label: string
-    assigned: number
-    required: number
-    severity: IssueSeverity
-}
-
-type ShiftTemplateCoverage = {
-    shiftType: ShiftTemplate
-    departmentName: string
-    totalWorkingDays: number
-    okDays: number
-    issues: DayIssue[]
-}
+import { roundToMinutes } from '@/helpers/dateHelper'
+import { computeCoverage } from '@/helpers/coverageHelper'
 
 type CoverageCheckModalProps = {
     open: boolean
@@ -51,49 +34,10 @@ export function CoverageCheckModal({
     orgSchedule,
     departments,
 }: CoverageCheckModalProps) {
-    const coverage = useMemo<ShiftTemplateCoverage[]>(() => {
-        const workingDays = daysOfMonth.filter(
-            day => !isHoliday(day.isoDate, orgHolidays) && isWorkingDay(day.isoDate, orgSchedule)
-        )
-
-        return shiftTypes.map(st => {
-            const department = departments.find(g => g.id === st.departmentId)
-            const issues: DayIssue[] = []
-
-            workingDays.forEach(day => {
-                const shift = shiftsData.find(
-                    s => s.date === day.isoDate && s.shiftTypeId === st.id
-                )
-                const assigned = shift?.employees.length ?? 0
-
-                if (assigned < st.minEmployees) {
-                    issues.push({
-                        isoDate: day.isoDate,
-                        label: day.label,
-                        assigned,
-                        required: st.minEmployees,
-                        severity: 'understaffed',
-                    })
-                } else if (assigned > st.maxEmployees) {
-                    issues.push({
-                        isoDate: day.isoDate,
-                        label: day.label,
-                        assigned,
-                        required: st.maxEmployees,
-                        severity: 'overstaffed',
-                    })
-                }
-            })
-
-            return {
-                shiftType: st,
-                departmentName: department?.name ?? '—',
-                totalWorkingDays: workingDays.length,
-                okDays: workingDays.length - issues.filter(i => i.severity === 'understaffed').length,
-                issues,
-            }
-        })
-    }, [shiftTypes, shiftsData, daysOfMonth, orgHolidays, orgSchedule, departments])
+    const coverage = useMemo(
+        () => computeCoverage(shiftTypes, shiftsData, daysOfMonth, orgHolidays, orgSchedule, departments),
+        [shiftTypes, shiftsData, daysOfMonth, orgHolidays, orgSchedule, departments]
+    )
 
     const totalWorkingDays = coverage[0]?.totalWorkingDays ?? 0
     const allOk = coverage.every(c => c.issues.filter(i => i.severity === 'understaffed').length === 0)

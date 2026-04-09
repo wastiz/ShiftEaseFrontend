@@ -134,6 +134,14 @@ export type AcoScheduleGenerateRequest = {
     NumIterations: number;
 }
 
+export type GaScheduleGenerateRequest = {
+    startDate: string;
+    endDate: string;
+    AllowedShiftTypeIds?: number[];
+    PopulationSize: number;
+    NumGenerations: number;
+}
+
 export type ScheduleGenerateResult =
     | {
         status: GenerateStatus.Success;

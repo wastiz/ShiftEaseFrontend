@@ -3,6 +3,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import {
     AcoScheduleGenerateRequest,
+    GaScheduleGenerateRequest,
     RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
@@ -183,6 +184,20 @@ export function useGenerateAcoSchedule() {
     return useMutation<ScheduleGenerateResult, Error, AcoScheduleGenerateRequest>({
         mutationFn: async (payload) => {
             const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-aco', payload);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateGaSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, GaScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-ga', payload);
             return response.data;
         },
         onSuccess: () => {

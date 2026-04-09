@@ -9,6 +9,15 @@ import "@fontsource-variable/inter/wght-italic.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages} from 'next-intl/server';
 
+export const metadata = {
+    title: "ShiftEase",
+    icons: {
+        icon: "/images/logo.svg",
+        shortcut: "/images/logo.svg",
+        apple: "/images/logo.svg",
+    },
+};
+
 const prompt = Prompt({
     subsets: ['latin'],
     weight: ['400', '500', '600', '700'],

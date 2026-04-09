@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import {
     Table,
     TableBody,
@@ -11,15 +11,7 @@ import {
 } from "@/components/ui/shadcn/table";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { Filter, ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, Settings, X } from "lucide-react";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/shadcn/command";
+import { ClipboardCheck, Maximize2, Minimize2, PanelLeft, PanelTop, X } from "lucide-react";
 import { DateData, EmployeeMinData, Department, Holiday, Shift, ShiftTemplate, WorkDay } from "@/types";
 import { EmployeeTimeOff } from "@/types/schedule";
 import { transformToSimpleView } from "@/helpers/scheduleHelper";
@@ -30,8 +22,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/shadcn/popover";
-import { Checkbox } from "@/components/ui/shadcn/checkbox";
-import { Label } from "@/components/ui/shadcn/label";
 import DroppableCell from "@/components/features/schedules/ScheduleSimple/DroppableCell";
 import { useTranslations } from 'next-intl';
 import {
@@ -45,6 +35,9 @@ import { WarningMessage } from "@/app/(private)/(employer)/schedules/[department
 import { MonthNavigator } from "@/components/features/schedules/MonthNavigator";
 import { MessageIndicator } from "@/components/features/schedules/MessageIndicator";
 import { CoverageCheckModal } from "@/components/features/schedules/CoverageCheckModal";
+import {EmployeeFilter} from "@/components/features/schedules/EmployeeFilter";
+import {ScheduleFilter} from "@/components/features/schedules/ScheduleFilter";
+import {HighlightSettingsPopover} from "@/components/features/schedules/HighlightSettingsPopover";
 
 type SimpleViewProps = {
     employees: EmployeeMinData[];
@@ -86,8 +79,6 @@ export default function SimpleView({
     const [selectedShiftTemplates, setSelectedShiftTemplates] = useState<number[]>([]);
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
-    const [employeeSearchOpen, setEmployeeSearchOpen] = useState(false);
-    const [employeeSearchValue, setEmployeeSearchValue] = useState("");
     const [coverageModalOpen, setCoverageModalOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [layoutPosition, setLayoutPosition] = useState<'left' | 'top'>('top');
@@ -123,16 +114,35 @@ export default function SimpleView({
         return result;
     }, [employees, departments, selectedDepartmentId, selectedShiftTemplates, shiftsData, selectedEmployeeId]);
 
-    const employeeSearchSuggestions = useMemo(() => {
-        if (!employeeSearchValue.trim()) return [];
-        const query = employeeSearchValue.toLowerCase();
-        return employees.filter(emp => emp.name.toLowerCase().includes(query)).slice(0, 8);
-    }, [employees, employeeSearchValue]);
-
     const rows = useMemo(
         () => transformToSimpleView(filteredEmployees, shiftsData, dates, shiftTypes),
         [filteredEmployees, shiftsData, dates, shiftTypes]
     );
+
+    const weeks = useMemo<(DateData | null)[][]>(() => {
+        if (!daysOfMonth.length) return []
+        const firstDayOfWeek = new Date(daysOfMonth[0].isoDate + 'T00:00:00').getDay()
+        // Monday-first offset: Mon=0, Tue=1, ..., Sun=6
+        const startOffset = (firstDayOfWeek + 6) % 7
+        const result: (DateData | null)[][] = []
+        let week: (DateData | null)[] = Array(startOffset).fill(null)
+        for (const day of daysOfMonth) {
+            week.push(day)
+            if (week.length === 7) {
+                result.push(week)
+                week = []
+            }
+        }
+        if (week.length > 0) {
+            while (week.length < 7) week.push(null)
+            result.push(week)
+        }
+        return result
+    }, [daysOfMonth])
+
+    const handleEmployeeDoubleClick = useCallback((employeeId: number) => {
+        setSelectedEmployeeId(prev => prev === employeeId ? null : employeeId)
+    }, [])
 
     const handleShiftTemplateFilterToggle = (shiftTypeId: number) => {
         setSelectedShiftTemplates(prev =>
@@ -264,6 +274,7 @@ export default function SimpleView({
 
     return (
         <div className="flex flex-col gap-4 p-4 h-full overflow-hidden">
+
             <div className="flex items-center gap-3 flex-shrink-0">
                 <MonthNavigator
                     currentMonth={currentMonth}
@@ -293,180 +304,36 @@ export default function SimpleView({
 
 
                 {/* Employee search combobox */}
-                <div className="relative ml-auto">
-                <Popover open={employeeSearchOpen} onOpenChange={setEmployeeSearchOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className={`w-44 justify-start font-normal ${selectedEmployeeId ? "pr-7" : ""}`}
-                            role="combobox"
-                        >
-                            <span className="truncate text-sm">
-                                {selectedEmployeeId
-                                    ? employees.find(e => e.id === selectedEmployeeId)?.name
-                                    : "Search employee..."}
-                            </span>
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-64 p-0" align="start">
-                        <Command>
-                            <CommandInput
-                                placeholder="Search employee..."
-                                value={employeeSearchValue}
-                                onValueChange={setEmployeeSearchValue}
-                            />
-                            <CommandList>
-                                <CommandEmpty>No employees found</CommandEmpty>
-                                <CommandGroup>
-                                    {employeeSearchSuggestions.map(emp => (
-                                        <CommandItem
-                                            key={emp.id}
-                                            value={emp.name}
-                                            onSelect={() => {
-                                                setSelectedEmployeeId(emp.id);
-                                                setEmployeeSearchValue("");
-                                                setEmployeeSearchOpen(false);
-                                            }}
-                                        >
-                                            {emp.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
-                {selectedEmployeeId && (
-                    <button
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        onClick={() => { setSelectedEmployeeId(null); setEmployeeSearchValue(""); }}
-                    >
-                        <X className="h-3.5 w-3.5" />
-                    </button>
-                )}
-                </div>
+                <EmployeeFilter
+                    employees={employees}
+                    selectedEmployeeId={selectedEmployeeId}
+                    onSelect={setSelectedEmployeeId}
+                />
 
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Filter className={(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) ? "text-primary" : ""} />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                        <div className="space-y-4">
-                            {departments.length > 0 && (
-                                <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Filter by Department</h4>
-                                    <div className="space-y-2">
-                                        {departments.map((g) => (
-                                            <div key={g.id} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`filter-department-${g.id}`}
-                                                    checked={selectedDepartmentId === g.id}
-                                                    onCheckedChange={() => handleDepartmentFilterToggle(g.id)}
-                                                />
-                                                <Label
-                                                    htmlFor={`filter-department-${g.id}`}
-                                                    className="flex items-center gap-2 cursor-pointer"
-                                                >
-                                                    {g.color && (
-                                                        <div
-                                                            className="w-3 h-3 rounded-full"
-                                                            style={{ backgroundColor: g.color }}
-                                                        />
-                                                    )}
-                                                    {g.name}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            <div className="space-y-2">
-                                <h4 className="font-medium text-sm">Filter by Shift Type</h4>
-                                <div className="space-y-2">
-                                    {shiftTypes.map((st) => (
-                                        <div key={st.id} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={`filter-simple-${st.id}`}
-                                                checked={selectedShiftTemplates.includes(st.id)}
-                                                onCheckedChange={() => handleShiftTemplateFilterToggle(st.id)}
-                                            />
-                                            <Label
-                                                htmlFor={`filter-simple-${st.id}`}
-                                                className="flex items-center gap-2 cursor-pointer"
-                                            >
-                                                <div
-                                                    className="w-3 h-3 rounded"
-                                                    style={{ backgroundColor: st.color }}
-                                                />
-                                                {st.name}
-                                            </Label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            {(selectedShiftTemplates.length > 0 || selectedDepartmentId !== null) && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => { setSelectedShiftTemplates([]); setSelectedDepartmentId(null); setSelectedEmployeeId(null); }}
-                                    className="w-full"
-                                >
-                                    Clear Filters
-                                </Button>
-                            )}
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                {/* ScheduleFilter */}
+                <ScheduleFilter
+                    departments={departments}
+                    shiftTypes={shiftTypes}
+                    selectedDepartmentId={selectedDepartmentId}
+                    selectedShiftTemplates={selectedShiftTemplates}
+                    onToggleDepartment={handleDepartmentFilterToggle}
+                    onToggleShiftTemplate={handleShiftTemplateFilterToggle}
+                    onClear={() => {
+                        setSelectedShiftTemplates([]);
+                        setSelectedDepartmentId(null);
+                        setSelectedEmployeeId(null);
+                    }}
+                />
 
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Settings className="h-4 w-4" />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-64">
-                        <div className="space-y-4">
-                            <h4 className="font-medium text-sm">Highlights</h4>
-                            <div className="space-y-3">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="highlight-weekend"
-                                        checked={showWeekendHighlight}
-                                        onCheckedChange={(c) => setShowWeekendHighlight(!!c)}
-                                    />
-                                    <Label htmlFor="highlight-weekend" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
-                                        <div className="w-3 h-3 rounded ring-1 ring-inset ring-yellow-300/60 bg-yellow-50/30" />
-                                        Weekends
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="highlight-holiday"
-                                        checked={showHolidayHighlight}
-                                        onCheckedChange={(c) => setShowHolidayHighlight(!!c)}
-                                    />
-                                    <Label htmlFor="highlight-holiday" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
-                                        <div className="w-3 h-3 rounded bg-red-100" />
-                                        Holidays / Day Off
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="highlight-shortened"
-                                        checked={showShortenedHighlight}
-                                        onCheckedChange={(c) => setShowShortenedHighlight(!!c)}
-                                    />
-                                    <Label htmlFor="highlight-shortened" className="flex items-center gap-2 cursor-pointer text-sm font-normal">
-                                        <div className="w-3 h-3 rounded bg-orange-100" />
-                                        Shortened Days
-                                    </Label>
-                                </div>
-                            </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                {/*Highlight Setting Popover*/}
+                <HighlightSettingsPopover
+                    showWeekendHighlight={showWeekendHighlight}
+                    showHolidayHighlight={showHolidayHighlight}
+                    showShortenedHighlight={showShortenedHighlight}
+                    onToggleWeekend={setShowWeekendHighlight}
+                    onToggleHoliday={setShowHolidayHighlight}
+                    onToggleShortened={setShowShortenedHighlight}
+                />
 
                 <Button
                     variant="outline"
@@ -519,6 +386,99 @@ export default function SimpleView({
                     )}
                 </div>
 
+                {selectedEmployeeId !== null && rows.length === 1 ? (
+                    /* ── Calendar grid view for focused employee ── */
+                    <div className="flex-1 border rounded-lg overflow-auto p-3 flex flex-col gap-2">
+                        {/* Employee header */}
+                        <div className="flex items-center gap-3 px-1 pb-1 border-b">
+                            <span className="font-semibold text-sm">{rows[0].employeeName}</span>
+                            {rows[0].departmentNames.map(n => (
+                                <span key={n} className="text-xs text-muted-foreground">{n}</span>
+                            ))}
+                            <Badge
+                                className="ml-auto"
+                                variant={rows[0].totalHours > 200 ? "destructive" : rows[0].totalHours > 180 ? "warning" : "secondary"}
+                            >
+                                {rows[0].totalHours.toFixed(1)}h
+                            </Badge>
+                            <button
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => setSelectedEmployeeId(null)}
+                                title="Exit focus mode"
+                            >
+                                <X className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
+                        {/* Day-of-week header */}
+                        <div className="grid grid-cols-7 gap-1">
+                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+                                <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">{d}</div>
+                            ))}
+                        </div>
+                        {/* Weeks */}
+                        {weeks.map((week, wi) => (
+                            <div key={wi} className="grid grid-cols-7 gap-1">
+                                {week.map((day, di) => {
+                                    if (!day) return <div key={di} className="min-h-[80px] rounded-md bg-muted/20" />
+                                    const holidayInfo = orgHolidays.find(h => {
+                                        const d = new Date(day.isoDate)
+                                        return h.month === d.getUTCMonth() + 1 && h.day === d.getUTCDate()
+                                    })
+                                    const dayDate = new Date(day.isoDate)
+                                    const isWeekend = dayDate.getUTCDay() === 0 || dayDate.getUTCDay() === 6
+                                    const isHolidayDay = !!holidayInfo && !holidayInfo.isShortenedDay
+                                    const isShortenedDay = !!holidayInfo?.isShortenedDay
+                                    const timeOff = getEmployeeTimeOff(rows[0].employeeId, day.isoDate, employeeTimeOffs)
+                                    const assignment = rows[0].days.get(day.isoDate)
+
+                                    return (
+                                        <div
+                                            key={day.isoDate}
+                                            className={`min-h-[80px] rounded-md border flex flex-col overflow-hidden ${
+                                                isHolidayDay && showHolidayHighlight ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900' :
+                                                isShortenedDay && showShortenedHighlight ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-200' :
+                                                isWeekend && showWeekendHighlight ? 'bg-yellow-50/40 dark:bg-yellow-900/10 border-yellow-200/60' :
+                                                'border-border'
+                                            } ${timeOff ? getTimeOffColor(timeOff.type) : ''}`}
+                                        >
+                                            {/* Date label */}
+                                            <div className={`px-1.5 py-0.5 text-[11px] font-medium flex items-center justify-between ${
+                                                isHolidayDay && showHolidayHighlight ? 'text-red-600 dark:text-red-400' :
+                                                isShortenedDay && showShortenedHighlight ? 'text-orange-500' :
+                                                isWeekend ? 'text-yellow-700 dark:text-yellow-400' :
+                                                'text-muted-foreground'
+                                            }`}>
+                                                <span>{day.label.split(' ')[0]}</span>
+                                                {isShortenedDay && !isHolidayDay && (
+                                                    <span className="text-[9px]">{holidayInfo?.startTime}-{holidayInfo?.endTime}</span>
+                                                )}
+                                            </div>
+                                            {/* Cell content */}
+                                            <div className="flex-1 p-0.5">
+                                                {timeOff ? (
+                                                    <div className="text-xs text-center py-1 px-1 rounded border h-full flex items-center justify-center">
+                                                        <span className="font-medium text-[10px]">{t(getTimeOffLabelKey(timeOff.type))}</span>
+                                                    </div>
+                                                ) : (
+                                                    <DroppableCell
+                                                        employeeId={rows[0].employeeId}
+                                                        date={day.isoDate}
+                                                        assignment={assignment}
+                                                        onAssign={assignShift}
+                                                        onRemove={removeShift}
+                                                        onUpdateNote={updateNote}
+                                                        isNonWorkingDay={isHolidayDay}
+                                                        isCompact={false}
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
                 <div className={`flex-1 border rounded-lg overflow-auto ${isCompact ? "overflow-x-hidden" : ""}`}>
                     <Table noWrapper className={isCompact ? "table-fixed w-full" : ""}>
                         <TableHeader className="sticky top-0 z-20 bg-background">
@@ -570,7 +530,11 @@ export default function SimpleView({
                         <TableBody>
                             {rows.map((row) => (
                                 <TableRow key={row.employeeId}>
-                                    <TableCell className={`font-medium sticky left-0 bg-background z-10 border-r ${isCompact ? "px-2 py-1 text-[11px]" : ""}`}>
+                                    <TableCell
+                                        className={`font-medium sticky left-0 bg-background z-10 border-r cursor-pointer select-none ${isCompact ? "px-2 py-1 text-[11px]" : ""} ${selectedEmployeeId === row.employeeId ? "bg-primary/10" : ""}`}
+                                        onDoubleClick={() => handleEmployeeDoubleClick(row.employeeId)}
+                                        title="Double-click to focus this employee"
+                                    >
                                         <div className="flex flex-row gap-2 justify-between items-center">
                                             <div className="min-w-0">
                                                 <div className="truncate">{row.employeeName}</div>
@@ -665,6 +629,7 @@ export default function SimpleView({
                         </TableBody>
                     </Table>
                 </div>
+                )}
             </div>
 
             <CoverageCheckModal
