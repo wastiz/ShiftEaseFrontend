@@ -1,7 +1,7 @@
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
-import { PasswordInput } from "@/components/ui/PasswordInput";
+import { PasswordInput } from "@/components/ui/inputs/PasswordInput";
 import { Button } from "@/components/ui/shadcn/button";
 import {Mode, Role, ApiError, getErrorMessage} from "@/types";
 import { useLogin } from "@/hooks/api/auth";

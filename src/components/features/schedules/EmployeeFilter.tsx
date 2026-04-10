@@ -11,6 +11,7 @@ import {
     CommandList
 } from "@/components/ui/shadcn/command";
 import {EmployeeMinData} from "@/types";
+import {useTranslations} from "next-intl";
 
 type Props = {
     employees: EmployeeMinData[];
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function EmployeeFilter({ employees, selectedEmployeeId, onSelect }: Props) {
+    const t = useTranslations('employer.schedules')
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
 
@@ -44,7 +46,7 @@ export function EmployeeFilter({ employees, selectedEmployeeId, onSelect }: Prop
                         role="combobox"
                     >
             <span className="truncate text-sm">
-              {selectedEmployee?.name || "Search employee..."}
+              {selectedEmployee?.name || t("searchEmployee")}
             </span>
                     </Button>
                 </PopoverTrigger>
@@ -52,13 +54,13 @@ export function EmployeeFilter({ employees, selectedEmployeeId, onSelect }: Prop
                 <PopoverContent className="w-64 p-0" align="start">
                     <Command>
                         <CommandInput
-                            placeholder="Search employee..."
+                            placeholder={t("searchEmployee")}
                             value={searchValue}
                             onValueChange={setSearchValue}
                         />
 
                         <CommandList>
-                            <CommandEmpty>No employees found</CommandEmpty>
+                            <CommandEmpty>{t("noEmployeesFound")}</CommandEmpty>
 
                             <CommandGroup>
                                 {suggestions.map((emp) => (

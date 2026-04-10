@@ -1,6 +1,10 @@
 import {DateData, EmployeeTimeOff, Holiday, TimeOffType, WorkDay} from "@/types";
 
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",];
+export const MONTH_NAMES: Record<string, number> = {
+    january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+    july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
 
 export function getDaysInMonth(year: number, month: number): DateData[] {
     return Array.from(

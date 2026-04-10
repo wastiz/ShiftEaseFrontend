@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
-import { PasswordInput } from "@/components/ui/PasswordInput";
+import { PasswordInput } from "@/components/ui/inputs/PasswordInput";
 import { Button } from "@/components/ui/shadcn/button";
 import { toast } from "sonner";
 import { useResetPassword } from "@/hooks/api/auth";

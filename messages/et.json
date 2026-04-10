@@ -112,7 +112,8 @@
     "preferences": "Eelistused",
     "vacation": "Puhkus",
     "sickLeave": "Haigusleht",
-    "personalDays": "Isiklikud päevad"
+    "personalDays": "Isiklikud päevad",
+    "timeOff": "Vaba aeg"
   },
   "employer": {
     "organizations": {
@@ -287,7 +288,9 @@
       "confirmedSchedules": "Kinnitatud graafikud:",
       "unconfirmedSchedules": "Kinnitamata graafikud:",
       "noSchedulesYet": "Selle osakonna jaoks pole veel graafikuid. Looge esimene alustamiseks.",
-      "manageSchedules": "Halda graafikuid"
+      "manageSchedules": "Halda graafikuid",
+      "searchEmployee": "Töötaja otsimine...",
+      "noEmployeesFound": "Töötajat ei leitud"
     },
     "bulkAdd": {
       "title": "Töötajate hulgilisamine",

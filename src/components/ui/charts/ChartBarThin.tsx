@@ -1,7 +1,7 @@
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import { TrendBadge } from '../../ui/TrendBadge';
+import { TrendBadge } from '../badges/TrendBadge';
 
 import { Card, CardContent } from '@/components/ui/shadcn/card';
 import {

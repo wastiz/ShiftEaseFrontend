@@ -112,7 +112,8 @@
     "preferences": "Preferences",
     "vacation": "Vacation",
     "sickLeave": "Sick Leave",
-    "personalDays": "Personal Days"
+    "personalDays": "Personal Days",
+    "timeOff": "Time Off"
   },
   "employer": {
     "organizations": {
@@ -287,7 +288,9 @@
       "confirmedSchedules": "Confirmed schedules:",
       "unconfirmedSchedules": "Unconfirmed schedules:",
       "noSchedulesYet": "No schedules yet for this department. Create the first one to get started.",
-      "manageSchedules": "Manage Schedules"
+      "manageSchedules": "Manage Schedules",
+      "searchEmployee": "Search Employee...",
+      "noEmployeesFound": "No employees found"
     },
     "bulkAdd": {
       "title": "Bulk Add Employees",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Calendar, BarChart2 } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 import { Employee } from "@/types";
 import Header from "@/components/ui/Header";
@@ -19,7 +19,6 @@ import {
 import EmployeeCard from "@/components/ui/cards/EmployeeCard";
 import {
     TimeOffDialog,
-    TimeOffCalendarDialog,
     EmployeeAsideForm,
     EmployeeFormValues,
     EmployeeFilters,
@@ -44,7 +43,7 @@ export default function Employees() {
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
     const [timeOffDialogOpen, setTimeOffDialogOpen] = useState(false);
     const [timeOffEmployee, setTimeOffEmployee] = useState<Employee | null>(null);
-    const [calendarOpen, setCalendarOpen] = useState(false);
+
 
     const { data: departments = [] } = useGetDepartments();
     const { data: employees = [], isLoading: isEmployeeLoading } = useGetEmployees();
@@ -115,10 +114,6 @@ export default function Employees() {
     return (
         <>
             <Header title={t("title")}>
-                <Button variant="outline" onClick={() => setCalendarOpen(true)}>
-                    <BarChart2 className="h-4 w-4 mr-2" />
-                    Time Off Schedule
-                </Button>
                 <Button variant="outline" onClick={() => router.push("employees/bulk-create")}>
                     {tCommon("bulkAdd")}
                 </Button>
@@ -213,12 +208,6 @@ export default function Employees() {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-
-                {/* Time off calendar dialog */}
-                <TimeOffCalendarDialog
-                    open={calendarOpen}
-                    onOpenChange={setCalendarOpen}
-                />
 
                 {/* Time off dialog */}
                 {timeOffEmployee && (
