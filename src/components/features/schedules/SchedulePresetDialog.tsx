@@ -41,7 +41,16 @@ export type GaPreset = {
     NumGenerations: number
 }
 
-export type SchedulePreset = StandardPreset | RetailPreset | AcoPreset | GaPreset
+export type AcoGaPreset = {
+    mode: 'aco-ga'
+    AllowedShiftTemplateIds: number[]
+    NumAnts: number
+    NumAcoIterations: number
+    PopulationSize: number
+    NumGaGenerations: number
+}
+
+export type SchedulePreset = StandardPreset | RetailPreset | AcoPreset | GaPreset | AcoGaPreset
 
 type SchedulePresetDialogProps = {
     open: boolean
@@ -55,6 +64,7 @@ const STORAGE_KEY_STANDARD = 'schedule_preset_standard'
 const STORAGE_KEY_RETAIL = 'schedule_preset_retail'
 const STORAGE_KEY_ACO = 'schedule_preset_aco'
 const STORAGE_KEY_GA = 'schedule_preset_ga'
+const STORAGE_KEY_ACO_GA = 'schedule_preset_aco_ga'
 
 const defaultStandardPreset: Omit<StandardPreset, 'mode'> = {
     AllowedShiftTemplateIds: [],
@@ -81,6 +91,14 @@ const defaultGaPreset: Omit<GaPreset, 'mode'> = {
     NumGenerations: 100,
 }
 
+const defaultAcoGaPreset: Omit<AcoGaPreset, 'mode'> = {
+    AllowedShiftTemplateIds: [],
+    NumAnts: 20,
+    NumAcoIterations: 30,
+    PopulationSize: 50,
+    NumGaGenerations: 80,
+}
+
 export default function SchedulePresetDialog({
     open,
     onOpenChange,
@@ -90,11 +108,12 @@ export default function SchedulePresetDialog({
 }: SchedulePresetDialogProps) {
     const t = useTranslations('schedule')
 
-    const [activeTab, setActiveTab] = useState<'standard' | 'retail' | 'aco' | 'ga'>('standard')
+    const [activeTab, setActiveTab] = useState<'standard' | 'retail' | 'aco' | 'ga' | 'aco-ga'>('standard')
     const [standard, setStandard] = useState<Omit<StandardPreset, 'mode'>>(defaultStandardPreset)
     const [retail, setRetail] = useState<Omit<RetailPreset, 'mode'>>(defaultRetailPreset)
     const [aco, setAco] = useState<Omit<AcoPreset, 'mode'>>(defaultAcoPreset)
     const [ga, setGa] = useState<Omit<GaPreset, 'mode'>>(defaultGaPreset)
+    const [acoGa, setAcoGa] = useState<Omit<AcoGaPreset, 'mode'>>(defaultAcoGaPreset)
 
     useEffect(() => {
         if (!open) return
@@ -146,6 +165,18 @@ export default function SchedulePresetDialog({
         } catch {
             setGa({ ...defaultGaPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
         }
+
+        // Load ACO+GA preset
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY_ACO_GA)
+            if (stored) {
+                setAcoGa(JSON.parse(stored))
+            } else {
+                setAcoGa({ ...defaultAcoGaPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
+            }
+        } catch {
+            setAcoGa({ ...defaultAcoGaPreset, AllowedShiftTemplateIds: shiftTypes.map(st => st.id) })
+        }
     }, [open, shiftTypes])
 
     const handleSave = () => {
@@ -158,9 +189,12 @@ export default function SchedulePresetDialog({
         } else if (activeTab === 'aco') {
             localStorage.setItem(STORAGE_KEY_ACO, JSON.stringify(aco))
             onGenerate({ mode: 'aco', ...aco })
-        } else {
+        } else if (activeTab === 'ga') {
             localStorage.setItem(STORAGE_KEY_GA, JSON.stringify(ga))
             onGenerate({ mode: 'ga', ...ga })
+        } else {
+            localStorage.setItem(STORAGE_KEY_ACO_GA, JSON.stringify(acoGa))
+            onGenerate({ mode: 'aco-ga', ...acoGa })
         }
         onOpenChange(false)
     }
@@ -201,6 +235,18 @@ export default function SchedulePresetDialog({
         })
     }
 
+    const toggleAcoGaShiftTemplate = (id: number) => {
+        setAcoGa(prev => {
+            const selected = prev.AllowedShiftTemplateIds.includes(id)
+            return {
+                ...prev,
+                AllowedShiftTemplateIds: selected
+                    ? prev.AllowedShiftTemplateIds.filter(x => x !== id)
+                    : [...prev.AllowedShiftTemplateIds, id],
+            }
+        })
+    }
+
     const getPatternLabel = (pattern: SchedulePattern): string => {
         switch (pattern) {
             case SchedulePattern.Custom: return t('patternCustom')
@@ -215,7 +261,8 @@ export default function SchedulePresetDialog({
     const isSaveDisabled =
         (activeTab === 'standard' && standard.AllowedShiftTemplateIds.length === 0) ||
         (activeTab === 'aco' && aco.AllowedShiftTemplateIds.length === 0) ||
-        (activeTab === 'ga' && ga.AllowedShiftTemplateIds.length === 0)
+        (activeTab === 'ga' && ga.AllowedShiftTemplateIds.length === 0) ||
+        (activeTab === 'aco-ga' && acoGa.AllowedShiftTemplateIds.length === 0)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -225,12 +272,13 @@ export default function SchedulePresetDialog({
                     <DialogDescription>{t('schedulePresetDescription')}</DialogDescription>
                 </DialogHeader>
 
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'standard' | 'retail' | 'aco' | 'ga')}>
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'standard' | 'retail' | 'aco' | 'ga' | 'aco-ga')}>
                     <TabsList className="w-full">
                         <TabsTrigger value="standard" className="flex-1">{t('tabStandard')}</TabsTrigger>
                         <TabsTrigger value="retail" className="flex-1">{t('tabRetail')}</TabsTrigger>
                         <TabsTrigger value="aco" className="flex-1">{t('tabAco')}</TabsTrigger>
                         <TabsTrigger value="ga" className="flex-1">{t('tabGa')}</TabsTrigger>
+                        <TabsTrigger value="aco-ga" className="flex-1">{t('tabAcoGa')}</TabsTrigger>
                     </TabsList>
 
                     {/* Standard tab */}
@@ -475,6 +523,90 @@ export default function SchedulePresetDialog({
                                     ))}
                                 </div>
                                 {ga.AllowedShiftTemplateIds.length === 0 && (
+                                    <p className="text-sm text-red-500">{t('selectAtLeastOneShiftTemplate')}</p>
+                                )}
+                            </div>
+                        </div>
+                    </TabsContent>
+                    {/* ACO+GA tab */}
+                    <TabsContent value="aco-ga">
+                        <div className="space-y-6 py-4">
+                            <div className="space-y-2">
+                                <Label>{t('numAnts')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('numAntsHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={acoGa.NumAnts}
+                                    onChange={(e) =>
+                                        setAcoGa(prev => ({ ...prev, NumAnts: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('numAcoIterations')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('numAcoIterationsHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={acoGa.NumAcoIterations}
+                                    onChange={(e) =>
+                                        setAcoGa(prev => ({ ...prev, NumAcoIterations: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('populationSize')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('populationSizeHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={acoGa.PopulationSize}
+                                    onChange={(e) =>
+                                        setAcoGa(prev => ({ ...prev, PopulationSize: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('numGaGenerations')}</Label>
+                                <p className="text-sm text-muted-foreground">{t('numGaGenerationsHint')}</p>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={acoGa.NumGaGenerations}
+                                    onChange={(e) =>
+                                        setAcoGa(prev => ({ ...prev, NumGaGenerations: parseInt(e.target.value) || 1 }))
+                                    }
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>{t('allowedShiftTemplates')}</Label>
+                                <div className="space-y-2 border rounded-md p-4 max-h-60 overflow-y-auto">
+                                    {shiftTypes.map((st) => (
+                                        <div key={st.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`aco-ga-shift-${st.id}`}
+                                                checked={acoGa.AllowedShiftTemplateIds.includes(st.id)}
+                                                onCheckedChange={() => toggleAcoGaShiftTemplate(st.id)}
+                                            />
+                                            <label
+                                                htmlFor={`aco-ga-shift-${st.id}`}
+                                                className="text-sm font-medium leading-none cursor-pointer"
+                                            >
+                                                <span
+                                                    className="inline-block w-4 h-4 rounded mr-2"
+                                                    style={{ backgroundColor: st.color }}
+                                                />
+                                                {st.name} ({st.startTime} - {st.endTime})
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                                {acoGa.AllowedShiftTemplateIds.length === 0 && (
                                     <p className="text-sm text-red-500">{t('selectAtLeastOneShiftTemplate')}</p>
                                 )}
                             </div>

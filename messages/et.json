@@ -112,7 +112,8 @@
     "preferences": "Eelistused",
     "vacation": "Puhkus",
     "sickLeave": "Haigusleht",
-    "personalDays": "Isiklikud päevad"
+    "personalDays": "Isiklikud päevad",
+    "timeOff": "Vaba aeg"
   },
   "employer": {
     "organizations": {
@@ -287,7 +288,9 @@
       "confirmedSchedules": "Kinnitatud graafikud:",
       "unconfirmedSchedules": "Kinnitamata graafikud:",
       "noSchedulesYet": "Selle osakonna jaoks pole veel graafikuid. Looge esimene alustamiseks.",
-      "manageSchedules": "Halda graafikuid"
+      "manageSchedules": "Halda graafikuid",
+      "searchEmployee": "Töötaja otsimine...",
+      "noEmployeesFound": "Töötajat ei leitud"
     },
     "bulkAdd": {
       "title": "Töötajate hulgilisamine",
@@ -723,6 +726,11 @@
     "tabRetail": "Jaemüük",
     "tabAco": "ACO",
     "tabGa": "GA",
+    "tabAcoGa": "ACO+GA",
+    "numAcoIterations": "ACO iteratsioonide arv",
+    "numAcoIterationsHint": "ACO iteratsioonide arv 1. faasis (rohkem = parem algne lahendus, aeglasem)",
+    "numGaGenerations": "GA põlvkondade arv",
+    "numGaGenerationsHint": "GA põlvkondade arv 2. faasis (rohkem = parem kvaliteet, aeglasem)",
     "numAnts": "Sipelgate arv",
     "numAntsHint": "Sipelgate arv iteratsiooni kohta (rohkem = rohkem uurimist, aeglasem)",
     "numIterations": "Iteratsioonide arv",

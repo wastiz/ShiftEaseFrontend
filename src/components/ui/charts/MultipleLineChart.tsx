@@ -23,7 +23,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/shadcn/chart';
-import { TrendBadge } from '../../ui/TrendBadge';
+import { TrendBadge } from '../badges/TrendBadge';
 
 export const description = 'A multiple line chart';
 

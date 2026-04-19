@@ -112,7 +112,8 @@
     "preferences": "Настройки",
     "vacation": "Отпуск",
     "sickLeave": "Больничный",
-    "personalDays": "Личные дни"
+    "personalDays": "Личные дни",
+    "timeOff": "Отсутствие"
   },
   "employer": {
     "organizations": {
@@ -287,7 +288,9 @@
       "confirmedSchedules": "Подтверждённые расписания:",
       "unconfirmedSchedules": "Неподтверждённые расписания:",
       "noSchedulesYet": "Расписаний для этой отделы пока нет. Создайте первое, чтобы начать.",
-      "manageSchedules": "Управление расписаниями"
+      "manageSchedules": "Управление расписаниями",
+      "searchEmployee": "Искать сотрудника...",
+      "noEmployeesFound": "Сотрудник не найден"
     },
     "bulkAdd": {
       "title": "Массовое добавление сотрудников",
@@ -723,6 +726,11 @@
     "tabRetail": "Розница",
     "tabAco": "ACO",
     "tabGa": "GA",
+    "tabAcoGa": "ACO+GA",
+    "numAcoIterations": "Количество итераций ACO",
+    "numAcoIterationsHint": "Количество итераций ACO в фазе 1 (больше = лучше начальное решение, медленнее)",
+    "numGaGenerations": "Количество поколений GA",
+    "numGaGenerationsHint": "Количество поколений GA в фазе 2 (больше = лучше качество, медленнее)",
     "numAnts": "Количество муравьёв",
     "numAntsHint": "Количество муравьёв за итерацию (больше = больше исследований, медленнее)",
     "numIterations": "Количество итераций",
