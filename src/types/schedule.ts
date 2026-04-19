@@ -142,6 +142,16 @@ export type GaScheduleGenerateRequest = {
     NumGenerations: number;
 }
 
+export type AcoGaScheduleGenerateRequest = {
+    startDate: string;
+    endDate: string;
+    AllowedShiftTypeIds?: number[];
+    NumAnts: number;
+    NumAcoIterations: number;
+    PopulationSize: number;
+    NumGaGenerations: number;
+}
+
 export type ScheduleGenerateResult =
     | {
         status: GenerateStatus.Success;

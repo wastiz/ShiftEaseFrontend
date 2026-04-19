@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import {
+    AcoGaScheduleGenerateRequest,
     AcoScheduleGenerateRequest,
     GaScheduleGenerateRequest,
     RetailScheduleGenerateRequest,
@@ -198,6 +199,20 @@ export function useGenerateGaSchedule() {
     return useMutation<ScheduleGenerateResult, Error, GaScheduleGenerateRequest>({
         mutationFn: async (payload) => {
             const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-ga', payload);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
+        },
+    });
+}
+
+export function useGenerateAcoGaSchedule() {
+    const queryClient = useQueryClient();
+
+    return useMutation<ScheduleGenerateResult, Error, AcoGaScheduleGenerateRequest>({
+        mutationFn: async (payload) => {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-aco-ga', payload);
             return response.data;
         },
         onSuccess: () => {

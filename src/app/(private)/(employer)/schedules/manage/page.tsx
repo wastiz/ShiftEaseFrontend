@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/shadcn/button'
 import {
     useAutoSaveSchedule,
     useExportSchedule,
+    useGenerateAcoGaSchedule,
     useGenerateAcoSchedule,
     useGenerateGaSchedule,
     useGenerateRetailSchedule,
@@ -193,6 +194,7 @@ export default function ManageSchedule() {
     const generateRetailSchedule = useGenerateRetailSchedule()
     const generateAcoSchedule = useGenerateAcoSchedule()
     const generateGaSchedule = useGenerateGaSchedule()
+    const generateAcoGaSchedule = useGenerateAcoGaSchedule()
 
     const onGenerateResult = (result: { status: GenerateStatus; error?: GenerateErrorCode; warnings?: GenerateWarningCode[]; shifts?: Shift[] } | undefined) => {
         if (!result) return;
@@ -282,6 +284,25 @@ export default function ManageSchedule() {
             return;
         }
 
+        if (preset.mode === 'aco-ga') {
+            generateAcoGaSchedule.mutate(
+                {
+                    startDate: daysOfMonth[0].isoDate,
+                    endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
+                    AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
+                    NumAnts: preset.NumAnts,
+                    NumAcoIterations: preset.NumAcoIterations,
+                    PopulationSize: preset.PopulationSize,
+                    NumGaGenerations: preset.NumGaGenerations,
+                },
+                {
+                    onSuccess: onGenerateResult,
+                    onError: () => toast.error(t('generateError')),
+                }
+            );
+            return;
+        }
+
         generateSchedule.mutate(
             {
                 startDate: daysOfMonth[0].isoDate,
@@ -335,8 +356,8 @@ export default function ManageSchedule() {
                 </ToggleGroup>
 
                 <div className="flex gap-2">
-                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending}>
-                        {(generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending) ? t('generating') : t('generateSchedule')}
+                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}>
+                        {(generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending) ? t('generating') : t('generateSchedule')}
                     </Button>
                 </div>
 
@@ -422,7 +443,7 @@ export default function ManageSchedule() {
                 onOpenChange={setGenerateDialogOpen}
                 shiftTypes={data?.shiftTypes || []}
                 onGenerate={handleGenerate}
-                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending}
+                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}
             />
 
             {generateResult && (
