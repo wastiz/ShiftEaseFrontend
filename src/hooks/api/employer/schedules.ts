@@ -5,7 +5,6 @@ import {
     AcoGaScheduleGenerateRequest,
     AcoScheduleGenerateRequest,
     GaScheduleGenerateRequest,
-    RetailScheduleGenerateRequest,
     Schedule,
     ScheduleEditorData,
     ScheduleGenerateRequest,
@@ -144,33 +143,15 @@ export function useGenerateSchedule() {
         mutationFn: async ({
             startDate,
             endDate,
-            AllowedShiftTypeIds,
-            MaxConsecutiveShifts,
-            SchedulePattern,
-            MinDaysOffPerWeek
+            TotalHours,
+            HardTotalHours,
         }) => {
-            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate', {
+            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-greedy', {
                 startDate,
                 endDate,
-                AllowedShiftTypeIds,
-                MaxConsecutiveShifts,
-                SchedulePattern,
-                MinDaysOffPerWeek
+                TotalHours,
+                HardTotalHours,
             });
-            return response.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: scheduleKeys.dataAll() });
-        },
-    });
-}
-
-export function useGenerateRetailSchedule() {
-    const queryClient = useQueryClient();
-
-    return useMutation<ScheduleGenerateResult, Error, RetailScheduleGenerateRequest>({
-        mutationFn: async (payload) => {
-            const response = await api.post<ScheduleGenerateResult>('/schedule-generator/generate-retail', payload);
             return response.data;
         },
         onSuccess: () => {

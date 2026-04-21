@@ -9,7 +9,6 @@ import {
     useGenerateAcoGaSchedule,
     useGenerateAcoSchedule,
     useGenerateGaSchedule,
-    useGenerateRetailSchedule,
     useGenerateSchedule,
     useSaveSchedule,
     useScheduleManagementData,
@@ -191,7 +190,6 @@ export default function ManageSchedule() {
     const unconfirmMutation = useUnconfirmSchedule()
     const exportSchedule = useExportSchedule()
     const generateSchedule = useGenerateSchedule()
-    const generateRetailSchedule = useGenerateRetailSchedule()
     const generateAcoSchedule = useGenerateAcoSchedule()
     const generateGaSchedule = useGenerateGaSchedule()
     const generateAcoGaSchedule = useGenerateAcoGaSchedule()
@@ -223,41 +221,15 @@ export default function ManageSchedule() {
     }
 
     const handleGenerate = (preset: SchedulePreset) => {
-        if (preset.mode === 'retail') {
-            if (!scheduleId) {
-                toast.error(t('retailRequiresSchedule'));
-                return;
-            }
-            generateRetailSchedule.mutate(
-                {
-                    scheduleId,
-                    totalHours: preset.totalHours,
-                    maxConsecutiveShifts: preset.maxConsecutiveShifts,
-                    minDaysOffPerWeek: preset.minDaysOffPerWeek,
-                },
-                {
-                    onSuccess: onGenerateResult,
-                    onError: (error: Error & { response?: { data?: { error?: string; message?: string } } }) => {
-                        const message =
-                            error?.response?.data?.error ||
-                            error?.response?.data?.message ||
-                            error?.message ||
-                            "Something went wrong";
-                        toast.error(message);
-                    }
-                }
-            );
-            return;
-        }
-
         if (preset.mode === 'aco') {
             generateAcoSchedule.mutate(
                 {
                     startDate: daysOfMonth[0].isoDate,
                     endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                    AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
                     NumAnts: preset.NumAnts,
                     NumIterations: preset.NumIterations,
+                    TotalHours: preset.TotalHours,
+                    HardTotalHours: preset.HardTotalHours,
                 },
                 {
                     onSuccess: onGenerateResult,
@@ -272,9 +244,10 @@ export default function ManageSchedule() {
                 {
                     startDate: daysOfMonth[0].isoDate,
                     endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                    AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
                     PopulationSize: preset.PopulationSize,
                     NumGenerations: preset.NumGenerations,
+                    TotalHours: preset.TotalHours,
+                    HardTotalHours: preset.HardTotalHours,
                 },
                 {
                     onSuccess: onGenerateResult,
@@ -289,11 +262,12 @@ export default function ManageSchedule() {
                 {
                     startDate: daysOfMonth[0].isoDate,
                     endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                    AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
                     NumAnts: preset.NumAnts,
                     NumAcoIterations: preset.NumAcoIterations,
                     PopulationSize: preset.PopulationSize,
                     NumGaGenerations: preset.NumGaGenerations,
+                    TotalHours: preset.TotalHours,
+                    HardTotalHours: preset.HardTotalHours,
                 },
                 {
                     onSuccess: onGenerateResult,
@@ -307,10 +281,8 @@ export default function ManageSchedule() {
             {
                 startDate: daysOfMonth[0].isoDate,
                 endDate: daysOfMonth[daysOfMonth.length - 1]?.isoDate,
-                AllowedShiftTypeIds: preset.AllowedShiftTemplateIds,
-                MaxConsecutiveShifts: preset.MaxConsecutiveShifts,
-                SchedulePattern: preset.SchedulePattern,
-                MinDaysOffPerWeek: preset.MinDaysOffPerWeek,
+                TotalHours: preset.TotalHours,
+                HardTotalHours: preset.HardTotalHours,
             },
             {
                 onSuccess: onGenerateResult,
@@ -356,8 +328,8 @@ export default function ManageSchedule() {
                 </ToggleGroup>
 
                 <div className="flex gap-2">
-                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}>
-                        {(generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending) ? t('generating') : t('generateSchedule')}
+                    <Button onClick={() => setGenerateDialogOpen(true)} disabled={generateSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}>
+                        {(generateSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending) ? t('generating') : t('generateSchedule')}
                     </Button>
                 </div>
 
@@ -441,9 +413,8 @@ export default function ManageSchedule() {
             <SchedulePresetDialog
                 open={generateDialogOpen}
                 onOpenChange={setGenerateDialogOpen}
-                shiftTypes={data?.shiftTypes || []}
                 onGenerate={handleGenerate}
-                isGenerating={generateSchedule.isPending || generateRetailSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}
+                isGenerating={generateSchedule.isPending || generateAcoSchedule.isPending || generateGaSchedule.isPending || generateAcoGaSchedule.isPending}
             />
 
             {generateResult && (

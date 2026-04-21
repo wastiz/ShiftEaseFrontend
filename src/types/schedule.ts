@@ -113,43 +113,37 @@ export type ScheduleGenerateRequest = {
     id: number
     startDate: string
     endDate: string
-    AllowedShiftTypeIds: number[];
-    MaxConsecutiveShifts: number;
-    SchedulePattern: SchedulePattern;
-    MinDaysOffPerWeek: number;
-}
-
-export type RetailScheduleGenerateRequest = {
-    scheduleId: number;
-    totalHours: number;
-    maxConsecutiveShifts: number;
-    minDaysOffPerWeek: number;
+    TotalHours?: number | null;
+    HardTotalHours?: boolean;
 }
 
 export type AcoScheduleGenerateRequest = {
     startDate: string;
     endDate: string;
-    AllowedShiftTypeIds?: number[];
     NumAnts: number;
     NumIterations: number;
+    TotalHours?: number | null;
+    HardTotalHours?: boolean;
 }
 
 export type GaScheduleGenerateRequest = {
     startDate: string;
     endDate: string;
-    AllowedShiftTypeIds?: number[];
     PopulationSize: number;
     NumGenerations: number;
+    TotalHours?: number | null;
+    HardTotalHours?: boolean;
 }
 
 export type AcoGaScheduleGenerateRequest = {
     startDate: string;
     endDate: string;
-    AllowedShiftTypeIds?: number[];
     NumAnts: number;
     NumAcoIterations: number;
     PopulationSize: number;
     NumGaGenerations: number;
+    TotalHours?: number | null;
+    HardTotalHours?: boolean;
 }
 
 export type ScheduleGenerateResult =
@@ -199,5 +193,6 @@ export enum GenerateWarningCode {
     AllEmployeesOnTimeOff = "AllEmployeesOnTimeOff",
     HighWorkloadDetected = "HighWorkloadDetected",
     SomeDaysWithoutShifts = "SomeDaysWithoutShifts",
+    BudgetExhausted = "BudgetExhausted",
 }
 
